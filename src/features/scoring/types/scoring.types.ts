@@ -28,22 +28,23 @@ export const PILLARS = [
 export type PillarKey = (typeof PILLARS)[number]["key"];
 
 export const AXES = [
-  { key: "d1", code: "D1", label: "Problème", pillar: "sens" },
-  { key: "d2", code: "D2", label: "Solution", pillar: "sens" },
-  { key: "d3", code: "D3", label: "Proposition de valeur", pillar: "sens" },
-  { key: "d4", code: "D4", label: "Marché", pillar: "viabilite" },
-  { key: "d5", code: "D5", label: "Concurrence & Benchmark", pillar: "viabilite" },
-  { key: "d6", code: "D6", label: "Modèle économique", pillar: "viabilite" },
-  { key: "d7", code: "D7", label: "Traction & Preuves", pillar: "scalabilite" },
-  { key: "d8", code: "D8", label: "Potentiel de croissance", pillar: "scalabilite" },
-  { key: "d9", code: "D9", label: "Stratégie Go-to-Market", pillar: "scalabilite" },
-  { key: "d10", code: "D10", label: "Équipe & Compétences", pillar: "execution" },
-  { key: "d11", code: "D11", label: "Niveau d'avancement", pillar: "execution" },
-  { key: "d12", code: "D12", label: "Risques & Freins", pillar: "execution" },
+  { key: "d1", code: "D1", label: "Problème", short: "Problème", pillar: "sens" },
+  { key: "d2", code: "D2", label: "Solution", short: "Solution", pillar: "sens" },
+  { key: "d3", code: "D3", label: "Proposition de valeur", short: "Valeur", pillar: "sens" },
+  { key: "d4", code: "D4", label: "Marché", short: "Marché", pillar: "viabilite" },
+  { key: "d5", code: "D5", label: "Concurrence & Benchmark", short: "Concurrence", pillar: "viabilite" },
+  { key: "d6", code: "D6", label: "Modèle économique", short: "Modèle éco", pillar: "viabilite" },
+  { key: "d7", code: "D7", label: "Traction & Preuves", short: "Traction", pillar: "scalabilite" },
+  { key: "d8", code: "D8", label: "Potentiel de croissance", short: "Croissance", pillar: "scalabilite" },
+  { key: "d9", code: "D9", label: "Stratégie Go-to-Market", short: "Go-to-market", pillar: "scalabilite" },
+  { key: "d10", code: "D10", label: "Équipe & Compétences", short: "Équipe", pillar: "execution" },
+  { key: "d11", code: "D11", label: "Niveau d'avancement", short: "Avancement", pillar: "execution" },
+  { key: "d12", code: "D12", label: "Risques & Freins", short: "Risques", pillar: "execution" },
 ] as const satisfies ReadonlyArray<{
   key: string;
   code: string;
   label: string;
+  short: string;
   pillar: PillarKey;
 }>;
 

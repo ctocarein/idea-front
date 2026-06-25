@@ -46,6 +46,8 @@ export type NavIcon = keyof typeof NAV_ICONS;
 export interface NavItem {
   href: string;
   label: string;
+  /** Libellé court pour la nav basse mobile (sinon `label`). */
+  shortLabel?: string;
   icon: NavIcon;
 }
 
@@ -187,7 +189,7 @@ export function AppShell({
                 )}
               >
                 <Icon className="size-5" />
-                <span className="max-w-full truncate">{item.label}</span>
+                <span className="max-w-full truncate">{item.shortLabel ?? item.label}</span>
               </Link>
             );
           })}

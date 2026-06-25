@@ -50,6 +50,8 @@ export function RadarChart({
   const cx = size / 2;
   const cy = size / 2;
   const r = size * (showLabels ? 0.33 : 0.42);
+  // Marge horizontale pour que les libellés des 12 axes ne soient pas rognés.
+  const pad = showLabels ? Math.round(size * 0.16) : 0;
 
   const values = AXES.map((a) => score.axes[a.key] ?? 0);
   const dataPoints = polygon(cx, cy, r, values);
@@ -66,8 +68,8 @@ export function RadarChart({
 
   return (
     <svg
-      viewBox={`0 0 ${size} ${size}`}
-      width={size}
+      viewBox={`${-pad} 0 ${size + pad * 2} ${size}`}
+      width={size + pad * 2}
       height={size}
       role="img"
       aria-label="Radar de Collision — 12 dimensions d'évaluation"
@@ -165,7 +167,7 @@ export function RadarChart({
                 dominantBaseline="middle"
                 className="fill-muted-foreground text-[10px] font-medium"
               >
-                {axis.label}
+                {axis.short}
               </text>
             );
           })

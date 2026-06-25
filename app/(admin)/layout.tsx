@@ -7,7 +7,7 @@ import { AppShell, type NavItem } from "@/shared/layout";
 import { signOut } from "@/features/auth";
 
 const NAV: NavItem[] = [
-  { href: routes.admin, label: "Vue d'ensemble", icon: "overview" },
+  { href: routes.admin, label: "Vue d'ensemble", shortLabel: "Aperçu", icon: "overview" },
   { href: routes.adminProjects, label: "Projets", icon: "projects" },
   { href: routes.adminMentors, label: "Mentors", icon: "mentors" },
   { href: routes.adminScoringGrid, label: "Grille", icon: "grid" },

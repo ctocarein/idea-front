@@ -7,12 +7,12 @@ import { AppShell, type NavItem } from "@/shared/layout";
 import { signOut } from "@/features/auth";
 
 const NAV: NavItem[] = [
-  { href: routes.dashboard, label: "Tableau de bord", icon: "overview" },
+  { href: routes.dashboard, label: "Tableau de bord", shortLabel: "Accueil", icon: "overview" },
   { href: routes.academy, label: "Academy", icon: "academy" },
-  { href: routes.pitchSim, label: "Simulateur", icon: "pitch" },
-  { href: routes.opportunities, label: "Opportunités", icon: "opportunities" },
+  { href: routes.pitchSim, label: "Simulateur", shortLabel: "Pitch", icon: "pitch" },
+  { href: routes.opportunities, label: "Opportunités", shortLabel: "Opports", icon: "opportunities" },
   { href: routes.mentors, label: "Mentors", icon: "mentors" },
-  { href: routes.readiness, label: "Readiness", icon: "readiness" },
+  { href: routes.readiness, label: "Readiness", shortLabel: "Prêt ?", icon: "readiness" },
 ];
 
 export default async function DashboardLayout({
