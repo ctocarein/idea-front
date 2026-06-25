@@ -40,7 +40,12 @@ async function post(sessionId: string, path: string, json?: unknown): Promise<Tu
       { method: "POST", ...(json !== undefined ? { json } : {}) },
     );
     return { ok: true, session };
-  } catch {
+  } catch (error) {
+    // Remonter le message métier du backend (ex. « Présentez votre pitch avant… »).
+    if (error instanceof ApiError && error.status < 500) {
+      const detail = error.detail as { error?: { message?: string } } | undefined;
+      if (detail?.error?.message) return failed(detail.error.message);
+    }
     return failed();
   }
 }

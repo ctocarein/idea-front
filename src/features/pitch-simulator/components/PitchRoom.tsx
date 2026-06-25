@@ -187,6 +187,7 @@ export function PitchRoom({
 
   // PITCHING — le porteur narre, le comité réagit en silence.
   if (phase === "pitching") {
+    const hasNarrated = turns.some((t) => t.kind === "narration");
     return (
       <div className="space-y-5">
         <CommitteeBench committee={committee} convictions={convictions} speaker={null} />
@@ -198,18 +199,28 @@ export function PitchRoom({
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
           />
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               variant="outline"
-              onClick={() => draft.trim() && run(() => narrate(session.id, draft.trim()))}
+              disabled={!draft.trim() || pending}
+              onClick={() => run(() => narrate(session.id, draft.trim()))}
               loading={pending}
             >
               <Send className="size-4" />
               Continuer
             </Button>
-            <Button onClick={() => run(() => endPitch(session.id), false)} loading={pending}>
+            <Button
+              disabled={!hasNarrated || pending}
+              onClick={() => run(() => endPitch(session.id), false)}
+              loading={pending}
+            >
               J&apos;ai terminé
             </Button>
+            {!hasNarrated ? (
+              <span className="text-xs text-muted-foreground">
+                Présente au moins une partie de ton pitch d&apos;abord.
+              </span>
+            ) : null}
           </div>
         </div>
       </div>
