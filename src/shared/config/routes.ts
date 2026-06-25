@@ -22,6 +22,7 @@ export const routes = {
   dashboard: "/dashboard",
   academy: "/dashboard/academy",
   pitchSim: "/dashboard/pitch-sim",
+  pitchSimSession: (id: string) => `/dashboard/pitch-sim/${id}`,
   mentors: "/dashboard/mentors",
   readiness: "/dashboard/readiness",
   opportunities: "/dashboard/opportunites",

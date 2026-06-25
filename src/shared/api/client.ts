@@ -37,16 +37,23 @@ export async function apiFetch<T = unknown>(path: string, options: FetchOptions 
   const { json, token, headers, ...rest } = options;
   const accessToken = token ?? (await cookies()).get(ACCESS_COOKIE)?.value ?? null;
 
-  const res = await fetch(`${env.backendUrl}${path}`, {
-    ...rest,
-    cache: "no-store",
-    headers: {
-      ...(json !== undefined ? { "content-type": "application/json" } : {}),
-      ...(accessToken ? { authorization: `Bearer ${accessToken}` } : {}),
-      ...headers,
-    },
-    body: json !== undefined ? JSON.stringify(json) : undefined,
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${env.backendUrl}${path}`, {
+      ...rest,
+      cache: "no-store",
+      headers: {
+        ...(json !== undefined ? { "content-type": "application/json" } : {}),
+        ...(accessToken ? { authorization: `Bearer ${accessToken}` } : {}),
+        ...headers,
+      },
+      body: json !== undefined ? JSON.stringify(json) : undefined,
+    });
+  } catch (cause) {
+    // Backend injoignable (réseau / reset). On normalise en ApiError(503) pour que les
+    // pages dégradent proprement (empty state) au lieu de planter sur l'error boundary.
+    throw new ApiError(503, cause);
+  }
 
   if (!res.ok) {
     let detail: unknown;

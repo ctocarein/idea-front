@@ -1,26 +1,31 @@
 import type { Metadata } from "next";
 
-import { PitchProgress, PitchSimulator } from "@/features/pitch-simulator";
+import { ApiError } from "@/shared/api/client";
+import { PitchBriefing } from "@/features/pitch-simulator";
+import { getCommittees } from "@/features/pitch-simulator/api";
+import { getMyProjectId } from "@/features/reports/api";
 
 export const metadata: Metadata = { title: "Simulateur de pitch" };
 
-export default function PitchSimPage() {
+export default async function PitchSimPage() {
+  let committees: Awaited<ReturnType<typeof getCommittees>> = [];
+  let projectId: string | null = null;
+  try {
+    [committees, projectId] = await Promise.all([getCommittees(), getMyProjectId()]);
+  } catch (error) {
+    if (!(error instanceof ApiError)) throw error;
+  }
+
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight">
-          Simulateur de pitch
-        </h1>
+        <h1 className="font-display text-2xl font-bold tracking-tight">Simulateur de pitch</h1>
         <p className="text-muted-foreground">
-          Entraîne-toi face à une IA-investisseur. Sans jugement, sans enjeu —
-          rejoue autant que tu veux.
+          Affronte un comité virtuel — sans jugement, sans enjeu. Rejoue autant que tu veux.
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_20rem]">
-        <PitchSimulator />
-        <PitchProgress />
-      </div>
+      <PitchBriefing committees={committees} projectId={projectId} />
     </div>
   );
 }
