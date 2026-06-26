@@ -33,6 +33,23 @@ export async function startSession(
   }
 }
 
+/** Le porteur partage son deck (PDF/image) dans le salon → persisté + rattaché à la session. */
+export async function shareDeck(sessionId: string, formData: FormData): Promise<TurnResult> {
+  try {
+    const session = await apiFetch<PitchSession>(
+      `/api/v1/pitchsim/sessions/${sessionId}/deck`,
+      { method: "POST", formData },
+    );
+    return { ok: true, session };
+  } catch (error) {
+    if (error instanceof ApiError && error.status < 500) {
+      const detail = error.detail as { error?: { message?: string } } | undefined;
+      if (detail?.error?.message) return failed(detail.error.message);
+    }
+    return failed();
+  }
+}
+
 async function post(sessionId: string, path: string, json?: unknown): Promise<TurnResult> {
   try {
     const session = await apiFetch<PitchSession>(

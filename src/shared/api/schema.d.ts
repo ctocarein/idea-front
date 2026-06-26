@@ -583,6 +583,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/pitchsim/sessions/{session_id}/deck": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Attach Session Deck */
+        post: operations["attach_session_deck_api_v1_pitchsim_sessions__session_id__deck_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/pitchsim/sessions/{session_id}/abandon": {
         parameters: {
             query?: never;
@@ -1317,6 +1334,11 @@ export interface components {
             /** @default backup */
             kind: components["schemas"]["SlideKind"];
         };
+        /** Body_attach_session_deck_api_v1_pitchsim_sessions__session_id__deck_post */
+        Body_attach_session_deck_api_v1_pitchsim_sessions__session_id__deck_post: {
+            /** File */
+            file: string;
+        };
         /** Body_create_deck_api_v1_pitchsim_decks_post */
         Body_create_deck_api_v1_pitchsim_decks_post: {
             /** File */
@@ -1385,6 +1407,10 @@ export interface components {
              * @default []
              */
             slides: components["schemas"]["SlideOut"][];
+            /** File Url */
+            file_url?: string | null;
+            /** Content Type */
+            content_type?: string | null;
         };
         /** DiagnosticCreatedOut */
         DiagnosticCreatedOut: {
@@ -2261,6 +2287,7 @@ export interface components {
              * @default []
              */
             turns: components["schemas"]["TurnOut"][];
+            deck?: components["schemas"]["DeckOut"] | null;
         };
         /** SessionStartIn */
         SessionStartIn: {
@@ -3543,6 +3570,41 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["SessionStartIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    attach_session_deck_api_v1_pitchsim_sessions__session_id__deck_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_attach_session_deck_api_v1_pitchsim_sessions__session_id__deck_post"];
             };
         };
         responses: {

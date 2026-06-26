@@ -29,12 +29,14 @@ export class ApiError extends Error {
 interface FetchOptions extends Omit<RequestInit, "body"> {
   /** Corps JSON (sérialisé automatiquement). */
   json?: unknown;
+  /** Corps multipart (upload de fichier). On laisse fetch poser le boundary. */
+  formData?: FormData;
   /** Forcer un token (ex. juste après login, avant que le cookie soit posé). */
   token?: string | null;
 }
 
 export async function apiFetch<T = unknown>(path: string, options: FetchOptions = {}): Promise<T> {
-  const { json, token, headers, ...rest } = options;
+  const { json, formData, token, headers, ...rest } = options;
   const accessToken = token ?? (await cookies()).get(ACCESS_COOKIE)?.value ?? null;
 
   let res: Response;
@@ -43,11 +45,12 @@ export async function apiFetch<T = unknown>(path: string, options: FetchOptions 
       ...rest,
       cache: "no-store",
       headers: {
+        // Pour le multipart on NE fixe PAS content-type (fetch gère le boundary).
         ...(json !== undefined ? { "content-type": "application/json" } : {}),
         ...(accessToken ? { authorization: `Bearer ${accessToken}` } : {}),
         ...headers,
       },
-      body: json !== undefined ? JSON.stringify(json) : undefined,
+      body: json !== undefined ? JSON.stringify(json) : (formData ?? undefined),
     });
   } catch (cause) {
     // Backend injoignable (réseau / reset). On normalise en ApiError(503) pour que les

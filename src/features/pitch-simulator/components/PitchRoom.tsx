@@ -21,7 +21,7 @@ import {
 import { routes } from "@/shared/config/routes";
 import { Badge, Button, toast } from "@/shared/ui";
 import { cn } from "@/shared/lib/utils";
-import { deliberate, endPitch, narrate, respond, startPitch } from "../actions";
+import { deliberate, endPitch, narrate, respond, shareDeck, startPitch } from "../actions";
 import type { Committee, PitchSession, PitchTurn } from "../api";
 import { createRecognizer, speak, speechSupported, stopSpeaking } from "../lib/speech";
 
@@ -258,8 +258,13 @@ export function PitchRoom({
   const recRef = useRef<ReturnType<typeof createRecognizer>>(null);
 
   // --- Partage de slides (présentation type « partage d'écran ») ---
-  const [slides, setSlides] = useState<{ url: string; isPdf: boolean }[]>([]);
+  // Au chargement, on ré-affiche le deck déjà partagé (persisté dans la session).
+  const persistedSlide = initial.deck?.file_url
+    ? [{ url: initial.deck.file_url, isPdf: (initial.deck.content_type ?? "").includes("pdf") }]
+    : [];
+  const [slides, setSlides] = useState<{ url: string; isPdf: boolean }[]>(persistedSlide);
   const [slideIdx, setSlideIdx] = useState(0);
+  const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const presenting = slides.length > 0;
 
@@ -313,13 +318,26 @@ export function PitchRoom({
       toast.error("Choisis un PDF ou des images de tes slides (exporte ton PowerPoint en PDF).");
       return;
     }
-    slides.forEach((s) => URL.revokeObjectURL(s.url));
+    // On ne révoque que les blobs locaux (pas l'URL présignée d'un deck déjà persisté).
+    slides.forEach((s) => s.url.startsWith("blob:") && URL.revokeObjectURL(s.url));
     const pdf = picked.find((f) => f.type === "application/pdf");
     const next = pdf
       ? [{ url: URL.createObjectURL(pdf), isPdf: true }]
       : picked.map((f) => ({ url: URL.createObjectURL(f), isPdf: false }));
-    setSlides(next);
+    setSlides(next); // aperçu instantané
     setSlideIdx(0);
+
+    // Persistance : on envoie le fichier principal (PDF, sinon 1re image) → rattaché à la session.
+    const primary = pdf ?? picked[0];
+    const fd = new FormData();
+    fd.append("file", primary);
+    setUploading(true);
+    shareDeck(session.id, fd)
+      .then((res) => {
+        if (res.ok) setSession(res.session);
+        else toast.error(res.message);
+      })
+      .finally(() => setUploading(false));
   }
 
   function stopPresenting() {
@@ -435,6 +453,12 @@ export function PitchRoom({
             <X className="size-3.5" />
             Arrêter de présenter
           </button>
+          {uploading ? (
+            <span className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1.5 text-xs font-medium text-white">
+              <Loader2 className="size-3.5 animate-spin" />
+              Enregistrement…
+            </span>
+          ) : null}
         </div>
       );
     }
