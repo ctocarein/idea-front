@@ -5,14 +5,32 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Users } from "lucide-react";
 
 import { routes } from "@/shared/config/routes";
-import { Button, Card, CardContent, Chip, toast } from "@/shared/ui";
+import { Button, Card, CardContent, toast } from "@/shared/ui";
 import { startSession } from "../actions";
 import type { Committee } from "../api";
 
 const FORMATS = [
-  { key: "elevator", label: "Elevator", hint: "1 min" },
-  { key: "standard", label: "Standard", hint: "3 min" },
-  { key: "long", label: "Long", hint: "5 min" },
+  {
+    key: "speed",
+    label: "Speed-pitching",
+    pitch: "Pitch 3 min",
+    qa: "Q&A 3 min",
+    hint: "Droit au but : taille du marché, barrières à l'entrée.",
+  },
+  {
+    key: "standard",
+    label: "Standard",
+    pitch: "Pitch 5 min",
+    qa: "Q&A 5–7 min",
+    hint: "Le jury creuse 3–4 sujets : équipe, traction, modèle éco.",
+  },
+  {
+    key: "approfondi",
+    label: "Approfondi",
+    pitch: "Pitch 10 min",
+    qa: "Q&A 10–15 min",
+    hint: "Questions pointues : PI, prévisions financières, tech.",
+  },
 ];
 
 export function PitchBriefing({
@@ -86,13 +104,37 @@ export function PitchBriefing({
 
       <section className="space-y-3">
         <h2 className="font-display text-lg font-bold tracking-tight">Format</h2>
-        <div className="flex flex-wrap gap-2">
-          {FORMATS.map((f) => (
-            <Chip key={f.key} selected={format === f.key} onClick={() => setFormat(f.key)}>
-              {f.label} · {f.hint}
-            </Chip>
-          ))}
+        <div className="grid gap-4 sm:grid-cols-3">
+          {FORMATS.map((f) => {
+            const selected = f.key === format;
+            return (
+              <button
+                key={f.key}
+                type="button"
+                onClick={() => setFormat(f.key)}
+                aria-pressed={selected}
+                className={`rounded-2xl border bg-card p-5 text-left transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/25 ${
+                  selected
+                    ? "border-coral-strong ring-2 ring-coral-strong/20"
+                    : "border-border hover:border-coral-strong/60"
+                }`}
+              >
+                <h3 className="font-display font-bold">{f.label}</h3>
+                <div className="mt-1 flex flex-wrap gap-x-3 text-xs font-medium text-coral-strong">
+                  <span>{f.pitch}</span>
+                  <span className="text-muted-foreground">·</span>
+                  <span>{f.qa}</span>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">{f.hint}</p>
+              </button>
+            );
+          })}
         </div>
+        <p className="text-xs text-muted-foreground">
+          Règle d&apos;or : plus le temps du jury est court, plus tes réponses doivent être
+          concises — vise <span className="font-medium text-foreground">moins de 45 s</span> pour
+          qu&apos;il enchaîne un maximum de questions.
+        </p>
       </section>
 
       <div className="flex flex-wrap items-center gap-3 border-t border-border pt-6">

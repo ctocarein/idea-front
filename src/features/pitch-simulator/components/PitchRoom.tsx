@@ -165,6 +165,10 @@ export function PitchRoom({
   const speaker = lastQuestion?.actor ?? null;
   const lastTurn = turns[turns.length - 1];
   const awaitingAnswer = lastTurn?.kind === "question";
+  // Règle d'or : viser des réponses courtes (cible portée par le format via la config de session).
+  const answerTargetS = Number(
+    (session.config as Record<string, unknown> | null)?.answer_target_s ?? 45,
+  );
 
   useEffect(() => {
     // Flag de montage : gate les capacités navigateur (micro/voix) pour éviter tout
@@ -317,6 +321,9 @@ export function PitchRoom({
                 <Send className="size-4" />
                 Répondre
               </Button>
+              <span className="text-xs text-muted-foreground">
+                Vise &lt; {answerTargetS}&nbsp;s — concis, le jury enchaîne plus de questions.
+              </span>
             </div>
           </div>
         ) : (
