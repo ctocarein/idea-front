@@ -1,22 +1,25 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
   Gavel,
   Loader2,
+  Mic,
   Send,
   Smile,
   Meh,
   Frown,
   User,
+  Volume2,
 } from "lucide-react";
 
 import { routes } from "@/shared/config/routes";
 import { Badge, Button, Card, CardContent, Textarea, toast } from "@/shared/ui";
 import { deliberate, endPitch, narrate, respond, startPitch } from "../actions";
 import type { Committee, PitchSession, PitchTurn } from "../api";
+import { createRecognizer, speak, speechSupported, stopSpeaking } from "../lib/speech";
 
 /** Signal de conviction d'un juge (−2..+2) → visage + couleur. */
 function ConvictionFace({ value }: { value: number }) {
@@ -117,6 +120,14 @@ function Transcript({ turns }: { turns: PitchTurn[] }) {
                 <p className="mb-0.5 flex items-center gap-2 text-xs font-medium">
                   {t.actor}
                   {axis ? <Badge variant="primary">{axis}</Badge> : null}
+                  <button
+                    type="button"
+                    onClick={() => speak(t.content, t.actor)}
+                    aria-label={`Écouter ${t.actor}`}
+                    className="ml-auto text-muted-foreground transition-colors hover:text-coral-strong"
+                  >
+                    <Volume2 className="size-4" />
+                  </button>
                 </p>
               ) : null}
               <p className="leading-relaxed">{t.content.replace(/^[^:]+:\s*/, "")}</p>
@@ -143,6 +154,9 @@ export function PitchRoom({
   const [session, setSession] = useState(initial);
   const [pending, startTransition] = useTransition();
   const [draft, setDraft] = useState("");
+  const [listening, setListening] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const recRef = useRef<ReturnType<typeof createRecognizer>>(null);
 
   const phase = session.phase;
   const turns = (session.turns ?? []) as PitchTurn[];
@@ -151,6 +165,55 @@ export function PitchRoom({
   const speaker = lastQuestion?.actor ?? null;
   const lastTurn = turns[turns.length - 1];
   const awaitingAnswer = lastTurn?.kind === "question";
+
+  useEffect(() => {
+    setMounted(true);
+    return () => {
+      stopSpeaking();
+      recRef.current?.stop();
+    };
+  }, []);
+  const canDictate = mounted && speechSupported();
+
+  // Lecture vocale automatique de la dernière question du juge (couche voix MVP).
+  const lastQuestionSeq = lastQuestion?.seq;
+  useEffect(() => {
+    if (lastQuestion && (phase === "qa" || phase === "free_round")) {
+      speak(lastQuestion.content, lastQuestion.actor);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastQuestionSeq]);
+
+  function toggleMic() {
+    if (listening) {
+      recRef.current?.stop();
+      return;
+    }
+    stopSpeaking();
+    const rec = createRecognizer(
+      (text) => setDraft((d) => (d ? `${d} ${text}` : text)),
+      () => setListening(false),
+    );
+    if (!rec) {
+      toast.error("La dictée vocale n'est pas disponible sur ce navigateur.");
+      return;
+    }
+    recRef.current = rec;
+    rec.start();
+    setListening(true);
+  }
+
+  const micButton = canDictate ? (
+    <Button
+      type="button"
+      variant={listening ? "primary" : "outline"}
+      onClick={toggleMic}
+      aria-label={listening ? "Arrêter la dictée" : "Dicter ta réponse"}
+    >
+      <Mic className="size-4" />
+      {listening ? "Écoute…" : "Parler"}
+    </Button>
+  ) : null;
 
   function run(action: () => ReturnType<typeof startPitch>, clearDraft = true) {
     startTransition(async () => {
@@ -200,6 +263,7 @@ export function PitchRoom({
             onChange={(e) => setDraft(e.target.value)}
           />
           <div className="flex flex-wrap items-center gap-2">
+            {micButton}
             <Button
               variant="outline"
               disabled={!draft.trim() || pending}
@@ -241,13 +305,16 @@ export function PitchRoom({
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
             />
-            <Button
-              onClick={() => draft.trim() && run(() => respond(session.id, draft.trim()))}
-              loading={pending}
-            >
-              <Send className="size-4" />
-              Répondre
-            </Button>
+            <div className="flex flex-wrap items-center gap-2">
+              {micButton}
+              <Button
+                onClick={() => draft.trim() && run(() => respond(session.id, draft.trim()))}
+                loading={pending}
+              >
+                <Send className="size-4" />
+                Répondre
+              </Button>
+            </div>
           </div>
         ) : (
           <Card>
