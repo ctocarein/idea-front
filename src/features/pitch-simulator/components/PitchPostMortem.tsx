@@ -100,12 +100,14 @@ export function PitchPostMortem({
                 <Card key={i}>
                   <CardContent className="space-y-2 pt-5">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="font-medium">{str(v, "name", "persona", "actor") || "Juge"}</p>
+                      <p className="font-medium">
+                        {str(v, "agent", "name", "persona", "actor") || "Juge"}
+                      </p>
                       {vote ? <Badge variant={VOTE_BADGE[vote] ?? "neutral"}>{vote}</Badge> : null}
                     </div>
                     <p className="flex gap-2 text-sm italic text-muted-foreground">
                       <Quote className="size-4 shrink-0 text-coral-strong" />
-                      {str(v, "verdict", "text", "analysis", "content")}
+                      {str(v, "text", "verdict", "analysis", "content")}
                     </p>
                   </CardContent>
                 </Card>
