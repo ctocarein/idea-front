@@ -17,8 +17,10 @@ import {
   toast,
 } from "@/shared/ui";
 import { routes } from "@/shared/config/routes";
+import { mockScoreFromInput, type RadarScore } from "@/features/scoring";
 import { CATEGORIES, getCategory } from "../data/categories";
 import { startManualDiagnostic } from "../api/actions";
+import { savePendingDiagnostic } from "../lib/pending";
 import {
   manualDiagnosticSchema,
   type ManualDiagnosticInput,
@@ -26,7 +28,14 @@ import {
 
 const STEPS = ["Catégorie", "Ton idée", "Bilan"];
 
-export function ManualDiagnosticWizard() {
+export function ManualDiagnosticWizard({
+  isAuthed = false,
+  onPreview,
+}: {
+  isAuthed?: boolean;
+  /** Anonyme : on rend un aperçu inline du bilan (le vrai sera créé après inscription). */
+  onPreview?: (score: RadarScore, projectName: string) => void;
+}) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [step, setStep] = useState(0);
@@ -59,15 +68,28 @@ export function ManualDiagnosticWizard() {
   function onValid(data: ManualDiagnosticInput) {
     const raw = data.fundingNeed?.trim();
     const fundingNeed = raw ? Number(raw) : undefined;
+    const payload = {
+      projectName: data.projectName,
+      sector: data.sector,
+      description: data.description,
+      fundingNeed: fundingNeed && !Number.isNaN(fundingNeed) ? fundingNeed : undefined,
+      consent: data.consent,
+      answers,
+    };
+
+    // Anonyme : pas d'appel authentifié (il 401-erait). On stashe le payload pour le rejouer
+    // après inscription, et on montre un aperçu inline. Le vrai bilan naîtra dans son espace.
+    if (!isAuthed) {
+      savePendingDiagnostic(payload);
+      onPreview?.(
+        mockScoreFromInput(`${data.projectName}|${data.sector}|${data.description}`),
+        data.projectName,
+      );
+      return;
+    }
+
     startTransition(async () => {
-      const res = await startManualDiagnostic({
-        projectName: data.projectName,
-        sector: data.sector,
-        description: data.description,
-        fundingNeed: fundingNeed && !Number.isNaN(fundingNeed) ? fundingNeed : undefined,
-        consent: data.consent,
-        answers,
-      });
+      const res = await startManualDiagnostic(payload);
       if (res.ok) router.push(routes.bilan(res.reportId));
       else toast.error(res.message);
     });

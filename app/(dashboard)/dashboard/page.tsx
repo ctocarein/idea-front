@@ -13,6 +13,7 @@ import {
   reading,
   sampleScore,
 } from "@/features/scoring";
+import { ClaimPendingDiagnostic } from "@/features/diagnostics";
 import { AcademyProgress } from "@/features/academy";
 import { PitchProgress } from "@/features/pitch-simulator";
 import { ReportsList } from "@/features/reports";
@@ -57,6 +58,8 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
+      {/* Cas limite : porteur déjà actif qui aurait refait un diagnostic en anonyme. */}
+      <ClaimPendingDiagnostic />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-2xl font-bold tracking-tight">
@@ -170,6 +173,8 @@ function EmptyDashboard({ firstName }: { firstName: string }) {
 
   return (
     <div className="space-y-8">
+      {/* Rattache un diagnostic fait en anonyme (le « Garder mon bilan » du parcours public). */}
+      <ClaimPendingDiagnostic />
       <div>
         <h1 className="font-display text-2xl font-bold tracking-tight">
           Bonjour, {firstName} 👋

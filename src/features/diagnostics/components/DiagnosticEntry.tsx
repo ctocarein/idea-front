@@ -89,7 +89,7 @@ export function DiagnosticEntry({ isAuthed = false }: { isAuthed?: boolean }) {
       </Button>
       <Card className="p-6">
         {mode === "manual" ? (
-          <ManualDiagnosticWizard />
+          <ManualDiagnosticWizard isAuthed={isAuthed} onPreview={handleComplete} />
         ) : (
           <UploadDiagnostic onComplete={handleComplete} />
         )}
