@@ -7,20 +7,25 @@
 
 ## 0. Avant la démo (2 min, hors caméra)
 
+> ⚠️ Sur cette machine, un serveur Node tiers occupe le **8080** → on met le backend sur **8081**
+> (déjà reflété dans `idea-front/.env.local` : `BACKEND_API_URL=http://127.0.0.1:8081`).
+
 ```bash
 # Infra (si la machine a veillé, les conteneurs s'arrêtent)
 docker start idea-pg idea-back-redis-1 idea-back-minio-1
 
-# Backend + worker (LLM mock = rapide, déterministe, gratuit)
+# Backend (LLM mock = rapide, déterministe, gratuit). UNE seule instance !
 cd idea-back
-LLM_PROVIDER=mock python -m uvicorn app.main:app --host 127.0.0.1 --port 8080
-python -m app.worker          # autre terminal
+LLM_PROVIDER=mock python -m uvicorn app.main:app --host 127.0.0.1 --port 8081
+python -m app.worker          # autre terminal (pour le diagnostic ; le pitch est synchrone)
 
 # Front
 cd idea-front && pnpm dev
 ```
 
-- Vérifier : `http://127.0.0.1:8080/api/v1/health` → `"database":true`.
+- Vérifier : `http://127.0.0.1:8081/api/v1/health` → `"database":true`.
+- En cas de 404 persistants : `Get-Process python | Stop-Process -Force` puis relancer UNE
+  seule uvicorn (les instances multiples qui se battent sur le port = la cause).
 - Ouvrir le front, **se connecter en « Porteur »** (bouton démo).
 - Astuce : avoir **déjà lancé un diagnostic** une fois (le dashboard montre alors un vrai radar — plus parlant).
 
