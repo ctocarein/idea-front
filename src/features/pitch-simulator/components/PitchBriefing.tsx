@@ -132,8 +132,9 @@ export function PitchBriefing({
         </div>
         <p className="text-xs text-muted-foreground">
           Règle d&apos;or : plus le temps du jury est court, plus tes réponses doivent être
-          concises — vise <span className="font-medium text-foreground">moins de 45 s</span> pour
-          qu&apos;il enchaîne un maximum de questions.
+          concises — vise{" "}
+          <span className="font-medium text-foreground">moins de 45 s</span>{" "}
+          pour qu&apos;il enchaîne un maximum de questions.
         </p>
       </section>
 

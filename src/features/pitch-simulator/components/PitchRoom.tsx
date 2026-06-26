@@ -1,46 +1,29 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowRight,
+  ChevronLeft,
+  ChevronRight,
   Gavel,
   Loader2,
   Mic,
+  MicOff,
+  MonitorUp,
+  PhoneOff,
   Send,
-  Smile,
-  Meh,
-  Frown,
-  User,
   Volume2,
+  X,
 } from "lucide-react";
 
 import { routes } from "@/shared/config/routes";
-import { Badge, Button, Card, CardContent, Textarea, toast } from "@/shared/ui";
+import { Badge, Button, toast } from "@/shared/ui";
+import { cn } from "@/shared/lib/utils";
 import { deliberate, endPitch, narrate, respond, startPitch } from "../actions";
 import type { Committee, PitchSession, PitchTurn } from "../api";
 import { createRecognizer, speak, speechSupported, stopSpeaking } from "../lib/speech";
-
-/** Signal de conviction d'un juge (−2..+2) → visage + couleur. */
-function ConvictionFace({ value }: { value: number }) {
-  if (value >= 1)
-    return (
-      <span className="inline-flex items-center gap-1 text-xs text-success">
-        <Smile className="size-3.5" /> convaincu
-      </span>
-    );
-  if (value <= -1)
-    return (
-      <span className="inline-flex items-center gap-1 text-xs text-warning">
-        <Frown className="size-3.5" /> sceptique
-      </span>
-    );
-  return (
-    <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-      <Meh className="size-3.5" /> neutre
-    </span>
-  );
-}
 
 function initials(name: string) {
   return name
@@ -51,95 +34,210 @@ function initials(name: string) {
     .toUpperCase();
 }
 
-/** Le banc du comité : un visage par juge + sa conviction ; le locuteur est mis en avant. */
-function CommitteeBench({
-  committee,
-  convictions,
-  speaker,
-}: {
-  committee: Committee | null;
-  convictions: Record<string, number>;
-  speaker: string | null;
-}) {
-  const names = committee?.personas.map((p) => p.name) ?? Object.keys(convictions);
-  const roleOf = (name: string) =>
-    committee?.personas.find((p) => p.name === name)?.role ?? "";
+/** Couleur d'ambiance d'un juge selon sa conviction (−2..+2). */
+function convictionRing(value: number): string {
+  if (value >= 1) return "ring-emerald-400/70";
+  if (value <= -1) return "ring-amber-400/70";
+  return "ring-white/10";
+}
+function convictionLabel(value: number): { text: string; cls: string } {
+  if (value >= 1) return { text: "convaincu", cls: "text-emerald-300" };
+  if (value <= -1) return { text: "sceptique", cls: "text-amber-300" };
+  return { text: "neutre", cls: "text-neutral-400" };
+}
 
+/** Tuile « participant » d'un juge — façon vignette de visio. */
+function JudgeTile({
+  name,
+  role,
+  conviction,
+  speaking,
+  compact,
+  onListen,
+}: {
+  name: string;
+  role: string;
+  conviction: number;
+  speaking: boolean;
+  compact?: boolean;
+  onListen?: () => void;
+}) {
+  const conv = convictionLabel(conviction);
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
-      {names.map((name) => {
-        const speaking = name === speaker;
-        return (
-          <div
-            key={name}
-            className={`rounded-xl border bg-card p-3 text-center ${
-              speaking ? "border-coral-strong ring-2 ring-coral-strong/20" : "border-border"
-            }`}
-          >
-            <div className="mx-auto flex size-9 items-center justify-center rounded-full bg-secondary text-xs font-bold">
-              {initials(name)}
-            </div>
-            <p className="mt-1.5 truncate text-xs font-medium">{name}</p>
-            <p className="truncate text-[11px] text-muted-foreground">{roleOf(name)}</p>
-            <div className="mt-1">
-              {speaking ? (
-                <span className="text-[11px] font-medium text-coral-strong">parle</span>
-              ) : (
-                <ConvictionFace value={convictions[name] ?? 0} />
-              )}
-            </div>
-          </div>
-        );
-      })}
+    <div
+      className={cn(
+        "group relative flex flex-col items-center justify-center overflow-hidden rounded-xl bg-neutral-800 ring-1 transition-all",
+        compact ? "aspect-video p-2" : "aspect-video p-3",
+        speaking
+          ? "ring-2 ring-emerald-400 shadow-[0_0_0_4px_rgba(52,211,153,0.18)]"
+          : convictionRing(conviction),
+      )}
+    >
+      <div
+        className={cn(
+          "flex items-center justify-center rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 font-bold text-white",
+          compact ? "size-9 text-xs" : "size-14 text-lg",
+        )}
+      >
+        {initials(name)}
+      </div>
+
+      {/* barres « audio » animées quand le juge parle */}
+      {speaking ? (
+        <div className="mt-2 flex items-end gap-0.5" aria-hidden>
+          {[0, 1, 2, 3].map((i) => (
+            <span
+              key={i}
+              className="w-1 animate-pulse rounded-full bg-emerald-400"
+              style={{ height: `${6 + (i % 2 ? 10 : 4)}px`, animationDelay: `${i * 120}ms` }}
+            />
+          ))}
+        </div>
+      ) : null}
+
+      {/* bandeau nom, bas-gauche (comme Meet) */}
+      <div className="absolute inset-x-1.5 bottom-1.5 flex items-center justify-between gap-1">
+        <div className="min-w-0 rounded-md bg-black/45 px-1.5 py-0.5 backdrop-blur-sm">
+          <p className="truncate text-[11px] font-medium text-white">{name}</p>
+          {!compact ? (
+            <p className="truncate text-[10px] text-neutral-300">{role}</p>
+          ) : null}
+        </div>
+        {!compact ? (
+          <span className={cn("rounded-md bg-black/45 px-1.5 py-0.5 text-[10px] font-medium backdrop-blur-sm", conv.cls)}>
+            {speaking ? "parle" : conv.text}
+          </span>
+        ) : null}
+      </div>
+
+      {onListen && !speaking ? (
+        <button
+          type="button"
+          onClick={onListen}
+          aria-label={`Écouter ${name}`}
+          className="absolute right-1.5 top-1.5 rounded-full bg-black/40 p-1 text-neutral-300 opacity-0 transition-opacity hover:text-white group-hover:opacity-100"
+        >
+          <Volume2 className="size-3.5" />
+        </button>
+      ) : null}
     </div>
   );
 }
 
-/** Transcript : narrations du porteur + questions des juges (on masque les lignes système). */
-function Transcript({ turns }: { turns: PitchTurn[] }) {
-  const visible = turns.filter((t) => t.actor !== "systeme");
-  if (visible.length === 0) return null;
+/** Tuile du porteur (toi). */
+function PorteurTile({ listening, compact }: { listening: boolean; compact?: boolean }) {
   return (
-    <div className="space-y-3">
-      {visible.map((t) => {
-        const mine = t.actor === "porteur";
-        const axis = (t.meta as { axis?: string } | null)?.axis;
-        return (
-          <div key={t.seq} className={`flex gap-2 ${mine ? "justify-end" : ""}`}>
-            {!mine ? (
-              <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-secondary text-[11px] font-bold">
-                {initials(t.actor)}
-              </div>
-            ) : null}
-            <div
-              className={`max-w-[80%] rounded-xl px-3 py-2 text-sm ${
-                mine ? "bg-coral/15 text-ink" : "border border-border bg-card"
-              }`}
-            >
-              {!mine ? (
-                <p className="mb-0.5 flex items-center gap-2 text-xs font-medium">
-                  {t.actor}
+    <div
+      className={cn(
+        "relative flex flex-col items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-coral/25 to-neutral-800 ring-1 ring-coral-strong/40",
+        compact ? "aspect-video p-2" : "aspect-video p-3",
+      )}
+    >
+      <div
+        className={cn(
+          "flex items-center justify-center rounded-full bg-coral-strong font-bold text-white",
+          compact ? "size-9 text-xs" : "size-14 text-lg",
+        )}
+      >
+        VOUS
+      </div>
+      <div className="absolute inset-x-1.5 bottom-1.5 flex items-center justify-between">
+        <span className="rounded-md bg-black/45 px-1.5 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm">
+          Vous
+        </span>
+        <span className="rounded-md bg-black/45 p-1 backdrop-blur-sm">
+          {listening ? (
+            <Mic className="size-3.5 text-emerald-300" />
+          ) : (
+            <MicOff className="size-3.5 text-neutral-400" />
+          )}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/** Bouton rond de la barre de contrôle (façon Meet). */
+function ControlButton({
+  label,
+  onClick,
+  active,
+  danger,
+  disabled,
+  children,
+}: {
+  label: string;
+  onClick?: () => void;
+  active?: boolean;
+  danger?: boolean;
+  disabled?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={label}
+      title={label}
+      className={cn(
+        "flex size-11 items-center justify-center rounded-full transition-colors disabled:opacity-40",
+        danger
+          ? "bg-red-500 text-white hover:bg-red-600"
+          : active
+            ? "bg-coral-strong text-white"
+            : "bg-neutral-700 text-neutral-100 hover:bg-neutral-600",
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+/** Légendes / captions latérales (le transcript, façon panneau Meet). */
+function Captions({ turns }: { turns: PitchTurn[] }) {
+  const visible = turns.filter((t) => t.actor !== "systeme");
+  return (
+    <div className="flex h-full flex-col rounded-xl bg-neutral-800/60 ring-1 ring-white/10">
+      <p className="border-b border-white/10 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-neutral-400">
+        Échanges
+      </p>
+      <div className="flex-1 space-y-3 overflow-y-auto p-4">
+        {visible.length === 0 ? (
+          <p className="text-sm text-neutral-500">La séance va commencer…</p>
+        ) : (
+          visible.map((t) => {
+            const mine = t.actor === "porteur";
+            const axis = (t.meta as { axis?: string } | null)?.axis;
+            return (
+              <div key={t.seq} className="text-sm">
+                <p
+                  className={cn(
+                    "mb-0.5 flex items-center gap-2 text-xs font-semibold",
+                    mine ? "text-coral-strong" : "text-neutral-300",
+                  )}
+                >
+                  {mine ? "Vous" : t.actor}
                   {axis ? <Badge variant="primary">{axis}</Badge> : null}
-                  <button
-                    type="button"
-                    onClick={() => speak(t.content, t.actor)}
-                    aria-label={`Écouter ${t.actor}`}
-                    className="ml-auto text-muted-foreground transition-colors hover:text-coral-strong"
-                  >
-                    <Volume2 className="size-4" />
-                  </button>
+                  {!mine ? (
+                    <button
+                      type="button"
+                      onClick={() => speak(t.content, t.actor)}
+                      aria-label={`Écouter ${t.actor}`}
+                      className="ml-auto text-neutral-500 transition-colors hover:text-white"
+                    >
+                      <Volume2 className="size-3.5" />
+                    </button>
+                  ) : null}
                 </p>
-              ) : null}
-              <p className="leading-relaxed">{t.content.replace(/^[^:]+:\s*/, "")}</p>
-            </div>
-            {mine ? (
-              <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-coral/20 text-coral-strong">
-                <User className="size-3.5" />
+                <p className={cn("leading-relaxed", mine ? "text-neutral-200" : "text-neutral-300")}>
+                  {t.content.replace(/^[^:]+:\s*/, "")}
+                </p>
               </div>
-            ) : null}
-          </div>
-        );
-      })}
+            );
+          })
+        )}
+      </div>
     </div>
   );
 }
@@ -151,12 +249,19 @@ export function PitchRoom({
   session: PitchSession;
   committee: Committee | null;
 }) {
+  const router = useRouter();
   const [session, setSession] = useState(initial);
   const [pending, startTransition] = useTransition();
   const [draft, setDraft] = useState("");
   const [listening, setListening] = useState(false);
   const [mounted, setMounted] = useState(false);
   const recRef = useRef<ReturnType<typeof createRecognizer>>(null);
+
+  // --- Partage de slides (présentation type « partage d'écran ») ---
+  const [slides, setSlides] = useState<{ url: string; isPdf: boolean }[]>([]);
+  const [slideIdx, setSlideIdx] = useState(0);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const presenting = slides.length > 0;
 
   const phase = session.phase;
   const turns = (session.turns ?? []) as PitchTurn[];
@@ -165,14 +270,16 @@ export function PitchRoom({
   const speaker = lastQuestion?.actor ?? null;
   const lastTurn = turns[turns.length - 1];
   const awaitingAnswer = lastTurn?.kind === "question";
-  // Règle d'or : viser des réponses courtes (cible portée par le format via la config de session).
   const answerTargetS = Number(
     (session.config as Record<string, unknown> | null)?.answer_target_s ?? 45,
   );
+  const fmt = String((session.config as Record<string, unknown> | null)?.format ?? "standard");
+
+  const personas = committee?.personas ?? [];
+  const roleOf = (name: string) => personas.find((p) => p.name === name)?.role ?? "";
+  const judgeNames = personas.map((p) => p.name);
 
   useEffect(() => {
-    // Flag de montage : gate les capacités navigateur (micro/voix) pour éviter tout
-    // mismatch d'hydratation. S'exécute une seule fois → pas de cascade de rendus.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     return () => {
@@ -182,7 +289,7 @@ export function PitchRoom({
   }, []);
   const canDictate = mounted && speechSupported();
 
-  // Lecture vocale automatique de la dernière question du juge (couche voix MVP).
+  // Lecture vocale automatique de la dernière question du juge.
   const lastQuestionSeq = lastQuestion?.seq;
   useEffect(() => {
     if (lastQuestion && (phase === "qa" || phase === "free_round")) {
@@ -190,6 +297,36 @@ export function PitchRoom({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastQuestionSeq]);
+
+  // Révoque les object URLs des slides au démontage.
+  useEffect(() => {
+    return () => slides.forEach((s) => URL.revokeObjectURL(s.url));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function onPickFiles(files: FileList | null) {
+    if (!files) return;
+    const picked = Array.from(files).filter(
+      (f) => f.type === "application/pdf" || f.type.startsWith("image/"),
+    );
+    if (picked.length === 0) {
+      toast.error("Choisis un PDF ou des images de tes slides (exporte ton PowerPoint en PDF).");
+      return;
+    }
+    slides.forEach((s) => URL.revokeObjectURL(s.url));
+    const pdf = picked.find((f) => f.type === "application/pdf");
+    const next = pdf
+      ? [{ url: URL.createObjectURL(pdf), isPdf: true }]
+      : picked.map((f) => ({ url: URL.createObjectURL(f), isPdf: false }));
+    setSlides(next);
+    setSlideIdx(0);
+  }
+
+  function stopPresenting() {
+    slides.forEach((s) => URL.revokeObjectURL(s.url));
+    setSlides([]);
+    setSlideIdx(0);
+  }
 
   function toggleMic() {
     if (listening) {
@@ -210,18 +347,6 @@ export function PitchRoom({
     setListening(true);
   }
 
-  const micButton = canDictate ? (
-    <Button
-      type="button"
-      variant={listening ? "primary" : "outline"}
-      onClick={toggleMic}
-      aria-label={listening ? "Arrêter la dictée" : "Dicter ta réponse"}
-    >
-      <Mic className="size-4" />
-      {listening ? "Écoute…" : "Parler"}
-    </Button>
-  ) : null;
-
   function run(action: () => ReturnType<typeof startPitch>, clearDraft = true) {
     startTransition(async () => {
       const res = await action();
@@ -234,141 +359,304 @@ export function PitchRoom({
     });
   }
 
-  // BRIEFING — le comité attend.
-  if (phase === "briefing") {
-    return (
-      <div className="space-y-6">
-        <CommitteeBench committee={committee} convictions={convictions} speaker={null} />
-        <Card>
-          <CardContent className="space-y-3 py-8 text-center">
-            <h2 className="font-display text-xl font-bold">Le comité t&apos;écoute</h2>
-            <p className="mx-auto max-w-md text-muted-foreground">
-              Tu as la parole. Personne ne te coupera — c&apos;est toi qui annonceras la fin.
-            </p>
-            <Button onClick={() => run(() => startPitch(session.id))} loading={pending}>
-              Commencer mon pitch
-              <ArrowRight className="size-5" />
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  // ---- Statut de phase (bandeau haut) ----
+  const phaseLabel: Record<string, string> = {
+    briefing: "En attente — le comité t'écoute",
+    pitching: "Tu présentes",
+    qa: "Questions du jury",
+    free_round: "Tour libre",
+    deliberating: "Délibération…",
+    completed: "Séance terminée",
+  };
 
-  // PITCHING — le porteur narre, le comité réagit en silence.
-  if (phase === "pitching") {
-    const hasNarrated = turns.some((t) => t.kind === "narration");
-    return (
-      <div className="space-y-5">
-        <CommitteeBench committee={committee} convictions={convictions} speaker={null} />
-        <Transcript turns={turns} />
-        <div className="space-y-2">
-          <Textarea
-            rows={3}
-            placeholder="Déroule ton pitch… (tu peux narrer en plusieurs fois)"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-          />
-          <div className="flex flex-wrap items-center gap-2">
-            {micButton}
-            <Button
-              variant="outline"
-              disabled={!draft.trim() || pending}
-              onClick={() => run(() => narrate(session.id, draft.trim()))}
-              loading={pending}
-            >
-              <Send className="size-4" />
-              Continuer
-            </Button>
-            <Button
-              disabled={!hasNarrated || pending}
-              onClick={() => run(() => endPitch(session.id), false)}
-              loading={pending}
-            >
-              J&apos;ai terminé
-            </Button>
-            {!hasNarrated ? (
-              <span className="text-xs text-muted-foreground">
-                Présente au moins une partie de ton pitch d&apos;abord.
+  const hasNarrated = turns.some((t) => t.kind === "narration");
+  const showInput =
+    phase === "pitching" || ((phase === "qa" || phase === "free_round") && awaitingAnswer);
+  const inputPlaceholder =
+    phase === "pitching"
+      ? "Déroule ton pitch… (tu peux narrer en plusieurs fois)"
+      : speaker
+        ? `Ta réponse à ${speaker}…`
+        : "Ta réponse…";
+
+  // ---- Scène centrale (fonction de rendu, pas un composant : capte l'état local) ----
+  function renderStage() {
+    if (presenting) {
+      const current = slides[slideIdx];
+      return (
+        <div className="relative flex h-full items-center justify-center bg-black">
+          {current?.isPdf ? (
+            <object data={current.url} type="application/pdf" className="h-full w-full">
+              <p className="p-4 text-sm text-neutral-300">
+                Aperçu PDF indisponible — ton navigateur ne sait pas l&apos;afficher en ligne.
+              </p>
+            </object>
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={current?.url}
+              alt={`Slide ${slideIdx + 1}`}
+              className="max-h-full max-w-full object-contain"
+            />
+          )}
+
+          {/* navigation images */}
+          {!current?.isPdf && slides.length > 1 ? (
+            <>
+              <button
+                type="button"
+                onClick={() => setSlideIdx((i) => Math.max(0, i - 1))}
+                disabled={slideIdx === 0}
+                aria-label="Slide précédente"
+                className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white disabled:opacity-30"
+              >
+                <ChevronLeft className="size-5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setSlideIdx((i) => Math.min(slides.length - 1, i + 1))}
+                disabled={slideIdx === slides.length - 1}
+                aria-label="Slide suivante"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white disabled:opacity-30"
+              >
+                <ChevronRight className="size-5" />
+              </button>
+              <span className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-2.5 py-1 text-xs text-white">
+                {slideIdx + 1} / {slides.length}
               </span>
-            ) : null}
+            </>
+          ) : null}
+
+          <button
+            type="button"
+            onClick={stopPresenting}
+            className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1.5 text-xs font-medium text-white hover:bg-black/80"
+          >
+            <X className="size-3.5" />
+            Arrêter de présenter
+          </button>
+        </div>
+      );
+    }
+
+    // Pas de présentation : gallery des juges (ou spotlight du locuteur).
+    if (speaker) {
+      const conv = convictions[speaker] ?? 0;
+      return (
+        <div className="flex h-full items-center justify-center p-4">
+          <div className="w-full max-w-md">
+            <JudgeTile
+              name={speaker}
+              role={roleOf(speaker)}
+              conviction={conv}
+              speaking
+            />
           </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid h-full place-content-center gap-4 p-6 text-center">
+        <p className="text-sm text-neutral-400">
+          {phase === "pitching"
+            ? "Tu as la parole. Le comité réagit en silence — lis les visages."
+            : "Le comité t'écoute. Personne ne te coupera."}
+        </p>
+        <div className="mx-auto grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {judgeNames.slice(0, 6).map((name) => (
+            <div key={name} className="w-28">
+              <JudgeTile
+                name={name}
+                role={roleOf(name)}
+                conviction={convictions[name] ?? 0}
+                speaking={false}
+                compact
+                onListen={undefined}
+              />
+            </div>
+          ))}
         </div>
       </div>
     );
   }
 
-  // Q&A / TOUR LIBRE — un juge interroge, le porteur répond ; sinon, on délibère.
-  if (phase === "qa" || phase === "free_round") {
-    return (
-      <div className="space-y-5">
-        <CommitteeBench committee={committee} convictions={convictions} speaker={speaker} />
-        <Transcript turns={turns} />
-        {awaitingAnswer ? (
-          <div className="space-y-2">
-            <Textarea
-              rows={3}
-              placeholder={speaker ? `Ta réponse à ${speaker}…` : "Ta réponse…"}
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-            />
-            <div className="flex flex-wrap items-center gap-2">
-              {micButton}
+  // ---- Délibération : overlay plein ----
+  const deliberating = phase === "deliberating";
+  const completed = phase === "completed";
+
+  return (
+    <div className="overflow-hidden rounded-3xl bg-neutral-900 text-neutral-100 ring-1 ring-white/10">
+      {/* Barre d'état */}
+      <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-2.5">
+        <div className="flex items-center gap-2">
+          <span className="size-2 animate-pulse rounded-full bg-red-500" />
+          <span className="text-sm font-medium">{phaseLabel[phase] ?? "Séance"}</span>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-neutral-400">
+          <span className="rounded-full bg-neutral-800 px-2 py-0.5 capitalize">{fmt}</span>
+          <span className="hidden sm:inline">{personas.length} juges</span>
+        </div>
+      </div>
+
+      {/* Scène + tuiles + captions */}
+      <div className="grid gap-3 p-3 lg:grid-cols-[1fr_300px]">
+        <div className="space-y-3">
+          {/* Scène principale */}
+          <div className="relative aspect-video overflow-hidden rounded-2xl bg-neutral-950 ring-1 ring-white/10">
+            {deliberating ? (
+              <div className="flex h-full flex-col items-center justify-center gap-3">
+                <Loader2 className="size-9 animate-spin text-coral-strong" />
+                <p className="text-neutral-300">Le comité délibère…</p>
+                <button
+                  type="button"
+                  onClick={() => run(() => deliberate(session.id), false)}
+                  className="rounded-full bg-neutral-700 px-3 py-1.5 text-xs hover:bg-neutral-600"
+                >
+                  Rafraîchir
+                </button>
+              </div>
+            ) : completed ? (
+              <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
+                <Gavel className="size-9 text-coral-strong" />
+                <h2 className="font-display text-xl font-bold">Le verdict est tombé</h2>
+                <Button asChild>
+                  <Link href={`${routes.pitchSimSession(session.id)}?view=report`}>
+                    Voir mon post-mortem
+                    <ArrowRight className="size-5" />
+                  </Link>
+                </Button>
+              </div>
+            ) : (
+              renderStage()
+            )}
+          </div>
+
+          {/* Filmstrip des juges quand on présente (sinon la gallery est dans la scène) */}
+          {presenting && !deliberating && !completed ? (
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+              <PorteurTile listening={listening} compact />
+              {judgeNames.map((name) => (
+                <JudgeTile
+                  key={name}
+                  name={name}
+                  role={roleOf(name)}
+                  conviction={convictions[name] ?? 0}
+                  speaking={name === speaker}
+                  compact
+                />
+              ))}
+            </div>
+          ) : null}
+
+          {/* Zone de saisie (pitch / réponse) */}
+          {showInput && !deliberating && !completed ? (
+            <div className="rounded-2xl bg-neutral-800/70 p-3 ring-1 ring-white/10">
+              <textarea
+                rows={2}
+                placeholder={inputPlaceholder}
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                className="w-full resize-none rounded-lg bg-neutral-900 px-3 py-2 text-sm text-neutral-100 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-coral-strong/40"
+              />
+              {phase === "qa" || phase === "free_round" ? (
+                <p className="mt-1.5 text-xs text-neutral-400">
+                  Vise &lt; {answerTargetS}&nbsp;s — concis, le jury enchaîne plus de questions.
+                </p>
+              ) : !hasNarrated ? (
+                <p className="mt-1.5 text-xs text-neutral-400">
+                  Présente au moins une partie de ton pitch avant de terminer.
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+
+        {/* Captions (échanges) */}
+        <div className="hidden h-[420px] lg:block">
+          <Captions turns={turns} />
+        </div>
+      </div>
+
+      {/* Barre de contrôle */}
+      <div className="flex flex-wrap items-center justify-center gap-2 border-t border-white/10 bg-neutral-900/80 px-4 py-3 backdrop-blur">
+        {canDictate ? (
+          <ControlButton
+            label={listening ? "Arrêter la dictée" : "Parler (dictée)"}
+            onClick={toggleMic}
+            active={listening}
+          >
+            {listening ? <Mic className="size-5" /> : <MicOff className="size-5" />}
+          </ControlButton>
+        ) : null}
+
+        <ControlButton
+          label={presenting ? "Changer de slides" : "Présenter mes slides"}
+          onClick={() => fileRef.current?.click()}
+          active={presenting}
+          disabled={deliberating || completed}
+        >
+          <MonitorUp className="size-5" />
+        </ControlButton>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="application/pdf,image/*"
+          multiple
+          hidden
+          onChange={(e) => onPickFiles(e.target.files)}
+        />
+
+        {/* Action principale contextuelle */}
+        <div className="mx-1 flex items-center gap-2">
+          {phase === "briefing" ? (
+            <Button onClick={() => run(() => startPitch(session.id))} loading={pending}>
+              Commencer mon pitch
+              <ArrowRight className="size-4" />
+            </Button>
+          ) : null}
+
+          {phase === "pitching" ? (
+            <>
               <Button
-                onClick={() => draft.trim() && run(() => respond(session.id, draft.trim()))}
-                loading={pending}
+                variant="outline"
+                disabled={!draft.trim() || pending}
+                onClick={() => run(() => narrate(session.id, draft.trim()))}
               >
                 <Send className="size-4" />
-                Répondre
+                Continuer
               </Button>
-              <span className="text-xs text-muted-foreground">
-                Vise &lt; {answerTargetS}&nbsp;s — concis, le jury enchaîne plus de questions.
-              </span>
-            </div>
-          </div>
-        ) : (
-          <Card>
-            <CardContent className="flex flex-wrap items-center justify-between gap-3 py-6">
-              <p className="text-sm text-muted-foreground">
-                Le comité a terminé ses questions. Prêt pour le verdict&nbsp;?
-              </p>
-              <Button onClick={() => run(() => deliberate(session.id), false)} loading={pending}>
-                <Gavel className="size-4" />
-                Faire délibérer
+              <Button
+                disabled={!hasNarrated || pending}
+                onClick={() => run(() => endPitch(session.id), false)}
+              >
+                J&apos;ai terminé
               </Button>
-            </CardContent>
-          </Card>
-        )}
-      </div>
-    );
-  }
+            </>
+          ) : null}
 
-  // DELIBERATING — transition.
-  if (phase === "deliberating") {
-    return (
-      <div className="flex flex-col items-center gap-3 py-16 text-center">
-        <Loader2 className="size-9 animate-spin text-coral-strong" />
-        <p className="text-muted-foreground">Le comité délibère…</p>
-        <Button variant="outline" size="sm" onClick={() => run(() => deliberate(session.id), false)}>
-          Rafraîchir
-        </Button>
-      </div>
-    );
-  }
+          {(phase === "qa" || phase === "free_round") && awaitingAnswer ? (
+            <Button
+              onClick={() => draft.trim() && run(() => respond(session.id, draft.trim()))}
+              loading={pending}
+            >
+              <Send className="size-4" />
+              Répondre
+            </Button>
+          ) : null}
 
-  // COMPLETED — renvoi vers le post-mortem.
-  return (
-    <Card>
-      <CardContent className="space-y-3 py-10 text-center">
-        <h2 className="font-display text-xl font-bold">Le verdict est tombé</h2>
-        <p className="text-muted-foreground">Découvre ton post-mortem détaillé.</p>
-        <Button asChild>
-          <Link href={`${routes.pitchSimSession(session.id)}?view=report`}>
-            Voir mon post-mortem
-            <ArrowRight className="size-5" />
-          </Link>
-        </Button>
-      </CardContent>
-    </Card>
+          {(phase === "qa" || phase === "free_round") && !awaitingAnswer ? (
+            <Button onClick={() => run(() => deliberate(session.id), false)} loading={pending}>
+              <Gavel className="size-4" />
+              Faire délibérer
+            </Button>
+          ) : null}
+        </div>
+
+        <ControlButton label="Quitter la salle" onClick={() => router.push(routes.pitchSim)} danger>
+          <PhoneOff className="size-5" />
+        </ControlButton>
+      </div>
+    </div>
   );
 }
