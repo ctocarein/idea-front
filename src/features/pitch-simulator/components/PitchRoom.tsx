@@ -167,6 +167,9 @@ export function PitchRoom({
   const awaitingAnswer = lastTurn?.kind === "question";
 
   useEffect(() => {
+    // Flag de montage : gate les capacités navigateur (micro/voix) pour éviter tout
+    // mismatch d'hydratation. S'exécute une seule fois → pas de cascade de rendus.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     return () => {
       stopSpeaking();

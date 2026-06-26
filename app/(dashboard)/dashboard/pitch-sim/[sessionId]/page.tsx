@@ -7,8 +7,7 @@ import { routes } from "@/shared/config/routes";
 import { ApiError } from "@/shared/api/client";
 import { Button } from "@/shared/ui";
 import { getCommittees, getPostMortem, getSession } from "@/features/pitch-simulator/api";
-import { PitchPostMortem } from "@/features/pitch-simulator/components/PitchPostMortem";
-import { PitchRoom } from "@/features/pitch-simulator/components/PitchRoom";
+import { PitchPostMortem, PitchRoom } from "@/features/pitch-simulator";
 
 export const metadata: Metadata = { title: "La salle" };
 

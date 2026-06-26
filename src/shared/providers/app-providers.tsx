@@ -35,7 +35,9 @@ export function AppProviders({ children }: { children: ReactNode }) {
           <Toaster richColors position="top-center" />
         </MotionConfig>
       </ThemeProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
+      {process.env.NODE_ENV === "development" ? (
+        <ReactQueryDevtools initialIsOpen={false} />
+      ) : null}
     </QueryClientProvider>
   );
 }

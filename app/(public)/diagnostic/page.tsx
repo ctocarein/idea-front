@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { getSession } from "@/shared/auth/server";
 import { DiagnosticEntry } from "@/features/diagnostics";
 
 export const metadata: Metadata = {
@@ -8,7 +9,10 @@ export const metadata: Metadata = {
     "Écris ton idée ou uploade ton projet — comprends tes forces et tes angles morts, gratuitement.",
 };
 
-export default function DiagnosticPage() {
+export default async function DiagnosticPage() {
+  // Diagnostic = public (aucune auth requise). On lit juste la session pour adapter le
+  // CTA récompense : le bilan/PDF est la porte d'auth (connecté → son espace, anonyme → onboarding).
+  const isAuthed = Boolean(await getSession());
   return (
     <div className="mx-auto max-w-4xl px-5 py-12">
       <header className="mb-8 text-center">
@@ -23,7 +27,7 @@ export default function DiagnosticPage() {
           viabilité, scalabilité. On part d&apos;où tu es.
         </p>
       </header>
-      <DiagnosticEntry />
+      <DiagnosticEntry isAuthed={isAuthed} />
     </div>
   );
 }

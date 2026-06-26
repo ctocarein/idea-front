@@ -19,9 +19,11 @@ import {
 export function DiagnosticResult({
   score,
   projectName,
+  isAuthed = false,
 }: {
   score: RadarScore;
   projectName: string;
+  isAuthed?: boolean;
 }) {
   const overall = overallScore(score);
   const r = reading(overall);
@@ -52,22 +54,29 @@ export function DiagnosticResult({
             La vue d&apos;ensemble
           </h3>
           <p className="text-sm text-muted-foreground">
-            Le Radar de Collision résume tes 6 axes. C&apos;est ta boussole : tu
+            Le Radar de Collision résume tes 12 dimensions. C&apos;est ta boussole : tu
             le verras progresser au fil de l&apos;Academy et du simulateur de
             pitch.
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
-            <Button asChild>
-              <Link href={routes.register}>Garder mon bilan</Link>
-            </Button>
+            {isAuthed ? (
+              <Button asChild>
+                <Link href={routes.dashboard}>Voir mon bilan complet</Link>
+              </Button>
+            ) : (
+              <Button asChild>
+                <Link href={routes.register}>Garder mon bilan</Link>
+              </Button>
+            )}
             <Button variant="outline" disabled>
               <Download className="size-5" />
               Télécharger le PDF
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">
-            Crée ton espace (gratuit) pour conserver ce bilan et démarrer ton
-            parcours.
+            {isAuthed
+              ? "Ton bilan est rattaché à ton espace — retrouve-le et télécharge le PDF depuis ton tableau de bord."
+              : "Crée ton espace (gratuit) pour conserver ce bilan, le télécharger en PDF et démarrer ton parcours."}
           </p>
         </div>
       </div>

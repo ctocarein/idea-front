@@ -7,8 +7,7 @@ import { routes } from "@/shared/config/routes";
 import { ApiError } from "@/shared/api/client";
 import { Button, Card, CardContent } from "@/shared/ui";
 import { getReportDetail } from "@/features/reports/api";
-import { BilanPending } from "@/features/reports/components/BilanPending";
-import { BilanView } from "@/features/reports/components/BilanView";
+import { BilanPending, BilanView } from "@/features/reports";
 
 export const metadata: Metadata = { title: "Mon bilan" };
 

@@ -12,7 +12,7 @@ import { DiagnosticResult } from "./DiagnosticResult";
 type Mode = "manual" | "upload";
 type Result = { score: RadarScore; projectName: string };
 
-export function DiagnosticEntry() {
+export function DiagnosticEntry({ isAuthed = false }: { isAuthed?: boolean }) {
   const [mode, setMode] = useState<Mode | null>(null);
   const [result, setResult] = useState<Result | null>(null);
 
@@ -26,6 +26,7 @@ export function DiagnosticEntry() {
         <DiagnosticResult
           score={result.score}
           projectName={result.projectName}
+          isAuthed={isAuthed}
         />
         <div className="text-center">
           <Button

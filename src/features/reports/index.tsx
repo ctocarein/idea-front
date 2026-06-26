@@ -2,6 +2,9 @@ import { Download, FileText } from "lucide-react";
 
 import { Badge, Button, Card, CardContent } from "@/shared/ui";
 
+export { BilanView } from "./components/BilanView";
+export { BilanPending } from "./components/BilanPending";
+
 /**
  * Feature reports — le bilan in-app (PAS d'email, BESOINS_PORTEUR cas 8).
  * Données mockées ; au Sprint INT : `/reports/*`, PDF via presigned download.

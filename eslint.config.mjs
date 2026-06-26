@@ -14,9 +14,16 @@ const eslintConfig = defineConfig([
         {
           patterns: [
             {
-              group: ["@/features/*/*"],
+              // Les composants client sont exposés par le barrel ; `api`/`actions`
+              // sont des sous-modules server-only publics (next/headers) qu'on n'expose
+              // PAS via le barrel client → on les autorise explicitement.
+              group: [
+                "@/features/*/*",
+                "!@/features/*/api",
+                "!@/features/*/actions",
+              ],
               message:
-                "Importe un feature par son barrel : @/features/<nom> (pas ses internes).",
+                "Importe un feature par son barrel : @/features/<nom> (ou son sous-module server @/features/<nom>/api|actions).",
             },
             {
               group: ["@/shared/ui/*"],
