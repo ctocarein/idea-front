@@ -1,15 +1,17 @@
 import Link from "next/link";
-import { AlertTriangle, ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
+import { AlertTriangle, ArrowRight, CheckCircle2, Flag, GraduationCap, Sparkles, Users } from "lucide-react";
 
 import { routes } from "@/shared/config/routes";
 import { Badge, Button, Card, CardContent } from "@/shared/ui";
 import {
+  AXES,
   ComprehensionTable,
   RadarChart,
   overallScore,
   reading,
 } from "@/features/scoring";
 import { type ReportDetail, toRadarScore } from "../api";
+import { BilanPdfButton } from "./BilanPdfButton";
 
 /** Mapping verdict backend → variante de badge. */
 const VERDICT_BADGE: Record<string, "success" | "warning" | "neutral"> = {
@@ -32,6 +34,13 @@ export function BilanView({ report }: { report: ReportDetail }) {
   const risks = insights?.risks ?? [];
   const recommendations = insights?.recommendations ?? [];
 
+  // Fil rouge : la dimension la plus faible = le point de rupture n°1 à attaquer en premier.
+  const weakest = radar
+    ? AXES.map((a) => ({ label: a.label, score: radar.axes[a.key] ?? 0 })).sort(
+        (x, y) => x.score - y.score,
+      )[0]
+    : null;
+
   return (
     <div className="space-y-8">
       {/* En-tête */}
@@ -49,6 +58,39 @@ export function BilanView({ report }: { report: ReportDetail }) {
           <Badge variant={VERDICT_BADGE[verdict.status] ?? "neutral"}>{verdict.label}</Badge>
         ) : null}
       </div>
+
+      {/* Fil rouge — le point de rupture n°1 + les leviers (Academy, mentors, rapport) */}
+      {weakest ? (
+        <Card className="border-coral-strong/30 bg-coral/5">
+          <CardContent className="space-y-3 pt-6">
+            <div className="flex items-center gap-2 text-sm font-medium text-coral-strong">
+              <Flag className="size-4" />
+              Ton fil rouge — commence ici
+            </div>
+            <p className="font-display text-lg font-bold">
+              {weakest.label} · {weakest.score}/10
+            </p>
+            <p className="text-sm text-muted-foreground">
+              C&apos;est ton point de rupture n°1 — le renforcer débloque le reste de ton radar.
+            </p>
+            <div className="flex flex-wrap gap-2 pt-1">
+              <Button asChild>
+                <Link href={routes.academy}>
+                  <GraduationCap className="size-5" />
+                  Renforcer dans l&apos;Academy
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href={routes.mentors}>
+                  <Users className="size-5" />
+                  Mentors référents
+                </Link>
+              </Button>
+              <BilanPdfButton reportId={report.id} />
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
 
       {/* Boussole + compréhension */}
       {radar ? (
