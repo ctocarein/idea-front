@@ -5,7 +5,7 @@ import { ArrowLeft, PenLine, UploadCloud } from "lucide-react";
 
 import { Button, Card } from "@/shared/ui";
 import type { RadarScore } from "@/features/scoring";
-import { ManualDiagnosticWizard } from "./ManualDiagnosticWizard";
+import { RaconteDiagnostic } from "./RaconteDiagnostic";
 import { UploadDiagnostic } from "./UploadDiagnostic";
 import { DiagnosticResult } from "./DiagnosticResult";
 import { DiagnosticTeaser } from "./DiagnosticTeaser";
@@ -100,7 +100,7 @@ export function DiagnosticEntry({ isAuthed = false }: { isAuthed?: boolean }) {
       </Button>
       <Card className="p-6">
         {mode === "manual" ? (
-          <ManualDiagnosticWizard isAuthed={isAuthed} onAnonSubmit={handleAnonSubmit} />
+          <RaconteDiagnostic isAuthed={isAuthed} onAnonSubmit={handleAnonSubmit} />
         ) : (
           <UploadDiagnostic
             isAuthed={isAuthed}

@@ -46,3 +46,45 @@ export async function startManualDiagnostic(
     return { ok: false, message: "Analyse impossible pour l'instant. Réessaie dans un instant." };
   }
 }
+
+
+// --- « Raconte, on structure » : extraction du récit libre → 12 dimensions ---
+
+export interface ExtractedDimension {
+  key: string;
+  label: string;
+  captured: boolean;
+  evidence: string;
+  question: string;
+}
+
+export interface IdeaExtract {
+  project_name: string | null;
+  captured_count: number;
+  total: number;
+  dimensions: ExtractedDimension[];
+  gaps: ExtractedDimension[];
+}
+
+export type ExtractResult =
+  | { ok: true; data: IdeaExtract }
+  | { ok: false; message: string };
+
+/** Récit libre → dimensions captées/manquantes (endpoint public + rate-limité). */
+export async function extractIdea(
+  idea: string,
+  projectName?: string,
+): Promise<ExtractResult> {
+  try {
+    const data = await apiFetch<IdeaExtract>("/api/v1/diagnostics/extract", {
+      method: "POST",
+      json: { idea, projectName },
+    });
+    return { ok: true, data };
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 429) {
+      return { ok: false, message: "Trop de demandes — réessaie dans une minute." };
+    }
+    return { ok: false, message: "Analyse impossible pour l'instant. Réessaie." };
+  }
+}
