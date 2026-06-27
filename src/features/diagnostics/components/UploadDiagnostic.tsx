@@ -11,18 +11,28 @@ import { mockScoreFromInput, type RadarScore } from "@/features/scoring";
  * même pipeline que le flow A).
  */
 export function UploadDiagnostic({
+  isAuthed = false,
   onComplete,
+  onAnonSubmit,
 }: {
+  isAuthed?: boolean;
   onComplete: (score: RadarScore, projectName: string) => void;
+  /** Anonyme : on ne révèle pas le bilan → teaser verrouillé (l'upload sera rejoué après inscription). */
+  onAnonSubmit?: (projectName: string) => void;
 }) {
   const [file, setFile] = useState<File | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
 
   function analyze() {
     if (!file) return;
-    setAnalyzing(true);
-    // Simule l'extraction + l'analyse (asynchrone côté backend au Sprint INT).
     const projectName = file.name.replace(/\.[^.]+$/, "");
+    // Anonyme : pas de révélation, on gate → teaser.
+    if (!isAuthed) {
+      onAnonSubmit?.(projectName);
+      return;
+    }
+    setAnalyzing(true);
+    // Connecté (placeholder) : extraction + scoring réels = pipeline backend à brancher.
     window.setTimeout(() => {
       onComplete(mockScoreFromInput(`${projectName}|${file.size}`), projectName);
     }, 900);

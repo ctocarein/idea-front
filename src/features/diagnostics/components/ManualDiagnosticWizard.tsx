@@ -17,7 +17,6 @@ import {
   toast,
 } from "@/shared/ui";
 import { routes } from "@/shared/config/routes";
-import { mockScoreFromInput, type RadarScore } from "@/features/scoring";
 import { CATEGORIES, getCategory } from "../data/categories";
 import { startManualDiagnostic } from "../api/actions";
 import { savePendingDiagnostic } from "../lib/pending";
@@ -30,11 +29,11 @@ const STEPS = ["Catégorie", "Ton idée", "Bilan"];
 
 export function ManualDiagnosticWizard({
   isAuthed = false,
-  onPreview,
+  onAnonSubmit,
 }: {
   isAuthed?: boolean;
-  /** Anonyme : on rend un aperçu inline du bilan (le vrai sera créé après inscription). */
-  onPreview?: (score: RadarScore, projectName: string) => void;
+  /** Anonyme : on stashe le payload et on affiche le teaser verrouillé (pas de bilan révélé). */
+  onAnonSubmit?: (projectName: string) => void;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -77,14 +76,12 @@ export function ManualDiagnosticWizard({
       answers,
     };
 
-    // Anonyme : pas d'appel authentifié (il 401-erait). On stashe le payload pour le rejouer
-    // après inscription, et on montre un aperçu inline. Le vrai bilan naîtra dans son espace.
+    // Anonyme : pas d'appel authentifié (il 401-erait), et on NE révèle PAS le bilan. On stashe
+    // le payload pour le rejouer après inscription → teaser verrouillé. Le vrai bilan (LLM) naîtra
+    // dans son espace.
     if (!isAuthed) {
       savePendingDiagnostic(payload);
-      onPreview?.(
-        mockScoreFromInput(`${data.projectName}|${data.sector}|${data.description}`),
-        data.projectName,
-      );
+      onAnonSubmit?.(data.projectName);
       return;
     }
 

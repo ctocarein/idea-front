@@ -8,6 +8,7 @@ import type { RadarScore } from "@/features/scoring";
 import { ManualDiagnosticWizard } from "./ManualDiagnosticWizard";
 import { UploadDiagnostic } from "./UploadDiagnostic";
 import { DiagnosticResult } from "./DiagnosticResult";
+import { DiagnosticTeaser } from "./DiagnosticTeaser";
 
 type Mode = "manual" | "upload";
 type Result = { score: RadarScore; projectName: string };
@@ -15,11 +16,21 @@ type Result = { score: RadarScore; projectName: string };
 export function DiagnosticEntry({ isAuthed = false }: { isAuthed?: boolean }) {
   const [mode, setMode] = useState<Mode | null>(null);
   const [result, setResult] = useState<Result | null>(null);
+  const [submitted, setSubmitted] = useState<string | null>(null);
 
   function handleComplete(score: RadarScore, projectName: string) {
     setResult({ score, projectName });
   }
+  function handleAnonSubmit(projectName: string) {
+    setSubmitted(projectName);
+  }
 
+  // Anonyme : diagnostic rempli → teaser verrouillé (le bilan reste derrière l'inscription).
+  if (submitted !== null) {
+    return <DiagnosticTeaser projectName={submitted} />;
+  }
+
+  // Connecté via upload (placeholder mock, en attendant le pipeline d'extraction backend).
   if (result) {
     return (
       <div className="space-y-6">
@@ -89,9 +100,13 @@ export function DiagnosticEntry({ isAuthed = false }: { isAuthed?: boolean }) {
       </Button>
       <Card className="p-6">
         {mode === "manual" ? (
-          <ManualDiagnosticWizard isAuthed={isAuthed} onPreview={handleComplete} />
+          <ManualDiagnosticWizard isAuthed={isAuthed} onAnonSubmit={handleAnonSubmit} />
         ) : (
-          <UploadDiagnostic onComplete={handleComplete} />
+          <UploadDiagnostic
+            isAuthed={isAuthed}
+            onComplete={handleComplete}
+            onAnonSubmit={handleAnonSubmit}
+          />
         )}
       </Card>
     </div>
