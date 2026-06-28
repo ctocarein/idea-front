@@ -47,6 +47,7 @@ async function persistSession(tokens: TokenPair): Promise<Role> {
       role: me.user.role as Role,
       name: me.user.full_name,
       email: me.user.email,
+      onboarding_completed: me.user.onboarding_completed ?? false,
     }),
     { ...base, maxAge: 60 * 60 * 24 * 30 },
   );
@@ -89,6 +90,38 @@ export async function registerFounder(
     return { ok: true, redirectTo: routes.onboarding };
   } catch (error) {
     return { ok: false, message: messageFor(error) };
+  }
+}
+
+export type OnboardingData = {
+  country: string;
+  city?: string;
+  professional_status: string;
+  project_stage: string;
+  weekly_availability?: string;
+};
+
+/** Complète le profil porteur post-inscription et met à jour le cookie de session. */
+export async function completeOnboarding(data: OnboardingData): Promise<AuthResult> {
+  try {
+    await apiFetch("/api/v1/auth/me/onboarding", { method: "PATCH", json: data });
+    // Relit /me pour mettre à jour le miroir de session (onboarding_completed → true).
+    const store = await cookies();
+    const access = store.get(ACCESS_COOKIE)?.value ?? null;
+    const me = await apiFetch<MeOut>("/api/v1/auth/me", { token: access });
+    store.set(
+      SESSION_COOKIE,
+      encodeSession({
+        role: me.user.role as Role,
+        name: me.user.full_name,
+        email: me.user.email,
+        onboarding_completed: true,
+      }),
+      { ...cookieBase(), maxAge: 60 * 60 * 24 * 30 },
+    );
+    return { ok: true, redirectTo: routes.dashboard };
+  } catch {
+    return { ok: false, message: "Impossible de sauvegarder le profil. Réessaie." };
   }
 }
 

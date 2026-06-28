@@ -15,6 +15,7 @@ export interface Session {
   role: Role;
   name: string;
   email: string;
+  onboarding_completed?: boolean;
 }
 
 /** Cookie miroir de session UX (rôle/identité). */

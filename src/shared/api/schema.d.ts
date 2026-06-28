@@ -2500,7 +2500,22 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+            /** Country (ISO 3166-1 alpha-2) */
+            country?: string | null;
+            /** City */
+            city?: string | null;
+            professional_status?: components["schemas"]["ProfessionalStatus"] | null;
+            project_stage?: components["schemas"]["ProjectStage"] | null;
+            weekly_availability?: components["schemas"]["WeeklyAvailability"] | null;
+            /** Onboarding Completed */
+            onboarding_completed?: boolean;
         };
+        /** ProfessionalStatus */
+        ProfessionalStatus: "student" | "employee" | "entrepreneur" | "freelance" | "career_change" | "unemployed";
+        /** ProjectStage */
+        ProjectStage: "idea" | "validation" | "mvp" | "traction" | "scale";
+        /** WeeklyAvailability */
+        WeeklyAvailability: "lt5" | "h5_10" | "h10_20" | "gt20";
         /** ValidationError */
         ValidationError: {
             /** Location */

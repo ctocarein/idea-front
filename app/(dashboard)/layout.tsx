@@ -22,6 +22,12 @@ export default async function DashboardLayout({
 }) {
   const session = await getSession();
   if (!session) redirect(routes.login);
+  // Porteurs nouvellement inscrits → onboarding obligatoire avant le dashboard.
+  // Les autres rôles (admin, mentor, analyst) n'ont pas d'onboarding.
+  // On défault à true si le champ est absent (sessions antérieures à la feature).
+  if (session.role === "founder" && (session.onboarding_completed ?? true) === false) {
+    redirect(routes.onboarding);
+  }
 
   return (
     <SessionProvider session={session}>
