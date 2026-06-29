@@ -5,10 +5,13 @@ import { routes } from "@/shared/config/routes";
 import { Badge, Button, Card, CardContent } from "@/shared/ui";
 import {
   AXES,
+  LEVERS,
   ComprehensionTable,
   RadarChart,
+  TONE_TO_BADGE,
+  maturityLevel,
   overallScore,
-  reading,
+  type AxisKey,
 } from "@/features/scoring";
 import { type ReportDetail, toRadarScore } from "../api";
 import { BilanPdfButton } from "./BilanPdfButton";
@@ -27,7 +30,7 @@ const VERDICT_BADGE: Record<string, "success" | "warning" | "neutral"> = {
 export function BilanView({ report }: { report: ReportDetail }) {
   const radar = report.radar_score ? toRadarScore(report.radar_score) : null;
   const overall = radar ? overallScore(radar) : null;
-  const r = overall !== null ? reading(overall) : null;
+  const maturity = overall !== null ? maturityLevel(overall) : null;
   const insights = report.report ?? null;
   const verdict = insights?.verdict;
   const strengths = insights?.strengths ?? [];
@@ -36,10 +39,15 @@ export function BilanView({ report }: { report: ReportDetail }) {
 
   // Fil rouge : la dimension la plus faible = le point de rupture n°1 à attaquer en premier.
   const weakest = radar
-    ? AXES.map((a) => ({ label: a.label, score: radar.axes[a.key] ?? 0 })).sort(
+    ? AXES.map((a) => ({ key: a.key as AxisKey, label: a.label, score: radar.axes[a.key] ?? 0 })).sort(
         (x, y) => x.score - y.score,
       )[0]
     : null;
+  const weakestLever = weakest ? LEVERS[weakest.key] : null;
+  const academyUrl =
+    weakestLever?.type === "academy"
+      ? routes.academyTopic(weakestLever.topic)
+      : routes.academy;
 
   return (
     <div className="space-y-8">
@@ -75,7 +83,7 @@ export function BilanView({ report }: { report: ReportDetail }) {
             </p>
             <div className="flex flex-wrap gap-2 pt-1">
               <Button asChild>
-                <Link href={routes.academy}>
+                <Link href={academyUrl}>
                   <GraduationCap className="size-5" />
                   Renforcer dans l&apos;Academy
                 </Link>
@@ -107,9 +115,13 @@ export function BilanView({ report }: { report: ReportDetail }) {
                 <div className="flex items-baseline gap-2">
                   <span className="tabular font-display text-3xl font-extrabold">{overall}</span>
                   <span className="text-muted-foreground">/100</span>
-                  {r ? <Badge variant="success">{r.label}</Badge> : null}
+                  {maturity ? (
+                    <Badge variant={TONE_TO_BADGE[maturity.tone]}>{maturity.label}</Badge>
+                  ) : null}
                 </div>
-                {verdict?.analysis ? (
+                {maturity ? (
+                  <p className="text-sm text-muted-foreground">{maturity.description}</p>
+                ) : verdict?.analysis ? (
                   <p className="text-sm text-muted-foreground">{verdict.analysis}</p>
                 ) : null}
                 <Button asChild variant="ghost" size="sm" className="mt-1 -ml-2">
