@@ -43,6 +43,77 @@ export async function setMentorActive(
   }
 }
 
+// --- Transitions MentorRequest (V1-07) ---
+
+import type { MentorRequestDetail } from "./api";
+
+export type RequestResult =
+  | { ok: true; data: MentorRequestDetail }
+  | { ok: false; message: string };
+
+export async function acceptRequest(requestId: string): Promise<RequestResult> {
+  try {
+    const data = await apiFetch<MentorRequestDetail>(
+      `/api/v1/mentor-requests/${requestId}/accept`,
+      { method: "PATCH" },
+    );
+    return { ok: true, data };
+  } catch {
+    return { ok: false, message: "Action impossible. Réessaie." };
+  }
+}
+
+export async function declineRequest(requestId: string): Promise<RequestResult> {
+  try {
+    const data = await apiFetch<MentorRequestDetail>(
+      `/api/v1/mentor-requests/${requestId}/decline`,
+      { method: "PATCH" },
+    );
+    return { ok: true, data };
+  } catch {
+    return { ok: false, message: "Action impossible. Réessaie." };
+  }
+}
+
+export async function planSession(
+  requestId: string,
+  sessionAt: string,
+): Promise<RequestResult> {
+  try {
+    const data = await apiFetch<MentorRequestDetail>(
+      `/api/v1/mentor-requests/${requestId}/plan-session`,
+      { method: "PATCH", json: { session_at: sessionAt } },
+    );
+    return { ok: true, data };
+  } catch {
+    return { ok: false, message: "Impossible de planifier. Réessaie." };
+  }
+}
+
+export async function completeRequest(requestId: string): Promise<RequestResult> {
+  try {
+    const data = await apiFetch<MentorRequestDetail>(
+      `/api/v1/mentor-requests/${requestId}/complete`,
+      { method: "PATCH" },
+    );
+    return { ok: true, data };
+  } catch {
+    return { ok: false, message: "Action impossible. Réessaie." };
+  }
+}
+
+export async function cancelRequest(requestId: string): Promise<RequestResult> {
+  try {
+    const data = await apiFetch<MentorRequestDetail>(
+      `/api/v1/mentor-requests/${requestId}/cancel`,
+      { method: "PATCH" },
+    );
+    return { ok: true, data };
+  } catch {
+    return { ok: false, message: "Impossible d'annuler. Réessaie." };
+  }
+}
+
 /** Demande d'accompagnement d'un porteur vers un mentor. */
 export async function requestMentor(
   mentorUserId: string,

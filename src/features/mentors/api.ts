@@ -28,3 +28,29 @@ export async function getMyMentorProfile(): Promise<MentorProfileMe | null> {
     return null;
   }
 }
+
+// --- Demandes mentor (V1-07) ---
+
+export interface MentorRequestDetail {
+  id: string;
+  status: string;
+  message: string;
+  mentor_user_id: string;
+  mentor_name: string;
+  founder_id: string;
+  founder_name: string;
+  project_id: string | null;
+  session_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Porteur : ses demandes envoyées. */
+export async function getMyMentorRequests(): Promise<MentorRequestDetail[]> {
+  return apiFetch<MentorRequestDetail[]>("/api/v1/me/mentor-requests");
+}
+
+/** Mentor : demandes reçues. */
+export async function getMentorIncomingRequests(): Promise<MentorRequestDetail[]> {
+  return apiFetch<MentorRequestDetail[]>("/api/v1/mentors/me/requests");
+}
