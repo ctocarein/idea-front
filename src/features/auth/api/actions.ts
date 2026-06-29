@@ -59,8 +59,9 @@ function messageFor(error: unknown): string {
     if (error.status === 401) return "Email ou mot de passe incorrect.";
     if (error.status === 409) return "Un compte existe déjà avec cet email.";
     if (error.status === 429) return "Trop de tentatives. Réessaie dans un instant.";
+    return `Erreur HTTP ${error.status} — ${JSON.stringify(error.detail)}`;
   }
-  return "Connexion impossible. Réessaie.";
+  return `Connexion impossible : ${String(error)}`;
 }
 
 export async function login(email: string, password: string): Promise<AuthResult> {
@@ -120,8 +121,12 @@ export async function completeOnboarding(data: OnboardingData): Promise<AuthResu
       { ...cookieBase(), maxAge: 60 * 60 * 24 * 30 },
     );
     return { ok: true, redirectTo: routes.dashboard };
-  } catch {
-    return { ok: false, message: "Impossible de sauvegarder le profil. Réessaie." };
+  } catch (error) {
+    const detail =
+      error instanceof ApiError
+        ? `HTTP ${error.status} — ${JSON.stringify(error.detail)}`
+        : String(error);
+    return { ok: false, message: `Erreur : ${detail}` };
   }
 }
 

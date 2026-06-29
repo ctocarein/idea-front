@@ -9,8 +9,9 @@ import { Badge, Button, Card, CardContent } from "@/shared/ui";
 import {
   ComprehensionTable,
   RadarChart,
+  TONE_TO_BADGE,
+  maturityLevel,
   overallScore,
-  reading,
   sampleScore,
 } from "@/features/scoring";
 import { ClaimPendingDiagnostic } from "@/features/diagnostics";
@@ -54,7 +55,7 @@ export default async function DashboardPage() {
     }
   }
   const overall = radar ? overallScore(radar) : null;
-  const r = overall !== null ? reading(overall) : null;
+  const maturity = overall !== null ? maturityLevel(overall) : null;
 
   return (
     <div className="space-y-8">
@@ -72,7 +73,7 @@ export default async function DashboardPage() {
         <Badge variant="primary">{radar ? "Diagnostic fait" : "Analyse en cours"}</Badge>
       </div>
 
-      {radar && r ? (
+      {radar && maturity ? (
         <>
           <Card>
             <CardContent className="grid items-center gap-6 pt-6 sm:grid-cols-[auto_1fr]">
@@ -86,12 +87,9 @@ export default async function DashboardPage() {
                 <div className="flex items-baseline gap-2">
                   <span className="tabular font-display text-3xl font-extrabold">{overall}</span>
                   <span className="text-muted-foreground">/100</span>
-                  <Badge variant="success">{r.label}</Badge>
+                  <Badge variant={TONE_TO_BADGE[maturity.tone]}>{maturity.label}</Badge>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  Le Radar de Collision résume tes axes. Tu le verras progresser au fil de
-                  l&apos;Academy et du simulateur.
-                </p>
+                <p className="text-sm text-muted-foreground">{maturity.description}</p>
                 <Button asChild variant="ghost" size="sm" className="mt-1 -ml-2">
                   <Link href={routes.readiness}>
                     Suis-je prêt ?

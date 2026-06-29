@@ -21,6 +21,7 @@ export const routes = {
   // Espace porteur (dashboard)
   dashboard: "/dashboard",
   academy: "/dashboard/academy",
+  academyTopic: (topic: string) => `/dashboard/academy?topic=${encodeURIComponent(topic)}`,
   pitchSim: "/dashboard/pitch-sim",
   pitchSimSession: (id: string) => `/dashboard/pitch-sim/${id}`,
   mentors: "/dashboard/mentors",
@@ -28,6 +29,8 @@ export const routes = {
   opportunities: "/dashboard/opportunites",
   project: (id: string) => `/dashboard/projects/${id}`,
   bilan: (id: string) => `/dashboard/bilan/${id}`,
+  profile: "/dashboard/profile",
+  shares: "/dashboard/shares",
 
   // Espace mentor
   mentorHome: "/mentor",
@@ -37,6 +40,7 @@ export const routes = {
   adminProjects: "/admin/projects",
   adminProject: (id: string) => `/admin/projects/${id}`,
   adminMentors: "/admin/mentors",
+  adminOpportunities: "/admin/opportunities",
   adminScoringGrid: "/admin/scoring-grid",
   adminAuditLogs: "/admin/audit-logs",
 } as const;

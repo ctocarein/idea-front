@@ -11,6 +11,7 @@ import {
   LogOut,
   Mic,
   ScrollText,
+  Share2,
   SlidersHorizontal,
   Target,
   UserCircle,
@@ -39,6 +40,7 @@ export const NAV_ICONS = {
   audit: ScrollText,
   profile: UserCircle,
   requests: Inbox,
+  share: Share2,
 } satisfies Record<string, LucideIcon>;
 
 export type NavIcon = keyof typeof NAV_ICONS;

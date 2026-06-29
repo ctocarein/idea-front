@@ -13,6 +13,8 @@ const NAV: NavItem[] = [
   { href: routes.opportunities, label: "Opportunités", shortLabel: "Opports", icon: "opportunities" },
   { href: routes.mentors, label: "Mentors", icon: "mentors" },
   { href: routes.readiness, label: "Readiness", shortLabel: "Prêt ?", icon: "readiness" },
+  { href: routes.shares, label: "Partages", icon: "share" },
+  { href: routes.profile, label: "Mon profil", shortLabel: "Profil", icon: "profile" },
 ];
 
 export default async function DashboardLayout({

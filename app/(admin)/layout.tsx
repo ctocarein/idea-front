@@ -10,6 +10,7 @@ const NAV: NavItem[] = [
   { href: routes.admin, label: "Vue d'ensemble", shortLabel: "Aperçu", icon: "overview" },
   { href: routes.adminProjects, label: "Projets", icon: "projects" },
   { href: routes.adminMentors, label: "Mentors", icon: "mentors" },
+  { href: routes.adminOpportunities, label: "Opportunités", icon: "opportunities" },
   { href: routes.adminScoringGrid, label: "Grille", icon: "grid" },
   { href: routes.adminAuditLogs, label: "Audit", icon: "audit" },
 ];

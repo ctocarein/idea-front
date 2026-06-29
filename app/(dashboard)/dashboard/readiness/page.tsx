@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, GraduationCap, Mic, type LucideIcon } from "lucide-react";
 
 import { routes } from "@/shared/config/routes";
 import { Badge, Button, Card, CardContent } from "@/shared/ui";
 import {
   AXES,
+  LEVERS,
   RadarChart,
+  TONE_TO_BADGE,
+  maturityLevel,
   overallScore,
-  reading,
   type AxisKey,
 } from "@/features/scoring";
 import { getLatestRadar } from "@/features/reports/api";
@@ -16,7 +18,7 @@ import { ExpressInterest } from "./_interest";
 
 export const metadata: Metadata = { title: "Readiness" };
 
-/** Pistes génériques par dimension. Au Sprint INT : issues des ancres de la grille. */
+/** Pistes génériques par dimension. */
 const HINTS: Record<AxisKey, string> = {
   d1: "Clarifie pour qui le problème est le plus aigu.",
   d2: "Montre que ta solution résout vraiment ce problème.",
@@ -31,6 +33,21 @@ const HINTS: Record<AxisKey, string> = {
   d11: "Précise où en est concrètement le projet.",
   d12: "Nomme tes risques majeurs et comment tu les réduis.",
 };
+
+/** Libellé du CTA selon le type de levier. */
+function leverCta(key: AxisKey): { href: string; label: string; icon: LucideIcon } {
+  const lever = LEVERS[key];
+  switch (lever.type) {
+    case "academy":
+      return { href: routes.academyTopic(lever.topic), label: "Aller à l'Academy", icon: GraduationCap };
+    case "pitchsim":
+      return { href: routes.pitchSim, label: "S'exercer au pitch", icon: Mic };
+    case "mentor":
+      return { href: routes.mentors, label: "Trouver un mentor", icon: ArrowUpRight };
+    default:
+      return { href: routes.academy, label: "Aller à l'Academy", icon: GraduationCap };
+  }
+}
 
 export default async function ReadinessPage() {
   const score = await getLatestRadar();
@@ -72,7 +89,7 @@ export default async function ReadinessPage() {
 
 function ReadinessContent({ score }: { score: NonNullable<Awaited<ReturnType<typeof getLatestRadar>>> }) {
   const overall = overallScore(score);
-  const r = reading(overall);
+  const maturity = maturityLevel(overall);
   const weak = [...AXES]
     .sort((a, b) => (score.axes[a.key] ?? 0) - (score.axes[b.key] ?? 0))
     .slice(0, 3);
@@ -88,11 +105,9 @@ function ReadinessContent({ score }: { score: NonNullable<Awaited<ReturnType<typ
             <div className="flex items-baseline gap-2">
               <span className="tabular font-display text-3xl font-extrabold">{overall}</span>
               <span className="text-muted-foreground">/100</span>
-              <Badge variant="success">{r.label}</Badge>
+              <Badge variant={TONE_TO_BADGE[maturity.tone]}>{maturity.label}</Badge>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Voici les axes qui te rapprocheraient le plus du niveau « certifiable ».
-            </p>
+            <p className="text-sm text-muted-foreground">{maturity.description}</p>
           </div>
         </CardContent>
       </Card>
@@ -100,20 +115,30 @@ function ReadinessContent({ score }: { score: NonNullable<Awaited<ReturnType<typ
       <section className="space-y-3">
         <h2 className="font-display text-lg font-bold tracking-tight">Ce qu&apos;il me reste</h2>
         <div className="space-y-2">
-          {weak.map((axis) => (
-            <div
-              key={axis.key}
-              className="flex items-start gap-3 rounded-xl border border-border bg-card p-4"
-            >
-              <span className="tabular mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-bold">
-                {score.axes[axis.key]}
-              </span>
-              <div>
-                <p className="font-medium">{axis.label}</p>
-                <p className="text-sm text-muted-foreground">{HINTS[axis.key]}</p>
+          {weak.map((axis) => {
+            const cta = leverCta(axis.key as AxisKey);
+            const Icon = cta.icon;
+            return (
+              <div
+                key={axis.key}
+                className="flex items-start gap-3 rounded-xl border border-border bg-card p-4"
+              >
+                <span className="tabular mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-bold">
+                  {score.axes[axis.key]}
+                </span>
+                <div className="flex-1 space-y-2">
+                  <p className="font-medium">{axis.label}</p>
+                  <p className="text-sm text-muted-foreground">{HINTS[axis.key]}</p>
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={cta.href}>
+                      <Icon className="size-4" />
+                      {cta.label}
+                    </Link>
+                  </Button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

@@ -88,17 +88,16 @@ export default function Home() {
               Capable et confiant
             </p>
             <h1 className="mt-4 font-display text-[34px] font-extrabold leading-[1.05] tracking-tight text-ink sm:text-5xl">
-              De l&apos;idée confuse au projet que tu sais défendre.
+              De l&apos;idée confuse à un projet solide.
             </h1>
             <p className="mt-5 max-w-lg text-lg text-muted-foreground">
-              Ideaxion t&apos;aide d&apos;abord à comprendre ton projet, puis à
-              le rendre solide. Gratuitement. Le capital vient après — jamais
-              devant.
+              <b>Ideaxion </b>t&apos;aide d&apos;abord à comprendre ton projet, puis à
+              le rendre solide. Gratuitement.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button asChild>
                 <Link href={routes.diagnostic}>
-                  Lancer mon diagnostic
+                  Demarrer maintenant
                   <ArrowRight className="size-5" />
                 </Link>
               </Button>
