@@ -10,4 +10,11 @@ export {
   type LessonSummary,
   type LessonDetail,
 } from "./api";
-export { completeLesson } from "./actions";
+export {
+  completeLesson,
+  startGuidedSession,
+  sendGuidedTurn,
+  saveGuidedDraft,
+  type GuidedSessionData,
+  type GuidedResult,
+} from "./actions";

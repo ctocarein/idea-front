@@ -14,9 +14,12 @@ export async function getAcademyProgress(): Promise<AcademyProgressData> {
   return apiFetch<AcademyProgressData>("/api/v1/academy/progress");
 }
 
-/** Référentiel des leçons (triées par position côté backend). */
-export async function getLessons(): Promise<LessonSummary[]> {
-  return apiFetch<LessonSummary[]>("/api/v1/academy/lessons");
+/** Référentiel des leçons (triées par position côté backend). Filtrable par topic (ex. "modele_economique"). */
+export async function getLessons(topic?: string): Promise<LessonSummary[]> {
+  const url = topic
+    ? `/api/v1/academy/lessons?topic=${encodeURIComponent(topic)}`
+    : "/api/v1/academy/lessons";
+  return apiFetch<LessonSummary[]>(url);
 }
 
 /** Détail d'une leçon (corps complet). */

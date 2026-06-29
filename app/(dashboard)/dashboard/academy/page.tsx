@@ -4,7 +4,9 @@ import { AcademyModules, GuidedBuilder } from "@/features/academy";
 
 export const metadata: Metadata = { title: "Academy" };
 
-export default function AcademyPage() {
+export default function AcademyPage({ searchParams }: { searchParams: { topic?: string } }) {
+  const highlightTopic = searchParams?.topic;
+
   return (
     <div className="space-y-10">
       <div>
@@ -17,7 +19,7 @@ export default function AcademyPage() {
         </p>
       </div>
 
-      <AcademyModules />
+      <AcademyModules highlightTopic={highlightTopic} />
 
       <section id="construire" className="space-y-3 scroll-mt-20">
         <h2 className="font-display text-lg font-bold tracking-tight">

@@ -596,8 +596,8 @@ export function PitchRoom({
           ) : null}
         </div>
 
-        {/* Captions (échanges) */}
-        <div className="hidden h-[420px] lg:block">
+        {/* Captions (échanges) — compactes sur mobile, pleine hauteur sur desktop */}
+        <div className="h-48 overflow-y-auto lg:h-[420px] lg:overflow-hidden">
           <Captions turns={turns} />
         </div>
       </div>
