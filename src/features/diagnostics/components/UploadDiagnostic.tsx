@@ -1,41 +1,53 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, useTransition } from "react";
+import { UploadCloud } from "lucide-react";
 
-import { Button, FileUpload } from "@/shared/ui";
-import { mockScoreFromInput, type RadarScore } from "@/features/scoring";
+import { Button, FileUpload, toast } from "@/shared/ui";
+import { type IdeaExtract, extractFileIdea } from "../api/actions";
 
 /**
- * Flow B — uploader un projet déjà écrit. L'extraction de texte + le scoring
- * sont mockés (au Sprint INT : upload presigned MinIO → extraction backend →
- * même pipeline que le flow A).
+ * Flow B — upload PDF/DOCX → extraction de texte côté backend → même pipeline « Raconte ».
+ * Le résultat (`IdeaExtract` + `description`) est remonté via `onExtracted` pour que
+ * `DiagnosticEntry` bascule vers `RaconteDiagnostic` en mode organize (le "tell" est skippé).
+ *
+ * Anonyme : on ne fait pas l'extraction LLM (coûteuse) → stash du nom de fichier + teaser.
  */
 export function UploadDiagnostic({
   isAuthed = false,
-  onComplete,
+  onExtracted,
   onAnonSubmit,
 }: {
   isAuthed?: boolean;
-  onComplete: (score: RadarScore, projectName: string) => void;
-  /** Anonyme : on ne révèle pas le bilan → teaser verrouillé (l'upload sera rejoué après inscription). */
+  /** Extraction réussie → DiagnosticEntry affiche RaconteDiagnostic en mode organize. */
+  onExtracted: (extract: IdeaExtract, description: string) => void;
   onAnonSubmit?: (projectName: string) => void;
 }) {
   const [file, setFile] = useState<File | null>(null);
-  const [analyzing, setAnalyzing] = useState(false);
+  const [analyzing, startTransition] = useTransition();
 
   function analyze() {
     if (!file) return;
+
     const projectName = file.name.replace(/\.[^.]+$/, "");
-    // Anonyme : pas de révélation, on gate → teaser.
+
     if (!isAuthed) {
       onAnonSubmit?.(projectName);
       return;
     }
-    setAnalyzing(true);
-    // Connecté (placeholder) : extraction + scoring réels = pipeline backend à brancher.
-    window.setTimeout(() => {
-      onComplete(mockScoreFromInput(`${projectName}|${file.size}`), projectName);
-    }, 900);
+
+    const form = new FormData();
+    form.append("file", file);
+    form.append("project_name", projectName);
+
+    startTransition(async () => {
+      const res = await extractFileIdea(form);
+      if (!res.ok) {
+        toast.error(res.message);
+        return;
+      }
+      onExtracted(res.data, res.description);
+    });
   }
 
   return (
@@ -51,11 +63,10 @@ export function UploadDiagnostic({
         loading={analyzing}
         className="w-full"
       >
-        {analyzing ? "Analyse en cours…" : "Analyser mon projet"}
+        {analyzing ? "Extraction en cours…" : "Analyser mon projet"}
       </Button>
       <p className="text-center text-xs text-muted-foreground">
-        Formats tolérés. Si l&apos;extraction est imparfaite, tu pourras
-        corriger ton bilan ensuite.
+        Le texte de ton document sera analysé par le LLM — même pipeline que &quot;Raconte ton idée&quot;.
       </p>
     </div>
   );

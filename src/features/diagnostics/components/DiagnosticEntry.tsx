@@ -4,54 +4,37 @@ import { useState } from "react";
 import { ArrowLeft, PenLine, UploadCloud } from "lucide-react";
 
 import { Button, Card } from "@/shared/ui";
-import type { RadarScore } from "@/features/scoring";
+import type { IdeaExtract } from "../api/actions";
 import { RaconteDiagnostic } from "./RaconteDiagnostic";
 import { UploadDiagnostic } from "./UploadDiagnostic";
-import { DiagnosticResult } from "./DiagnosticResult";
 import { DiagnosticTeaser } from "./DiagnosticTeaser";
 
 type Mode = "manual" | "upload";
-type Result = { score: RadarScore; projectName: string };
+
+/** État intermédiaire : l'extraction de fichier a réussi, on enchaîne sur organize. */
+type Extracted = { extract: IdeaExtract; description: string };
 
 export function DiagnosticEntry({ isAuthed = false }: { isAuthed?: boolean }) {
   const [mode, setMode] = useState<Mode | null>(null);
-  const [result, setResult] = useState<Result | null>(null);
+  const [extracted, setExtracted] = useState<Extracted | null>(null);
   const [submitted, setSubmitted] = useState<string | null>(null);
 
-  function handleComplete(score: RadarScore, projectName: string) {
-    setResult({ score, projectName });
-  }
   function handleAnonSubmit(projectName: string) {
     setSubmitted(projectName);
   }
 
-  // Anonyme : diagnostic rempli → teaser verrouillé (le bilan reste derrière l'inscription).
-  if (submitted !== null) {
-    return <DiagnosticTeaser projectName={submitted} />;
+  function handleExtracted(extract: IdeaExtract, description: string) {
+    setExtracted({ extract, description });
   }
 
-  // Connecté via upload (placeholder mock, en attendant le pipeline d'extraction backend).
-  if (result) {
-    return (
-      <div className="space-y-6">
-        <DiagnosticResult
-          score={result.score}
-          projectName={result.projectName}
-          isAuthed={isAuthed}
-        />
-        <div className="text-center">
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setResult(null);
-              setMode(null);
-            }}
-          >
-            Refaire un diagnostic
-          </Button>
-        </div>
-      </div>
-    );
+  function reset() {
+    setExtracted(null);
+    setMode(null);
+  }
+
+  // Anonyme : diagnostic rempli → teaser verrouillé.
+  if (submitted !== null) {
+    return <DiagnosticTeaser projectName={submitted} />;
   }
 
   if (mode === null) {
@@ -65,11 +48,9 @@ export function DiagnosticEntry({ isAuthed = false }: { isAuthed?: boolean }) {
           <span className="flex size-12 items-center justify-center rounded-full bg-coral/15 text-coral-strong">
             <PenLine className="size-6" />
           </span>
-          <h3 className="mt-4 font-display text-lg font-bold">
-            Écrire mon idée
-          </h3>
+          <h3 className="mt-4 font-display text-lg font-bold">Raconte ton idée</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            Réponds à des questions guidées, adaptées à ta catégorie.
+            En quelques phrases — le LLM organise, on comble les trous ensemble.
           </p>
         </button>
 
@@ -81,11 +62,9 @@ export function DiagnosticEntry({ isAuthed = false }: { isAuthed?: boolean }) {
           <span className="flex size-12 items-center justify-center rounded-full bg-secondary text-muted-foreground">
             <UploadCloud className="size-6" />
           </span>
-          <h3 className="mt-4 font-display text-lg font-bold">
-            Uploader mon projet
-          </h3>
+          <h3 className="mt-4 font-display text-lg font-bold">Uploader mon projet</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            Tu as déjà un document ? On l&apos;analyse sans tout ressaisir.
+            Tu as déjà un document ? On l&apos;analyse — même pipeline que le récit libre.
           </p>
         </button>
       </div>
@@ -94,17 +73,25 @@ export function DiagnosticEntry({ isAuthed = false }: { isAuthed?: boolean }) {
 
   return (
     <div className="space-y-5">
-      <Button variant="ghost" size="sm" onClick={() => setMode(null)}>
+      <Button variant="ghost" size="sm" onClick={reset}>
         <ArrowLeft className="size-4" />
         Changer de méthode
       </Button>
       <Card className="p-6">
         {mode === "manual" ? (
           <RaconteDiagnostic isAuthed={isAuthed} onAnonSubmit={handleAnonSubmit} />
+        ) : extracted ? (
+          /* Fichier extrait → RaconteDiagnostic démarre directement en organize */
+          <RaconteDiagnostic
+            isAuthed={isAuthed}
+            onAnonSubmit={handleAnonSubmit}
+            initialExtract={extracted.extract}
+            initialDescription={extracted.description}
+          />
         ) : (
           <UploadDiagnostic
             isAuthed={isAuthed}
-            onComplete={handleComplete}
+            onExtracted={handleExtracted}
             onAnonSubmit={handleAnonSubmit}
           />
         )}

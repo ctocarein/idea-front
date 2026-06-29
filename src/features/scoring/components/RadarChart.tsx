@@ -73,7 +73,7 @@ export function RadarChart({
       height={size}
       role="img"
       aria-label="Radar de Collision — 12 dimensions d'évaluation"
-      className={cn("max-w-full", className)}
+      className={cn("max-w-full h-auto", className)}
     >
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">

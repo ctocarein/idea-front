@@ -73,10 +73,114 @@ export function overallScore(score: RadarScore): number {
 
 export type ReadingTone = "strong" | "good" | "watch" | "fragile";
 
-/** Lecture qualitative non culpabilisante (charte §1.6) — sur 100. */
+/** Lecture qualitative non culpabilisante (charte §1.6) — sur 100. Utilisée pour les piliers. */
 export function reading(value: number): { label: string; tone: ReadingTone } {
   if (value >= 75) return { label: "Solide", tone: "strong" };
   if (value >= 55) return { label: "En bonne voie", tone: "good" };
   if (value >= 35) return { label: "À renforcer", tone: "watch" };
   return { label: "À explorer", tone: "fragile" };
 }
+
+/** Niveau de maturité global — 6 paliers du score /100 (PRESENTATION.md §8). */
+export interface MaturityLevel {
+  key: string;
+  label: string;
+  min: number;
+  max: number;
+  description: string;
+  tone: ReadingTone;
+}
+
+export const MATURITY_LEVELS: MaturityLevel[] = [
+  {
+    key: "idee_brute",
+    label: "Idée brute",
+    min: 0,
+    max: 25,
+    description: "Le projet est encore très flou — travaillons les fondamentaux.",
+    tone: "fragile",
+  },
+  {
+    key: "a_structurer",
+    label: "Projet à structurer",
+    min: 26,
+    max: 45,
+    description: "Le potentiel existe, mais les bases sont à renforcer.",
+    tone: "watch",
+  },
+  {
+    key: "prometteur",
+    label: "Projet prometteur",
+    min: 46,
+    max: 60,
+    description: "Le projet commence à être lisible — tu es sur la bonne voie.",
+    tone: "watch",
+  },
+  {
+    key: "pre_viable",
+    label: "Projet pré-viable",
+    min: 61,
+    max: 75,
+    description: "Le projet peut être testé sérieusement.",
+    tone: "good",
+  },
+  {
+    key: "business_ready",
+    label: "Business Ready",
+    min: 76,
+    max: 85,
+    description: "Prêt à rencontrer des partenaires, incubateurs ou premiers clients.",
+    tone: "strong",
+  },
+  {
+    key: "investor_ready",
+    label: "Investor Ready",
+    min: 86,
+    max: 100,
+    description: "Suffisamment structuré pour des financeurs ou institutions.",
+    tone: "strong",
+  },
+];
+
+/** Retourne le niveau de maturité correspondant au score global /100. */
+export function maturityLevel(overall: number): MaturityLevel {
+  return (
+    MATURITY_LEVELS.find((l) => overall >= l.min && overall <= l.max) ??
+    MATURITY_LEVELS[0]
+  );
+}
+
+/** Mapping tone → variante de Badge (shadcn). */
+export const TONE_TO_BADGE: Record<ReadingTone, "success" | "warning" | "primary" | "neutral"> = {
+  strong: "success",
+  good: "primary",
+  watch: "warning",
+  fragile: "neutral",
+};
+
+/** Type de levier : où pointer le porteur pour renforcer une dimension. */
+export type LeverType = "academy" | "pitchsim" | "document" | "mentor";
+
+export interface Lever {
+  type: LeverType;
+  topic: string;
+}
+
+/**
+ * Map dimension → levier d'action (miroir de `_LEVERS` backend dans `app/scoring/constants.py`).
+ * Utilisé pour transformer un axe faible en lien ciblé (Academy, pitch sim, mentors, documents).
+ */
+export const LEVERS: Record<AxisKey, Lever> = {
+  d1:  { type: "academy",  topic: "probleme" },
+  d2:  { type: "academy",  topic: "solution" },
+  d3:  { type: "pitchsim", topic: "proposition_valeur" },
+  d4:  { type: "academy",  topic: "marche" },
+  d5:  { type: "academy",  topic: "concurrence" },
+  d6:  { type: "academy",  topic: "modele_economique" },
+  d7:  { type: "document", topic: "preuves_traction" },
+  d8:  { type: "academy",  topic: "croissance" },
+  d9:  { type: "academy",  topic: "go_to_market" },
+  d10: { type: "mentor",   topic: "equipe" },
+  d11: { type: "academy",  topic: "avancement" },
+  d12: { type: "academy",  topic: "risques" },
+};

@@ -11,7 +11,7 @@ type DiagnosticCreatedOut = components["schemas"]["DiagnosticCreatedOut"];
 
 export type StartDiagnosticResult =
   | { ok: true; reportId: string }
-  | { ok: false; message: string };
+  | { ok: false; message: string; unauthorized?: boolean };
 
 export interface ManualDiagnosticPayload {
   projectName: string;
@@ -40,7 +40,7 @@ export async function startManualDiagnostic(
     return { ok: true, reportId: created.report_id };
   } catch (error) {
     if (error instanceof ApiError) {
-      if (error.status === 401) return { ok: false, message: "Connecte-toi pour lancer ton diagnostic." };
+      if (error.status === 401) return { ok: false, message: "Connecte-toi pour lancer ton diagnostic.", unauthorized: true };
       if (error.status === 422) return { ok: false, message: "Vérifie les champs : il manque une information." };
     }
     return { ok: false, message: "Analyse impossible pour l'instant. Réessaie dans un instant." };
@@ -78,7 +78,7 @@ export async function extractIdea(
   try {
     const data = await apiFetch<IdeaExtract>("/api/v1/diagnostics/extract", {
       method: "POST",
-      json: { idea, projectName },
+      json: { idea, projectName, consent: true },
     });
     return { ok: true, data };
   } catch (error) {
@@ -86,5 +86,32 @@ export async function extractIdea(
       return { ok: false, message: "Trop de demandes — réessaie dans une minute." };
     }
     return { ok: false, message: "Analyse impossible pour l'instant. Réessaie." };
+  }
+}
+
+export type ExtractFileResult =
+  | { ok: true; data: IdeaExtract; description: string }
+  | { ok: false; message: string };
+
+/**
+ * Upload PDF/DOCX → extraction de texte côté backend → même pipeline 'Raconte'.
+ * Le `description` retourné est le texte brut extrait (utilisé dans le payload de scoring).
+ */
+export async function extractFileIdea(formData: FormData): Promise<ExtractFileResult> {
+  try {
+    const raw = await apiFetch<IdeaExtract & { source_text?: string }>(
+      "/api/v1/diagnostics/extract-file",
+      { method: "POST", formData },
+    );
+    return { ok: true, data: raw, description: raw.source_text ?? "" };
+  } catch (error) {
+    if (error instanceof ApiError) {
+      if (error.status === 413) return { ok: false, message: "Fichier trop grand (max 20 Mo)." };
+      if (error.status === 415) return { ok: false, message: "Format non supporté (PDF ou DOCX uniquement)." };
+      if (error.status === 422) return { ok: false, message: "Le document semble vide ou illisible. Essaie le flow 'Raconte'." };
+      if (error.status === 429) return { ok: false, message: "Trop de demandes — réessaie dans une minute." };
+      return { ok: false, message: `Erreur backend HTTP ${error.status} — ${JSON.stringify(error.detail)}` };
+    }
+    return { ok: false, message: `Erreur inattendue : ${String(error)}` };
   }
 }

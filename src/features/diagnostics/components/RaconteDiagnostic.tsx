@@ -15,21 +15,30 @@ type Step = "tell" | "organize" | "fill";
  * « Raconte, on structure » — l'inverse du formulaire. Le porteur raconte son idée ; le LLM
  * l'organise (12 dimensions captées/manquantes) ; on ne demande QUE les trous. Anonyme → teaser ;
  * connecté → vrai diagnostic. On n'invente rien : ce qui manque devient une question ciblée.
+ *
+ * `initialExtract` + `initialDescription` : passés par UploadDiagnostic pour sauter l'étape
+ * "tell" et démarrer directement en mode organize (le texte du fichier a déjà été extrait).
  */
 export function RaconteDiagnostic({
   isAuthed = false,
   onAnonSubmit,
+  initialExtract,
+  initialDescription = "",
 }: {
   isAuthed?: boolean;
   onAnonSubmit?: (projectName: string) => void;
+  /** Pré-extraction depuis un fichier uploadé — démarre en mode organize. */
+  initialExtract?: IdeaExtract;
+  /** Texte extrait du fichier (utilisé comme `description` dans le payload de scoring). */
+  initialDescription?: string;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const [step, setStep] = useState<Step>("tell");
-  const [idea, setIdea] = useState("");
-  const [name, setName] = useState("");
-  const [consent, setConsent] = useState(false);
-  const [extract, setExtract] = useState<IdeaExtract | null>(null);
+  const [step, setStep] = useState<Step>(initialExtract ? "organize" : "tell");
+  const [idea, setIdea] = useState(initialDescription);
+  const [name, setName] = useState(initialExtract?.project_name ?? "");
+  const [consent, setConsent] = useState(!!initialExtract); // déjà consenti via upload
+  const [extract, setExtract] = useState<IdeaExtract | null>(initialExtract ?? null);
   const [gapIdx, setGapIdx] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [draft, setDraft] = useState("");
@@ -71,8 +80,15 @@ export function RaconteDiagnostic({
     }
     startTransition(async () => {
       const res = await startManualDiagnostic(payload);
-      if (res.ok) router.push(routes.bilan(res.reportId));
-      else toast.error(res.message);
+      if (res.ok) {
+        router.push(routes.bilan(res.reportId));
+      } else if (!res.ok && res.unauthorized) {
+        // Token expiré sur page publique : on traite comme anonyme (stash + teaser)
+        savePendingDiagnostic(payload);
+        onAnonSubmit?.(projectName);
+      } else {
+        toast.error(res.message);
+      }
     });
   }
 
