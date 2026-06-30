@@ -1,5 +1,6 @@
 /** Feature scoring — le Radar de Collision + tableau de compréhension. Barrel. */
 export { RadarChart, type RadarChartProps } from "./components/RadarChart";
+export { AnimatedRadarHero } from "./components/AnimatedRadarHero";
 export { RadarHex } from "./components/RadarHex";
 export { ComprehensionTable } from "./components/ComprehensionTable";
 export {

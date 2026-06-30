@@ -12,7 +12,7 @@ import {
 import { routes } from "@/shared/config/routes";
 import { Button } from "@/shared/ui";
 import { Reveal } from "@/shared/motion";
-import { RadarChart, sampleScore } from "@/features/scoring";
+import { AnimatedRadarHero } from "@/features/scoring";
 
 const STEPS = [
   {
@@ -108,7 +108,7 @@ export default function Home() {
           </Reveal>
 
           <Reveal delay={0.1} className="flex justify-center">
-            <RadarChart score={sampleScore} size={440} />
+            <AnimatedRadarHero size={440} />
           </Reveal>
         </div>
       </section>
