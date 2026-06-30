@@ -1,20 +1,12 @@
 import type { Metadata } from "next";
-import { BookOpen } from "lucide-react";
 
 import { apiFetch } from "@/shared/api/client";
 import { WeaknessCards } from "@/features/academy/components/WeaknessCards";
-import { AcademyModules } from "@/features/academy";
 import type { WeaknessListData } from "@/features/academy/actions";
 
 export const metadata: Metadata = { title: "Academy" };
 
-export default async function AcademyPage({
-  searchParams,
-}: {
-  searchParams: { topic?: string };
-}) {
-  const highlightTopic = searchParams?.topic;
-
+export default async function AcademyPage() {
   let weaknessData: WeaknessListData = {
     weaknesses: [],
     dimensions_worked: 0,
@@ -36,7 +28,6 @@ export default async function AcademyPage({
         </p>
       </div>
 
-      {/* Section principale : faiblesses Radar */}
       <section className="space-y-4">
         <div>
           <h2 className="font-display text-lg font-bold tracking-tight">
@@ -47,20 +38,6 @@ export default async function AcademyPage({
           </p>
         </div>
         <WeaknessCards data={weaknessData} />
-      </section>
-
-      {/* Section secondaire : ressources pédagogiques */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2">
-          <BookOpen className="size-4 text-muted-foreground" />
-          <h2 className="font-display text-lg font-bold tracking-tight">
-            Ressources pédagogiques
-          </h2>
-        </div>
-        <p className="text-sm text-muted-foreground -mt-2">
-          Approfondis tes connaissances sur les concepts clés de l&apos;entrepreneuriat.
-        </p>
-        <AcademyModules highlightTopic={highlightTopic} />
       </section>
     </div>
   );

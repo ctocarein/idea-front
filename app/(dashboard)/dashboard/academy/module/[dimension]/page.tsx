@@ -25,9 +25,10 @@ const DIMENSION_LABELS: Record<string, string> = {
 export async function generateMetadata({
   params,
 }: {
-  params: { dimension: string };
+  params: Promise<{ dimension: string }>;
 }): Promise<Metadata> {
-  const label = DIMENSION_LABELS[params.dimension] ?? params.dimension;
+  const { dimension } = await params;
+  const label = DIMENSION_LABELS[dimension] ?? dimension;
   return { title: `Module — ${label}` };
 }
 
@@ -35,10 +36,11 @@ export default async function ModulePage({
   params,
   searchParams,
 }: {
-  params: { dimension: string };
-  searchParams: { session?: string };
+  params: Promise<{ dimension: string }>;
+  searchParams: Promise<{ session?: string }>;
 }) {
-  const { dimension } = params;
+  const { dimension } = await params;
+  const { session: sessionId } = await searchParams;
   const label = DIMENSION_LABELS[dimension];
 
   if (!label) return notFound();
@@ -46,10 +48,10 @@ export default async function ModulePage({
   let session: ModuleSessionData | null = null;
 
   // Si une session existante est passée en query param, la charger
-  if (searchParams?.session) {
+  if (sessionId) {
     try {
       session = await apiFetch<ModuleSessionData>(
-        `/api/v1/academy/modules/${searchParams.session}`,
+        `/api/v1/academy/modules/${sessionId}`,
       );
     } catch {
       // session invalide, on va en créer une nouvelle
