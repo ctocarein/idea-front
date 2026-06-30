@@ -1,16 +1,20 @@
 import type { Metadata } from "next";
 
 import { apiFetch } from "@/shared/api/client";
-import { SharesDashboard, type ShareStats } from "@/features/sharing/SharesDashboard";
+import { SharesDashboard, type ShareStats, type ProjectVisibility } from "@/features/sharing/SharesDashboard";
 
 export const metadata: Metadata = { title: "Mes partages" };
 
 export default async function SharesPage() {
   let shares: ShareStats[] = [];
+  let visibility: ProjectVisibility | null = null;
   try {
-    shares = await apiFetch<ShareStats[]>("/api/v1/me/shares");
+    [shares, visibility] = await Promise.all([
+      apiFetch<ShareStats[]>("/api/v1/me/shares"),
+      apiFetch<ProjectVisibility | null>("/api/v1/me/project-visibility").catch(() => null),
+    ]);
   } catch {
-    // état dégradé : liste vide
+    // état dégradé
   }
 
   return (
@@ -18,10 +22,10 @@ export default async function SharesPage() {
       <div>
         <h1 className="font-display text-2xl font-bold tracking-tight">Mes partages</h1>
         <p className="text-muted-foreground">
-          Liens de partage actifs, statistiques de vues et gestion de l&apos;accès.
+          Visibilité du projet, liens de partage actifs et statistiques de vues.
         </p>
       </div>
-      <SharesDashboard shares={shares} />
+      <SharesDashboard shares={shares} projectVisibility={visibility} />
     </div>
   );
 }

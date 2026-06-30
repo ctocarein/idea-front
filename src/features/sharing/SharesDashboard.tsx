@@ -1,13 +1,19 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Copy, Link2, Eye, Clock, Trash2, CheckCircle2, AlertCircle } from "lucide-react";
+import { Copy, Link2, Eye, Clock, Trash2, CheckCircle2, AlertCircle, Globe, Lock } from "lucide-react";
 
 import { Card, CardContent } from "@/shared/ui/Card";
 import { Button } from "@/shared/ui/Button";
 import { toast } from "@/shared/ui";
 
-import { revokeShare } from "./sharingActions";
+import { revokeShare, setProjectVisibility } from "./sharingActions";
+
+export interface ProjectVisibility {
+  project_id: string;
+  project_title: string;
+  is_public: boolean;
+}
 
 export interface ShareStats {
   id: string;
@@ -165,11 +171,64 @@ function ShareCard({ share, onRevoked }: ShareCardProps) {
   );
 }
 
-interface Props {
-  shares: ShareStats[];
+function ProjectVisibilityCard({ visibility }: { visibility: ProjectVisibility }) {
+  const [isPublic, setIsPublic] = useState(visibility.is_public);
+  const [isPending, startTransition] = useTransition();
+
+  function handleToggle() {
+    const next = !isPublic;
+    startTransition(async () => {
+      const result = await setProjectVisibility(visibility.project_id, next);
+      if (!result.ok) {
+        toast.error(result.message);
+        return;
+      }
+      setIsPublic(next);
+      toast.success(next ? "Projet visible dans l'écosystème." : "Projet repassé en privé.");
+    });
+  }
+
+  return (
+    <Card className="border-2 border-dashed">
+      <CardContent className="pt-5">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className={`flex size-9 shrink-0 items-center justify-center rounded-full ${isPublic ? "bg-teal/15 text-teal" : "bg-muted text-muted-foreground"}`}>
+              {isPublic ? <Globe className="size-4" /> : <Lock className="size-4" />}
+            </div>
+            <div>
+              <p className="font-semibold text-sm">{visibility.project_title}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {isPublic
+                  ? "Visible par les mentors et financeurs de l'écosystème"
+                  : "Projet privé — seuls toi et les analystes assignés peuvent le voir"}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={isPublic}
+            disabled={isPending}
+            onClick={handleToggle}
+            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 ${isPublic ? "bg-teal" : "bg-input"}`}
+          >
+            <span
+              className={`pointer-events-none block size-5 rounded-full bg-background shadow-lg ring-0 transition-transform ${isPublic ? "translate-x-5" : "translate-x-0.5"}`}
+            />
+          </button>
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
-export function SharesDashboard({ shares: initialShares }: Props) {
+interface Props {
+  shares: ShareStats[];
+  projectVisibility?: ProjectVisibility | null;
+}
+
+export function SharesDashboard({ shares: initialShares, projectVisibility }: Props) {
   const [shares, setShares] = useState(initialShares);
 
   function handleRevoked(id: string) {
@@ -181,21 +240,27 @@ export function SharesDashboard({ shares: initialShares }: Props) {
   const active = shares.filter((s) => s.is_active);
   const revoked = shares.filter((s) => !s.is_active);
 
-  if (shares.length === 0) {
-    return (
-      <div className="rounded-xl border border-dashed p-12 text-center">
-        <p className="text-muted-foreground text-sm">
-          Aucun lien de partage pour l&apos;instant.
-        </p>
-        <p className="text-muted-foreground text-xs mt-1">
-          Crée un lien depuis la page Opportunités pour partager ta fiche projet.
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-8">
+      {projectVisibility && (
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+            Confidentialité
+          </h2>
+          <ProjectVisibilityCard visibility={projectVisibility} />
+        </section>
+      )}
+
+      {shares.length === 0 && (
+        <div className="rounded-xl border border-dashed p-12 text-center">
+          <p className="text-muted-foreground text-sm">
+            Aucun lien de partage pour l&apos;instant.
+          </p>
+          <p className="text-muted-foreground text-xs mt-1">
+            Crée un lien depuis la page Opportunités pour partager ta fiche projet.
+          </p>
+        </div>
+      )}
       {active.length > 0 && (
         <section className="space-y-3">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
@@ -220,3 +285,4 @@ export function SharesDashboard({ shares: initialShares }: Props) {
     </div>
   );
 }
+

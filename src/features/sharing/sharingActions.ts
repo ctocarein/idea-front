@@ -29,3 +29,18 @@ export async function revokeShare(projectId: string): Promise<ShareActionResult>
     return { ok: false, message: "Impossible de révoquer le lien. Réessaie." };
   }
 }
+
+export async function setProjectVisibility(
+  projectId: string,
+  isPublic: boolean,
+): Promise<ShareActionResult> {
+  try {
+    await apiFetch(`/api/v1/projects/${projectId}/visibility`, {
+      method: "PATCH",
+      json: { is_public: isPublic },
+    });
+    return { ok: true };
+  } catch {
+    return { ok: false, message: "Impossible de mettre à jour la visibilité. Réessaie." };
+  }
+}
