@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useTransition, useRef, useEffect } from "react";
-import { Send, ChevronRight, Loader2, RefreshCw, CheckCircle2 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Send, ChevronRight, Loader2, RefreshCw, CheckCircle2, Bot } from "lucide-react";
 import { Button } from "@/shared/ui/Button";
 import { Card, CardContent } from "@/shared/ui/Card";
 import { toast } from "@/shared/ui";
@@ -24,6 +26,72 @@ const PHASE_LABELS: Record<string, { label: string; step: number }> = {
   fiches: { label: "Fiches de besoin", step: 3 },
 };
 
+function TypingBubble() {
+  return (
+    <div className="flex justify-start items-end gap-2">
+      <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10">
+        <Bot className="size-3.5 text-primary" />
+      </div>
+      <div className="bg-muted rounded-2xl rounded-bl-sm px-4 py-3">
+        <div className="flex items-center gap-1.5">
+          <span className="size-1.5 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:0ms]" />
+          <span className="size-1.5 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:150ms]" />
+          <span className="size-1.5 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:300ms]" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const MARKDOWN_COMPONENTS = {
+  p: ({ children }: { children?: React.ReactNode }) => (
+    <p className="my-1.5 first:mt-0 last:mb-0 leading-relaxed">{children}</p>
+  ),
+  ul: ({ children }: { children?: React.ReactNode }) => (
+    <ul className="my-1.5 space-y-1.5 list-none">{children}</ul>
+  ),
+  ol: ({ children }: { children?: React.ReactNode }) => (
+    <ol className="my-1.5 space-y-1.5 list-decimal pl-5">{children}</ol>
+  ),
+  li: ({ children }: { children?: React.ReactNode }) => (
+    <li className="leading-relaxed marker:text-primary">{children}</li>
+  ),
+  strong: ({ children }: { children?: React.ReactNode }) => (
+    <strong className="font-semibold text-foreground">{children}</strong>
+  ),
+  em: ({ children }: { children?: React.ReactNode }) => (
+    <em className="text-muted-foreground not-italic block mt-0.5 text-[13px]">{children}</em>
+  ),
+  code: ({ children }: { children?: React.ReactNode }) => (
+    <code className="rounded bg-background/60 px-1 py-0.5 text-[13px] font-mono">{children}</code>
+  ),
+};
+
+function CoachMessage({ text }: { text: string }) {
+  return (
+    <div className="flex justify-start items-end gap-2">
+      <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 mb-0.5">
+        <Bot className="size-3.5 text-primary" />
+      </div>
+      <div className="max-w-[85%] rounded-2xl rounded-bl-sm bg-muted px-4 py-3 text-sm text-foreground">
+        <ReactMarkdown remarkPlugins={[remarkGfm]} components={MARKDOWN_COMPONENTS}>
+          {text}
+        </ReactMarkdown>
+      </div>
+    </div>
+  );
+}
+
+function PorteurMessage({ text }: { text: string }) {
+  return (
+    <div className="flex justify-end">
+      <div className="max-w-[80%] rounded-2xl rounded-br-sm bg-primary px-4 py-3 text-sm text-primary-foreground whitespace-pre-wrap">
+        {text}
+      </div>
+    </div>
+  );
+}
+
 export function ModuleFlow({ initial }: Props) {
   const [session, setSession] = useState(initial);
   const [message, setMessage] = useState("");
@@ -32,15 +100,17 @@ export function ModuleFlow({ initial }: Props) {
   );
   const [isPending, startTransition] = useTransition();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [session.turns]);
+  }, [session.turns, isPending]);
 
   function handleSend() {
     if (!message.trim() || isPending) return;
     const msg = message;
     setMessage("");
+    textareaRef.current?.focus();
     startTransition(async () => {
       const result = await sendModuleTurn(session.id, msg);
       if (!result.ok) {
@@ -86,6 +156,7 @@ export function ModuleFlow({ initial }: Props) {
   }
 
   const currentPhase = PHASE_LABELS[session.phase] ?? { label: session.phase, step: 1 };
+  const canPassToForm = session.turns.filter(t => t.role === "porteur").length >= 2;
 
   return (
     <div className="space-y-6">
@@ -98,7 +169,7 @@ export function ModuleFlow({ initial }: Props) {
             <div key={key} className="flex items-center gap-2">
               <div className="flex items-center gap-2">
                 <div
-                  className={`flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                  className={`flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors ${
                     isDone
                       ? "bg-success text-white"
                       : isCurrent
@@ -127,36 +198,25 @@ export function ModuleFlow({ initial }: Props) {
       {/* Phase context */}
       {session.phase === "context" && (
         <div className="space-y-4">
-          <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1">
-            {session.turns.map((turn, i) => (
-              <div
-                key={i}
-                className={`flex ${turn.role === "porteur" ? "justify-end" : "justify-start"}`}
-              >
-                <div
-                  className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm ${
-                    turn.role === "porteur"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-foreground"
-                  }`}
-                >
-                  {turn.text}
-                </div>
-              </div>
-            ))}
-            {isPending && (
-              <div className="flex justify-start">
-                <div className="bg-muted rounded-2xl px-4 py-3">
-                  <Loader2 className="size-4 animate-spin text-muted-foreground" />
-                </div>
-              </div>
+          {/* Fenêtre de chat */}
+          <div className="space-y-3 max-h-[520px] overflow-y-auto pr-1 scroll-smooth">
+            {session.turns.map((turn, i) =>
+              turn.role === "porteur" ? (
+                <PorteurMessage key={i} text={turn.text} />
+              ) : (
+                <CoachMessage key={i} text={turn.text} />
+              )
             )}
+
+            {isPending && <TypingBubble />}
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="flex gap-2">
+          {/* Zone de saisie */}
+          <div className="rounded-xl border bg-background focus-within:ring-2 focus-within:ring-ring transition-shadow">
             <textarea
-              className="flex-1 resize-none rounded-xl border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring min-h-[80px]"
+              ref={textareaRef}
+              className="w-full resize-none rounded-t-xl bg-transparent px-4 pt-3 pb-2 text-sm focus:outline-none min-h-[72px] max-h-[160px]"
               placeholder="Réponds aux questions du coach…"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -165,22 +225,31 @@ export function ModuleFlow({ initial }: Props) {
               }}
               disabled={isPending}
             />
-            <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between px-3 pb-2">
+              <span className="text-xs text-muted-foreground">⌘ + Entrée pour envoyer</span>
               <Button
-                size="icon"
+                size="sm"
                 onClick={handleSend}
                 disabled={!message.trim() || isPending}
               >
-                <Send className="size-4" />
+                <Send className="size-3.5 mr-1.5" />
+                Envoyer
               </Button>
             </div>
           </div>
 
-          <div className="flex justify-end pt-2">
+          <div className="flex items-center justify-between pt-1">
+            {!canPassToForm ? (
+              <p className="text-xs text-muted-foreground">
+                Réponds à au moins 2 questions du coach avant de continuer.
+              </p>
+            ) : (
+              <span />
+            )}
             <Button
               variant="outline"
               onClick={handlePrefillForm}
-              disabled={isPending || session.turns.length < 3}
+              disabled={isPending || !canPassToForm}
             >
               {isPending ? (
                 <><Loader2 className="mr-2 size-4 animate-spin" /> Génération du formulaire…</>
@@ -189,11 +258,6 @@ export function ModuleFlow({ initial }: Props) {
               )}
             </Button>
           </div>
-          {session.turns.length < 3 && (
-            <p className="text-center text-xs text-muted-foreground">
-              Réponds aux questions du coach avant de passer au formulaire.
-            </p>
-          )}
         </div>
       )}
 
@@ -237,7 +301,7 @@ export function ModuleFlow({ initial }: Props) {
                 {isPending ? (
                   <><Loader2 className="mr-2 size-4 animate-spin" /> Génération…</>
                 ) : (
-                  <>Générer mes fiches de besoin <ChevronRight className="ml-1.5 size-4" /></>
+                  <>Générer mes fiches <ChevronRight className="ml-1.5 size-4" /></>
                 )}
               </Button>
             </div>
