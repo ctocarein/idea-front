@@ -174,12 +174,12 @@ export function ModuleFlow({ initial }: Props) {
   return (
     <div className="space-y-6">
       {/* Stepper */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2">
         {Object.entries(PHASE_LABELS).map(([key, { label, step }], idx, arr) => {
           const isDone = currentPhase.step > step;
           const isCurrent = session.phase === key;
           return (
-            <div key={key} className="flex items-center gap-2">
+            <div key={key} className="flex items-center gap-1.5 sm:gap-2">
               <div className="flex items-center gap-2">
                 <div
                   className={`flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors ${
@@ -192,8 +192,9 @@ export function ModuleFlow({ initial }: Props) {
                 >
                   {isDone ? <CheckCircle2 className="size-3.5" /> : step}
                 </div>
+                {/* Label : toujours visible pour l'étape courante, dès sm pour les autres */}
                 <span
-                  className={`text-sm font-medium ${
+                  className={`text-sm font-medium ${isCurrent ? "inline" : "hidden sm:inline"} ${
                     isCurrent ? "text-foreground" : "text-muted-foreground"
                   }`}
                 >
