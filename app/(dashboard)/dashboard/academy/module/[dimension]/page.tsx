@@ -87,7 +87,7 @@ export default async function ModulePage({
   }
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 max-w-2xl mx-auto w-full">
       <div>
         <Link
           href="/dashboard/academy"

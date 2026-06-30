@@ -88,10 +88,11 @@ export interface ModuleSessionData {
   id: string;
   dimension: string | null;
   phase: string;
-  turns: Array<{ role: string; text: string }>;
+  turns: Array<{ role: string; text: string; ready?: boolean }>;
   form_data: Record<string, string> | null;
   form_sections: Array<{ key: string; label: string; hint: string }>;
   fiches: NeedFicheData[];
+  context_ready: boolean;
 }
 
 export type ModuleResult = { ok: true; session: ModuleSessionData } | { ok: false; message: string };

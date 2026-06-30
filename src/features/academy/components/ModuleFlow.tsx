@@ -3,7 +3,7 @@
 import { useState, useTransition, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Send, ChevronRight, Loader2, RefreshCw, CheckCircle2, Bot } from "lucide-react";
+import { Send, ChevronRight, Loader2, RefreshCw, CheckCircle2, Bot, Sparkles } from "lucide-react";
 import { Button } from "@/shared/ui/Button";
 import { Card, CardContent } from "@/shared/ui/Card";
 import { toast } from "@/shared/ui";
@@ -21,9 +21,9 @@ interface Props {
 }
 
 const PHASE_LABELS: Record<string, { label: string; step: number }> = {
-  context: { label: "Questions de contexte", step: 1 },
-  form: { label: "Formulaire", step: 2 },
-  fiches: { label: "Fiches de besoin", step: 3 },
+  context: { label: "Échange", step: 1 },
+  form: { label: "Synthèse", step: 2 },
+  fiches: { label: "Tes besoins", step: 3 },
 };
 
 function TypingBubble() {
@@ -106,10 +106,23 @@ export function ModuleFlow({ initial }: Props) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [session.turns, isPending]);
 
+  function resetTextareaHeight() {
+    const el = textareaRef.current;
+    if (el) el.style.height = "auto";
+  }
+
+  function handleTextareaChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    setMessage(e.target.value);
+    const el = e.target;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
+  }
+
   function handleSend() {
     if (!message.trim() || isPending) return;
     const msg = message;
     setMessage("");
+    resetTextareaHeight();
     textareaRef.current?.focus();
     startTransition(async () => {
       const result = await sendModuleTurn(session.id, msg);
@@ -156,7 +169,7 @@ export function ModuleFlow({ initial }: Props) {
   }
 
   const currentPhase = PHASE_LABELS[session.phase] ?? { label: session.phase, step: 1 };
-  const canPassToForm = session.turns.filter(t => t.role === "porteur").length >= 2;
+  const canPassToForm = session.turns.filter(t => t.role === "porteur").length >= 1;
 
   return (
     <div className="space-y-6">
@@ -199,7 +212,7 @@ export function ModuleFlow({ initial }: Props) {
       {session.phase === "context" && (
         <div className="space-y-4">
           {/* Fenêtre de chat */}
-          <div className="space-y-3 max-h-[520px] overflow-y-auto pr-1 scroll-smooth">
+          <div className="space-y-3 max-h-[520px] overflow-y-auto scrollbar-soft pr-2 scroll-smooth">
             {session.turns.map((turn, i) =>
               turn.role === "porteur" ? (
                 <PorteurMessage key={i} text={turn.text} />
@@ -212,25 +225,54 @@ export function ModuleFlow({ initial }: Props) {
             <div ref={messagesEndRef} />
           </div>
 
+          {/* Invitation intelligente : le coach a réuni assez d'éléments */}
+          {session.context_ready && (
+            <div className="rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between animate-in fade-in slide-in-from-bottom-1 duration-300">
+              <div className="flex items-start gap-2.5">
+                <Sparkles className="size-4 text-primary mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold">Le coach a assez d&apos;éléments.</p>
+                  <p className="text-xs text-muted-foreground">
+                    Tu peux continuer à échanger, ou structurer tes réponses dès maintenant.
+                  </p>
+                </div>
+              </div>
+              <Button onClick={handlePrefillForm} disabled={isPending} className="shrink-0">
+                {isPending ? (
+                  <><Loader2 className="mr-2 size-4 animate-spin" /> Synthèse en cours…</>
+                ) : (
+                  <>Structurer mes réponses <ChevronRight className="ml-1.5 size-4" /></>
+                )}
+              </Button>
+            </div>
+          )}
+
           {/* Zone de saisie */}
           <div className="rounded-xl border bg-background focus-within:ring-2 focus-within:ring-ring transition-shadow">
             <textarea
               ref={textareaRef}
-              className="w-full resize-none rounded-t-xl bg-transparent px-4 pt-3 pb-2 text-sm focus:outline-none min-h-[72px] max-h-[160px]"
+              rows={1}
+              className="w-full resize-none rounded-t-xl bg-transparent px-4 pt-3 pb-2 text-sm leading-relaxed focus:outline-none min-h-[48px] max-h-[200px] scrollbar-soft"
               placeholder="Réponds aux questions du coach…"
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={handleTextareaChange}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSend();
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend();
+                }
               }}
               disabled={isPending}
             />
-            <div className="flex items-center justify-between px-3 pb-2">
-              <span className="text-xs text-muted-foreground">⌘ + Entrée pour envoyer</span>
+            <div className="flex items-center justify-between px-3 pb-2 gap-2">
+              <span className="text-xs text-muted-foreground hidden sm:inline">
+                <kbd className="font-sans">Entrée</kbd> pour envoyer · <kbd className="font-sans">Maj+Entrée</kbd> pour un retour à la ligne
+              </span>
               <Button
                 size="sm"
                 onClick={handleSend}
                 disabled={!message.trim() || isPending}
+                className="ml-auto"
               >
                 <Send className="size-3.5 mr-1.5" />
                 Envoyer
@@ -238,26 +280,24 @@ export function ModuleFlow({ initial }: Props) {
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-1">
-            {!canPassToForm ? (
-              <p className="text-xs text-muted-foreground">
-                Réponds à au moins 2 questions du coach avant de continuer.
-              </p>
-            ) : (
-              <span />
-            )}
-            <Button
-              variant="outline"
-              onClick={handlePrefillForm}
-              disabled={isPending || !canPassToForm}
-            >
-              {isPending ? (
-                <><Loader2 className="mr-2 size-4 animate-spin" /> Génération du formulaire…</>
-              ) : (
-                <>Passer au formulaire <ChevronRight className="ml-1.5 size-4" /></>
-              )}
-            </Button>
-          </div>
+          {/* Échappatoire discrète : passer à la synthèse sans attendre le signal */}
+          {!session.context_ready && canPassToForm && (
+            <div className="flex justify-center pt-1">
+              <button
+                type="button"
+                onClick={handlePrefillForm}
+                disabled={isPending}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline disabled:opacity-50"
+              >
+                {isPending ? "Synthèse en cours…" : "Structurer mes réponses maintenant →"}
+              </button>
+            </div>
+          )}
+          {!canPassToForm && (
+            <p className="text-center text-xs text-muted-foreground pt-1">
+              Réponds à au moins une question du coach pour continuer.
+            </p>
+          )}
         </div>
       )}
 
@@ -265,7 +305,7 @@ export function ModuleFlow({ initial }: Props) {
       {session.phase === "form" && (
         <div className="space-y-5">
           <p className="text-sm text-muted-foreground">
-            Ce formulaire a été pré-rempli par l&apos;IA à partir de ta conversation. Complète ou corrige chaque section.
+            Voici la <strong className="text-foreground font-semibold">synthèse</strong> de ton échange, structurée par l&apos;IA. Relis, complète ou corrige chaque point avant de générer tes besoins.
           </p>
 
           <div className="space-y-4">
