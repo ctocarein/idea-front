@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useTransition } from "react";
-import { Sparkles, Check, Loader2 } from "lucide-react";
+import { Sparkles, Check, Loader2, Download } from "lucide-react";
 import { Card, CardContent } from "@/shared/ui/Card";
 import { Button } from "@/shared/ui/Button";
 import { toast } from "@/shared/ui";
@@ -10,23 +10,64 @@ import { updateSection, generateSection } from "../actions";
 
 export function PitchEditor({ initial }: { initial: PitchData }) {
   const [sections, setSections] = useState<PitchSection[]>(initial.sections);
+  const [exporting, setExporting] = useState<string | null>(null);
   const filled = sections.filter((s) => s.content.trim().length > 0).length;
 
   function setContent(key: string, content: string) {
     setSections((prev) => prev.map((s) => (s.key === key ? { ...s, content } : s)));
   }
 
+  async function handleExport(format: "pdf" | "pptx") {
+    setExporting(format);
+    try {
+      const res = await fetch(`/api/pitch/${initial.id}/export?format=${format}`);
+      if (!res.ok) {
+        toast.error(
+          res.status === 503
+            ? `Export ${format.toUpperCase()} indisponible sur cet environnement.`
+            : "Export impossible. Réessaie.",
+        );
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `pitch.${format}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error("Export impossible. Réessaie.");
+    } finally {
+      setExporting(null);
+    }
+  }
+
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <p className="text-xs text-muted-foreground">
-          <span className="font-semibold text-foreground">{filled}</span> / {sections.length} sections rédigées
-        </p>
-        <div className="h-1.5 w-28 rounded-full bg-muted overflow-hidden">
-          <div
-            className="h-full rounded-full bg-primary transition-all"
-            style={{ width: `${(filled / sections.length) * 100}%` }}
-          />
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <p className="text-xs text-muted-foreground">
+            <span className="font-semibold text-foreground">{filled}</span> / {sections.length} sections
+          </p>
+          <div className="h-1.5 w-24 rounded-full bg-muted overflow-hidden">
+            <div
+              className="h-full rounded-full bg-primary transition-all"
+              style={{ width: `${(filled / sections.length) * 100}%` }}
+            />
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={() => handleExport("pptx")} disabled={!!exporting}>
+            {exporting === "pptx" ? <Loader2 className="size-3.5 animate-spin" /> : <Download className="size-3.5" />}
+            <span className="ml-1.5">PPTX</span>
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => handleExport("pdf")} disabled={!!exporting}>
+            {exporting === "pdf" ? <Loader2 className="size-3.5 animate-spin" /> : <Download className="size-3.5" />}
+            <span className="ml-1.5">PDF</span>
+          </Button>
         </div>
       </div>
 
