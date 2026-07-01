@@ -15,8 +15,6 @@ import {
   sampleScore,
 } from "@/features/scoring";
 import { ClaimPendingDiagnostic } from "@/features/diagnostics";
-import { AcademyProgress } from "@/features/academy";
-import { PitchProgress } from "@/features/pitch-simulator";
 import { ReportsList } from "@/features/reports";
 import { getMyReports, getReportDetail, toRadarScore, toReportCard } from "@/features/reports/api";
 import type { RadarScore } from "@/features/scoring";
@@ -127,11 +125,6 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       )}
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <AcademyProgress />
-        <PitchProgress />
-      </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <ReportsList reports={reportCards} />
