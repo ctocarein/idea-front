@@ -14,6 +14,8 @@ export {
   getModule,
   getMyFiches,
   validateFiche,
+  shareFiche,
+  unshareFiche,
   type WeaknessData,
   type WeaknessListData,
   type ModuleSessionData,

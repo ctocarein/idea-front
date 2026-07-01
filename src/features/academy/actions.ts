@@ -145,3 +145,28 @@ export async function validateFiche(ficheId: string): Promise<{ ok: boolean }> {
     return { ok: false };
   }
 }
+
+export type ShareResult = { ok: true; path: string } | { ok: false };
+
+/** Génère un lien de partage public read-only pour la fiche. Retourne le chemin /shared/fiche/<token>. */
+export async function shareFiche(ficheId: string): Promise<ShareResult> {
+  try {
+    const res = await apiFetch<{ token: string; path: string }>(
+      `/api/v1/academy/fiches/${ficheId}/share`,
+      { method: "POST" },
+    );
+    return { ok: true, path: res.path };
+  } catch {
+    return { ok: false };
+  }
+}
+
+/** Révoque le lien de partage d'une fiche. */
+export async function unshareFiche(ficheId: string): Promise<{ ok: boolean }> {
+  try {
+    await apiFetch(`/api/v1/academy/fiches/${ficheId}/share`, { method: "DELETE" });
+    return { ok: true };
+  } catch {
+    return { ok: false };
+  }
+}

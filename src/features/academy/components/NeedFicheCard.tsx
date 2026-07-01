@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Code2, Users, Handshake, Wrench, DollarSign, GraduationCap, CheckCircle2, Circle, Lightbulb } from "lucide-react";
+import { Code2, Users, Handshake, Wrench, DollarSign, GraduationCap, CheckCircle2, Circle, Lightbulb, Download, Share2 } from "lucide-react";
 import { Card, CardContent } from "@/shared/ui/Card";
 import { Button } from "@/shared/ui/Button";
 import { toast } from "@/shared/ui";
 import type { NeedFicheData } from "../actions";
-import { validateFiche } from "../actions";
+import { validateFiche, shareFiche } from "../actions";
 
 const TYPE_CONFIG: Record<string, { label: string; icon: React.ElementType; color: string }> = {
   dev: { label: "Développeur", icon: Code2, color: "text-blue-500 bg-blue-50" },
@@ -54,6 +54,23 @@ export function NeedFicheCard({
         setValidated(true);
         onValidated?.(fiche.id);
         toast.success("Fiche confirmée.");
+      }
+    });
+  }
+
+  function handleShare() {
+    startTransition(async () => {
+      const result = await shareFiche(fiche.id);
+      if (!result.ok) {
+        toast.error("Partage impossible. Réessaie.");
+        return;
+      }
+      const url = `${window.location.origin}${result.path}`;
+      try {
+        await navigator.clipboard.writeText(url);
+        toast.success("Lien de partage copié.");
+      } catch {
+        toast.success(`Lien de partage : ${url}`);
       }
     });
   }
@@ -135,14 +152,31 @@ export function NeedFicheCard({
           </div>
         )}
 
-        {!validated && (
-          <div className="flex justify-end">
-            <Button size="sm" variant="outline" onClick={handleValidate} disabled={isPending}>
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          <a
+            href={`/api/besoins/${fiche.id}/pdf`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground hover:border-border-strong"
+          >
+            <Download className="size-3.5" /> PDF
+          </a>
+          <button
+            type="button"
+            onClick={handleShare}
+            disabled={isPending}
+            className="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground hover:border-border-strong disabled:opacity-50"
+          >
+            <Share2 className="size-3.5" /> Partager
+          </button>
+
+          {!validated && (
+            <Button size="sm" variant="outline" className="ml-auto" onClick={handleValidate} disabled={isPending}>
               <CheckCircle2 className="mr-1.5 size-3.5" />
               {isPending ? "Confirmation…" : "Confirmer ce besoin"}
             </Button>
-          </div>
-        )}
+          )}
+        </div>
       </CardContent>
     </Card>
   );
