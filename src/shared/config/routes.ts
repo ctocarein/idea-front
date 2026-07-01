@@ -22,6 +22,7 @@ export const routes = {
   dashboard: "/dashboard",
   academy: "/dashboard/academy",
   academyTopic: (topic: string) => `/dashboard/academy?topic=${encodeURIComponent(topic)}`,
+  besoins: "/dashboard/besoins",
   pitchSim: "/dashboard/pitch-sim",
   pitchSimSession: (id: string) => `/dashboard/pitch-sim/${id}`,
   mentors: "/dashboard/mentors",

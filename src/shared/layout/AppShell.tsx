@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  ClipboardList,
   Compass,
   FolderKanban,
   GraduationCap,
@@ -31,6 +32,7 @@ import { ThemeToggle } from "@/shared/ui";
 export const NAV_ICONS = {
   overview: LayoutDashboard,
   academy: GraduationCap,
+  needs: ClipboardList,
   pitch: Mic,
   mentors: Users,
   readiness: Target,

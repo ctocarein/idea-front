@@ -2,6 +2,7 @@
 export { WeaknessCards } from "./components/WeaknessCards";
 export { ModuleFlow } from "./components/ModuleFlow";
 export { NeedFicheCard } from "./components/NeedFicheCard";
+export { NeedFichesBoard } from "./components/NeedFichesBoard";
 export {
   getMyWeaknesses,
   startModule,

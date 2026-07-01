@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition, useRef, useEffect } from "react";
+import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Send, ChevronRight, Loader2, RefreshCw, CheckCircle2, Bot, Sparkles, Gauge, TrendingUp, ArrowRight } from "lucide-react";
@@ -457,7 +458,11 @@ export function ModuleFlow({ initial }: Props) {
               {session.fiches.length} fiche{session.fiches.length > 1 ? "s" : ""} de besoin générée{session.fiches.length > 1 ? "s" : ""}.
             </p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Confirme les besoins qui correspondent à ta réalité.
+              Confirme les besoins qui correspondent à ta réalité — retrouve-les tous dans{" "}
+              <Link href="/dashboard/besoins" className="font-medium text-primary underline-offset-4 hover:underline">
+                Mes besoins
+              </Link>
+              .
             </p>
           </div>
 

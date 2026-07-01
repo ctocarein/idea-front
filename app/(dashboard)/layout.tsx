@@ -11,6 +11,7 @@ import { signOut } from "@/features/auth";
 const NAV: NavItem[] = [
   { href: routes.dashboard, label: "Tableau de bord", shortLabel: "Accueil", icon: "overview" },
   { href: routes.academy, label: "Workshop", icon: "academy" },
+  { href: routes.besoins, label: "Mes besoins", shortLabel: "Besoins", icon: "needs" },
   ...(features.pitchSimulator
     ? [{ href: routes.pitchSim, label: "Simulateur", shortLabel: "Pitch", icon: "pitch" } as NavItem]
     : []),
