@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
 import { ApiError } from "@/shared/api/client";
+import { features } from "@/shared/config/features";
+import { routes } from "@/shared/config/routes";
 import { MentorMarketplace, MyMentorRequests } from "@/features/mentors";
 import { getMentors, getMyMentorRequests } from "@/features/mentors/api";
 import { getMyProjectId } from "@/features/reports/api";
@@ -8,6 +11,8 @@ import { getMyProjectId } from "@/features/reports/api";
 export const metadata: Metadata = { title: "Mentors" };
 
 export default async function DashboardMentorsPage() {
+  if (!features.mentors) redirect(routes.dashboard);
+
   let mentors: Awaited<ReturnType<typeof getMentors>> = [];
   let myRequests: Awaited<ReturnType<typeof getMyMentorRequests>> = [];
   let projectId: string | null = null;

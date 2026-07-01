@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AlertTriangle, ArrowRight, CheckCircle2, Flag, GraduationCap, Sparkles, Users } from "lucide-react";
 
 import { routes } from "@/shared/config/routes";
+import { features } from "@/shared/config/features";
 import { Badge, Button, Card, CardContent } from "@/shared/ui";
 import {
   AXES,
@@ -88,12 +89,14 @@ export function BilanView({ report }: { report: ReportDetail }) {
                   Renforcer dans le Workshop
                 </Link>
               </Button>
-              <Button asChild variant="outline">
-                <Link href={routes.mentors}>
-                  <Users className="size-5" />
-                  Mentors référents
-                </Link>
-              </Button>
+              {features.mentors && (
+                <Button asChild variant="outline">
+                  <Link href={routes.mentors}>
+                    <Users className="size-5" />
+                    Mentors référents
+                  </Link>
+                </Button>
+              )}
               <BilanPdfButton reportId={report.id} />
             </div>
           </CardContent>

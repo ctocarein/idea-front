@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
 import { routes } from "@/shared/config/routes";
+import { features } from "@/shared/config/features";
 import { ApiError } from "@/shared/api/client";
 import { Button } from "@/shared/ui";
 import { getCommittees, getPostMortem, getSession } from "@/features/pitch-simulator/api";
@@ -18,6 +19,8 @@ export default async function PitchSessionPage({
   params: Promise<{ sessionId: string }>;
   searchParams: Promise<{ view?: string }>;
 }) {
+  if (!features.pitchSimulator) redirect(routes.dashboard);
+
   const { sessionId } = await params;
   const { view } = await searchParams;
 

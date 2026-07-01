@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight, GraduationCap, Mic, type LucideIcon } from "lucide-react";
 
 import { routes } from "@/shared/config/routes";
+import { features } from "@/shared/config/features";
 import { Badge, Button, Card, CardContent } from "@/shared/ui";
 import {
   AXES,
@@ -37,15 +38,22 @@ const HINTS: Record<AxisKey, string> = {
 /** Libellé du CTA selon le type de levier. */
 function leverCta(key: AxisKey): { href: string; label: string; icon: LucideIcon } {
   const lever = LEVERS[key];
+  const workshop = { href: routes.academy, label: "Aller au Workshop", icon: GraduationCap };
   switch (lever.type) {
     case "academy":
       return { href: routes.academyTopic(lever.topic), label: "Aller au Workshop", icon: GraduationCap };
     case "pitchsim":
-      return { href: routes.pitchSim, label: "S'exercer au pitch", icon: Mic };
+      // Simulateur repoussé en V2 → on renvoie vers le Workshop tant qu'il est masqué.
+      return features.pitchSimulator
+        ? { href: routes.pitchSim, label: "S'exercer au pitch", icon: Mic }
+        : workshop;
     case "mentor":
-      return { href: routes.mentors, label: "Trouver un mentor", icon: ArrowUpRight };
+      // Mentorat repoussé en V2 → fallback Workshop.
+      return features.mentors
+        ? { href: routes.mentors, label: "Trouver un mentor", icon: ArrowUpRight }
+        : workshop;
     default:
-      return { href: routes.academy, label: "Aller au Workshop", icon: GraduationCap };
+      return workshop;
   }
 }
 

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
 import { ApiError } from "@/shared/api/client";
+import { features } from "@/shared/config/features";
+import { routes } from "@/shared/config/routes";
 import { PitchBriefing } from "@/features/pitch-simulator";
 import { getCommittees } from "@/features/pitch-simulator/api";
 import { getMyProjectId } from "@/features/reports/api";
@@ -8,6 +11,8 @@ import { getMyProjectId } from "@/features/reports/api";
 export const metadata: Metadata = { title: "Simulateur de pitch" };
 
 export default async function PitchSimPage() {
+  if (!features.pitchSimulator) redirect(routes.dashboard);
+
   let committees: Awaited<ReturnType<typeof getCommittees>> = [];
   let projectId: string | null = null;
   try {
