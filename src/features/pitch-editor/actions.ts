@@ -13,6 +13,8 @@ export interface PitchData {
   id: string;
   title: string;
   sections: PitchSection[];
+  template_id: string;
+  slides: Record<string, unknown>[];
   updated_at: string;
 }
 
@@ -37,6 +39,35 @@ export async function updateSection(
     return { ok: true, pitch };
   } catch {
     return { ok: false, message: "Impossible d'enregistrer. Réessaie." };
+  }
+}
+
+/** Génère le deck visuel (slides structurées) depuis les sections ou un texte fourni. */
+export async function generateDeck(
+  pitchId: string,
+  source?: string,
+): Promise<PitchResult> {
+  try {
+    const pitch = await apiFetch<PitchData>(`/api/v1/pitch/${pitchId}/deck/generate`, {
+      method: "POST",
+      json: { source: source ?? null },
+    });
+    return { ok: true, pitch };
+  } catch {
+    return { ok: false, message: "La génération du deck a échoué. Réessaie." };
+  }
+}
+
+/** Change le template (thème) du deck. */
+export async function setTemplate(pitchId: string, templateId: string): Promise<PitchResult> {
+  try {
+    const pitch = await apiFetch<PitchData>(`/api/v1/pitch/${pitchId}/template`, {
+      method: "PATCH",
+      json: { template_id: templateId },
+    });
+    return { ok: true, pitch };
+  } catch {
+    return { ok: false, message: "Impossible de changer le thème. Réessaie." };
   }
 }
 
