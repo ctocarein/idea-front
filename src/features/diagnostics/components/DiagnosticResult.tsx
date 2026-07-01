@@ -55,7 +55,7 @@ export function DiagnosticResult({
           </h3>
           <p className="text-sm text-muted-foreground">
             Le Radar de Collision résume tes 12 dimensions. C&apos;est ta boussole : tu
-            le verras progresser au fil de l&apos;Academy et du simulateur de
+            le verras progresser au fil du Workshop et du simulateur de
             pitch.
           </p>
           <div className="flex flex-wrap gap-3 pt-2">

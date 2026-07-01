@@ -8,7 +8,7 @@ import { signOut } from "@/features/auth";
 
 const NAV: NavItem[] = [
   { href: routes.dashboard, label: "Tableau de bord", shortLabel: "Accueil", icon: "overview" },
-  { href: routes.academy, label: "Academy", icon: "academy" },
+  { href: routes.academy, label: "Workshop", icon: "academy" },
   { href: routes.pitchSim, label: "Simulateur", shortLabel: "Pitch", icon: "pitch" },
   { href: routes.opportunities, label: "Opportunités", shortLabel: "Opports", icon: "opportunities" },
   { href: routes.mentors, label: "Mentors", icon: "mentors" },

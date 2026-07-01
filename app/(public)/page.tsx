@@ -23,7 +23,7 @@ const STEPS = [
   {
     icon: GraduationCap,
     title: "Apprendre",
-    text: "L'Academy t'explique le BP, le pitch, le modèle éco — et tu construis ta version, guidé.",
+    text: "Le Workshop t'explique le BP, le pitch, le modèle éco — et tu construis ta version, guidé.",
   },
   {
     icon: Mic,

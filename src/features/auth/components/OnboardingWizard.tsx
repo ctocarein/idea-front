@@ -104,7 +104,7 @@ export function OnboardingWizard({ name: initialName = "" }: { name?: string }) 
           </h1>
           <p className="mx-auto max-w-sm text-muted-foreground">
             Quelques infos rapides pour personnaliser ton parcours — mentors,
-            modules Academy et opportunités adaptés à ton profil.
+            modules Workshop et opportunités adaptés à ton profil.
           </p>
         </div>
       ) : null}
@@ -184,7 +184,7 @@ export function OnboardingWizard({ name: initialName = "" }: { name?: string }) 
             Bienvenue, {initialName || "porteur"} !
           </h2>
           <p className="mx-auto max-w-sm text-muted-foreground">
-            Ton espace est prêt. Retrouve ton diagnostic, les modules Academy
+            Ton espace est prêt. Retrouve ton diagnostic, les modules Workshop
             et les mentors adaptés à ton profil.
           </p>
           {error ? (

@@ -25,7 +25,7 @@ export async function AcademyProgress() {
           <span className="flex size-9 items-center justify-center rounded-full bg-coral/15 text-coral-strong">
             <GraduationCap className="size-5" />
           </span>
-          <h3 className="font-display text-base font-bold">Academy</h3>
+          <h3 className="font-display text-base font-bold">Workshop</h3>
         </div>
         <div className="flex items-baseline gap-1">
           <span className="tabular font-display text-2xl font-extrabold">{completed}</span>

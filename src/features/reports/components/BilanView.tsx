@@ -85,7 +85,7 @@ export function BilanView({ report }: { report: ReportDetail }) {
               <Button asChild>
                 <Link href={academyUrl}>
                   <GraduationCap className="size-5" />
-                  Renforcer dans l&apos;Academy
+                  Renforcer dans le Workshop
                 </Link>
               </Button>
               <Button asChild variant="outline">
@@ -218,7 +218,7 @@ export function BilanView({ report }: { report: ReportDetail }) {
           </Link>
         </Button>
         <Button asChild variant="outline">
-          <Link href={routes.academy}>Apprendre avec l&apos;Academy</Link>
+          <Link href={routes.academy}>Travailler avec le Workshop</Link>
         </Button>
       </div>
     </div>

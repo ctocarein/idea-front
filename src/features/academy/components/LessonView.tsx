@@ -42,7 +42,7 @@ export function LessonView({
       <Button asChild variant="ghost" size="sm">
         <Link href={routes.academy}>
           <ArrowLeft className="size-4" />
-          Academy
+          Workshop
         </Link>
       </Button>
 

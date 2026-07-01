@@ -77,7 +77,7 @@ export default async function ModulePage({
           href="/dashboard/academy"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
         >
-          <ArrowLeft className="size-4" /> Retour à l&apos;Academy
+          <ArrowLeft className="size-4" /> Retour au Workshop
         </Link>
         <p className="text-destructive">
           Impossible de démarrer ce module. Vérifie ta connexion et réessaie.
@@ -92,7 +92,7 @@ export default async function ModulePage({
         href="/dashboard/academy"
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
-        <ArrowLeft className="size-4" /> Retour à l&apos;Academy
+        <ArrowLeft className="size-4" /> Retour au Workshop
       </Link>
 
       <div className="max-w-2xl mx-auto w-full space-y-6">

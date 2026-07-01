@@ -210,7 +210,7 @@ export function PitchPostMortem({
           </Link>
         </Button>
         <Button asChild variant="outline">
-          <Link href={routes.academy}>Travailler avec l&apos;Academy</Link>
+          <Link href={routes.academy}>Travailler avec le Workshop</Link>
         </Button>
       </div>
     </div>

@@ -39,13 +39,13 @@ function leverCta(key: AxisKey): { href: string; label: string; icon: LucideIcon
   const lever = LEVERS[key];
   switch (lever.type) {
     case "academy":
-      return { href: routes.academyTopic(lever.topic), label: "Aller à l'Academy", icon: GraduationCap };
+      return { href: routes.academyTopic(lever.topic), label: "Aller au Workshop", icon: GraduationCap };
     case "pitchsim":
       return { href: routes.pitchSim, label: "S'exercer au pitch", icon: Mic };
     case "mentor":
       return { href: routes.mentors, label: "Trouver un mentor", icon: ArrowUpRight };
     default:
-      return { href: routes.academy, label: "Aller à l'Academy", icon: GraduationCap };
+      return { href: routes.academy, label: "Aller au Workshop", icon: GraduationCap };
   }
 }
 

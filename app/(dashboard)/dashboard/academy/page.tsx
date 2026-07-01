@@ -4,7 +4,7 @@ import { apiFetch } from "@/shared/api/client";
 import { WeaknessCards } from "@/features/academy/components/WeaknessCards";
 import type { WeaknessListData } from "@/features/academy/actions";
 
-export const metadata: Metadata = { title: "Academy" };
+export const metadata: Metadata = { title: "Workshop" };
 
 export default async function AcademyPage() {
   let weaknessData: WeaknessListData = {
@@ -22,7 +22,7 @@ export default async function AcademyPage() {
   return (
     <div className="space-y-10">
       <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight">Academy</h1>
+        <h1 className="font-display text-2xl font-bold tracking-tight">Workshop</h1>
         <p className="text-muted-foreground">
           Comprends ton projet, renforce tes faiblesses, exprime tes besoins.
         </p>

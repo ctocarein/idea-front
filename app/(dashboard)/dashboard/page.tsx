@@ -158,7 +158,7 @@ function EmptyDashboard({ firstName }: { firstName: string }) {
     {
       icon: GraduationCap,
       label: "Apprendre",
-      text: "L'Academy t'explique le BP, le modèle éco, le pitch — et tu construis ta version.",
+      text: "Le Workshop t'explique le BP, le modèle éco, le pitch — et tu construis ta version.",
       active: false,
     },
     {
