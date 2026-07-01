@@ -66,11 +66,14 @@ export interface WeaknessData {
   pillar: string;
   module_session_id: string | null;
   module_phase: string | null;
+  is_reinforced: boolean;
 }
 
 export interface WeaknessListData {
   weaknesses: WeaknessData[];
   dimensions_worked: number;
+  dimensions_reinforced: number;
+  reinforced_dimensions: string[];
   has_radar: boolean;
 }
 

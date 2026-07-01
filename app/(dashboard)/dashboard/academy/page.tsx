@@ -10,6 +10,8 @@ export default async function AcademyPage() {
   let weaknessData: WeaknessListData = {
     weaknesses: [],
     dimensions_worked: 0,
+    dimensions_reinforced: 0,
+    reinforced_dimensions: [],
     has_radar: false,
   };
 

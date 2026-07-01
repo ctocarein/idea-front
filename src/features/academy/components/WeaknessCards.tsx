@@ -64,12 +64,18 @@ export function WeaknessCards({ data }: { data: WeaknessListData }) {
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground">
-          {data.dimensions_worked} axe{data.dimensions_worked > 1 ? "s" : ""} travaillé{data.dimensions_worked > 1 ? "s" : ""} sur 12
+          <span className="font-semibold text-foreground">{data.dimensions_reinforced}</span>
+          {" / 12 "}axe{data.dimensions_reinforced > 1 ? "s" : ""} renforcé{data.dimensions_reinforced > 1 ? "s" : ""}
+          {data.dimensions_worked > data.dimensions_reinforced && (
+            <span className="text-muted-foreground/70">
+              {" · "}{data.dimensions_worked - data.dimensions_reinforced} en cours
+            </span>
+          )}
         </p>
         <div className="h-1.5 w-24 rounded-full bg-muted overflow-hidden">
           <div
-            className="h-full rounded-full bg-primary"
-            style={{ width: `${(data.dimensions_worked / 12) * 100}%` }}
+            className="h-full rounded-full bg-success transition-all"
+            style={{ width: `${(data.dimensions_reinforced / 12) * 100}%` }}
           />
         </div>
       </div>
@@ -79,26 +85,30 @@ export function WeaknessCards({ data }: { data: WeaknessListData }) {
         const PillarIcon = pillar.icon;
         const hasModule = !!w.module_session_id;
         const phase = w.module_phase;
+        const reinforced = w.is_reinforced;
 
         return (
-          <Card key={w.dimension} className="group transition-shadow hover:shadow-sm">
+          <Card
+            key={w.dimension}
+            className={`group transition-shadow hover:shadow-sm ${reinforced ? "border-success/40 bg-success/5" : ""}`}
+          >
             <CardContent className="pt-5 space-y-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <span className={`text-xs font-semibold uppercase tracking-wider ${pillar.color}`}>
                       <PillarIcon className="inline size-3 mr-1" />
                       {pillar.label}
                     </span>
-                    {hasModule && phase && (
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                        phase === "fiches"
-                          ? "bg-success/15 text-success"
-                          : "bg-primary/10 text-primary"
-                      }`}>
+                    {reinforced ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-success/15 px-2 py-0.5 text-xs font-medium text-success">
+                        <CheckCircle2 className="size-3" /> Renforcé
+                      </span>
+                    ) : hasModule && phase ? (
+                      <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                         {PHASE_LABEL[phase] ?? phase}
                       </span>
-                    )}
+                    ) : null}
                   </div>
                   <h3 className="font-display font-bold text-base">{w.label}</h3>
                   <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
@@ -112,7 +122,7 @@ export function WeaknessCards({ data }: { data: WeaknessListData }) {
               <div className="flex justify-end">
                 <Link href={`/dashboard/academy/module/${w.dimension}${w.module_session_id ? `?session=${w.module_session_id}` : ""}`}>
                   <Button size="sm" variant={hasModule ? "outline" : "primary"}>
-                    {hasModule ? "Continuer le module" : "Travailler cet axe"}
+                    {reinforced ? "Voir mes besoins" : hasModule ? "Continuer le module" : "Travailler cet axe"}
                     <ArrowRight className="ml-1.5 size-3.5" />
                   </Button>
                 </Link>
