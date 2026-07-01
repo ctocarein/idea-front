@@ -3,7 +3,7 @@
 import { useState, useTransition, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Send, ChevronRight, Loader2, RefreshCw, CheckCircle2, Bot, Sparkles } from "lucide-react";
+import { Send, ChevronRight, Loader2, RefreshCw, CheckCircle2, Bot, Sparkles, Gauge, TrendingUp, ArrowRight } from "lucide-react";
 import { Button } from "@/shared/ui/Button";
 import { Card, CardContent } from "@/shared/ui/Card";
 import { toast } from "@/shared/ui";
@@ -13,6 +13,7 @@ import {
   prefillModuleForm,
   saveModuleForm,
   generateFiches,
+  rescoreAxis,
 } from "../actions";
 import { NeedFicheCard } from "./NeedFicheCard";
 
@@ -92,6 +93,88 @@ function PorteurMessage({ text }: { text: string }) {
   );
 }
 
+function ProgressPanel({
+  before,
+  after,
+  isPending,
+  onRescore,
+}: {
+  before: number | null;
+  after: number | null;
+  isPending: boolean;
+  onRescore: () => void;
+}) {
+  // Pas encore mesuré → invitation à mesurer la progression sur l'axe.
+  if (after === null) {
+    return (
+      <Card className="border-primary/20 bg-primary/[0.03]">
+        <CardContent className="flex flex-col gap-3 pt-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-2.5">
+            <Gauge className="mt-0.5 size-5 shrink-0 text-primary" />
+            <div>
+              <p className="text-sm font-semibold">Mesure ta progression</p>
+              <p className="text-xs text-muted-foreground">
+                Re-note cet axe à partir du travail que tu viens de faire, et vois ton score bouger.
+              </p>
+            </div>
+          </div>
+          <Button onClick={onRescore} disabled={isPending} className="shrink-0">
+            {isPending ? (
+              <><Loader2 className="mr-2 size-4 animate-spin" /> Mesure en cours…</>
+            ) : (
+              <><Gauge className="mr-1.5 size-4" /> Mesurer mon score</>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Mesuré → avant / après avec delta.
+  const delta = before !== null ? after - before : null;
+  const improved = delta !== null && delta > 0;
+  return (
+    <Card className={improved ? "border-success/40 bg-success/5" : "border-border"}>
+      <CardContent className="pt-5">
+        <div className="flex items-center gap-2 mb-3">
+          <TrendingUp className={`size-4 ${improved ? "text-success" : "text-muted-foreground"}`} />
+          <p className="text-sm font-semibold">
+            {improved ? "Ton score a progressé" : "Score re-mesuré"}
+          </p>
+        </div>
+        <div className="flex items-center justify-center gap-4">
+          {before !== null && (
+            <>
+              <div className="text-center">
+                <p className="text-xs text-muted-foreground mb-0.5">Avant</p>
+                <p className="font-display text-2xl font-bold tabular-nums text-muted-foreground">{before}<span className="text-sm font-normal">/10</span></p>
+              </div>
+              <ArrowRight className="size-5 text-muted-foreground/50" />
+            </>
+          )}
+          <div className="text-center">
+            <p className="text-xs text-muted-foreground mb-0.5">Après</p>
+            <p className={`font-display text-3xl font-extrabold tabular-nums ${improved ? "text-success" : "text-foreground"}`}>
+              {after}<span className="text-base font-normal">/10</span>
+            </p>
+          </div>
+          {improved && (
+            <span className="ml-1 rounded-full bg-success/15 px-2.5 py-1 text-sm font-bold text-success">
+              +{delta}
+            </span>
+          )}
+        </div>
+        <div className="mt-4 flex justify-center">
+          <Button variant="ghost" size="sm" onClick={onRescore} disabled={isPending}>
+            <RefreshCw className="mr-1.5 size-3.5" />
+            {isPending ? "Mesure en cours…" : "Re-mesurer"}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export function ModuleFlow({ initial }: Props) {
   const [session, setSession] = useState(initial);
   const [message, setMessage] = useState("");
@@ -165,6 +248,22 @@ export function ModuleFlow({ initial }: Props) {
         return;
       }
       setSession(result.session);
+    });
+  }
+
+  function handleRescore() {
+    startTransition(async () => {
+      const result = await rescoreAxis(session.id);
+      if (!result.ok) {
+        toast.error(result.message);
+        return;
+      }
+      setSession(result.session);
+      const before = result.session.axis_score_before;
+      const after = result.session.axis_score_after;
+      if (after !== null && before !== null && after > before) {
+        toast.success(`Ton score progresse : ${before} → ${after} !`);
+      }
     });
   }
 
@@ -361,6 +460,14 @@ export function ModuleFlow({ initial }: Props) {
               Confirme les besoins qui correspondent à ta réalité.
             </p>
           </div>
+
+          {/* Mesure de progression sur l'axe (boucle B) */}
+          <ProgressPanel
+            before={session.axis_score_before}
+            after={session.axis_score_after}
+            isPending={isPending}
+            onRescore={handleRescore}
+          />
 
           {session.fiches.map((fiche) => (
             <NeedFicheCard key={fiche.id} fiche={fiche} />

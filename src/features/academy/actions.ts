@@ -67,6 +67,8 @@ export interface WeaknessData {
   module_session_id: string | null;
   module_phase: string | null;
   is_reinforced: boolean;
+  original_score: number;
+  is_rescored: boolean;
 }
 
 export interface WeaknessListData {
@@ -96,6 +98,8 @@ export interface ModuleSessionData {
   form_sections: Array<{ key: string; label: string; hint: string }>;
   fiches: NeedFicheData[];
   context_ready: boolean;
+  axis_score_before: number | null;
+  axis_score_after: number | null;
 }
 
 export type ModuleResult = { ok: true; session: ModuleSessionData } | { ok: false; message: string };
@@ -164,6 +168,18 @@ export async function generateFiches(sessionId: string): Promise<ModuleResult> {
     return { ok: true, session };
   } catch {
     return { ok: false, message: "Impossible de générer les fiches. Réessaie." };
+  }
+}
+
+export async function rescoreAxis(sessionId: string): Promise<ModuleResult> {
+  try {
+    const session = await apiFetch<ModuleSessionData>(
+      `/api/v1/academy/modules/${sessionId}/rescore`,
+      { method: "POST" },
+    );
+    return { ok: true, session };
+  } catch {
+    return { ok: false, message: "Impossible de mesurer ta progression. Réessaie." };
   }
 }
 

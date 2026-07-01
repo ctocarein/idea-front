@@ -117,7 +117,24 @@ export function WeaknessCards({ data }: { data: WeaknessListData }) {
                 </div>
               </div>
 
-              <ScoreBar score={w.score} />
+              <div className="space-y-1.5">
+                <ScoreBar score={w.score} />
+                {w.is_rescored && w.score !== w.original_score && (
+                  <p className="text-xs text-muted-foreground">
+                    Depuis le diagnostic :{" "}
+                    <span className="text-muted-foreground/70">{w.original_score}</span>
+                    {" → "}
+                    <span className={`font-semibold ${w.score > w.original_score ? "text-success" : "text-foreground"}`}>
+                      {w.score}
+                    </span>
+                    {w.score > w.original_score && (
+                      <span className="ml-1 font-semibold text-success">
+                        (+{w.score - w.original_score})
+                      </span>
+                    )}
+                  </p>
+                )}
+              </div>
 
               <div className="flex justify-end">
                 <Link href={`/dashboard/academy/module/${w.dimension}${w.module_session_id ? `?session=${w.module_session_id}` : ""}`}>
