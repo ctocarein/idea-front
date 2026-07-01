@@ -60,10 +60,10 @@ const MARKDOWN_COMPONENTS = {
     <strong className="font-semibold text-foreground">{children}</strong>
   ),
   em: ({ children }: { children?: React.ReactNode }) => (
-    <em className="text-muted-foreground not-italic block mt-0.5 text-[13px]">{children}</em>
+    <em className="text-muted-foreground italic block mt-0.5 text-[11pt] leading-snug">{children}</em>
   ),
   code: ({ children }: { children?: React.ReactNode }) => (
-    <code className="rounded bg-background/60 px-1 py-0.5 text-[13px] font-mono">{children}</code>
+    <code className="rounded bg-background/60 px-1 py-0.5 text-[11pt] font-mono">{children}</code>
   ),
 };
 
@@ -73,7 +73,7 @@ function CoachMessage({ text }: { text: string }) {
       <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 mb-0.5">
         <Bot className="size-3.5 text-primary" />
       </div>
-      <div className="max-w-[85%] rounded-2xl rounded-bl-sm bg-muted px-4 py-3 text-sm text-foreground">
+      <div className="max-w-[85%] rounded-2xl rounded-bl-sm bg-muted px-4 py-3 text-[12pt] leading-relaxed text-foreground">
         <ReactMarkdown remarkPlugins={[remarkGfm]} components={MARKDOWN_COMPONENTS}>
           {text}
         </ReactMarkdown>
@@ -85,7 +85,7 @@ function CoachMessage({ text }: { text: string }) {
 function PorteurMessage({ text }: { text: string }) {
   return (
     <div className="flex justify-end">
-      <div className="max-w-[80%] rounded-2xl rounded-br-sm bg-primary px-4 py-3 text-sm text-primary-foreground whitespace-pre-wrap">
+      <div className="max-w-[80%] rounded-2xl rounded-br-sm bg-primary px-4 py-3 text-[12pt] leading-relaxed text-primary-foreground whitespace-pre-wrap">
         {text}
       </div>
     </div>
