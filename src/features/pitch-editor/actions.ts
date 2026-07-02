@@ -58,6 +58,48 @@ export async function generateDeck(
   }
 }
 
+/** Met à jour les champs d'une slide (édition structurée). */
+export async function updateSlide(
+  pitchId: string,
+  index: number,
+  fields: Record<string, unknown>,
+): Promise<PitchResult> {
+  try {
+    const pitch = await apiFetch<PitchData>(`/api/v1/pitch/${pitchId}/slides/${index}`, {
+      method: "PATCH",
+      json: fields,
+    });
+    return { ok: true, pitch };
+  } catch {
+    return { ok: false, message: "Impossible d'enregistrer la slide. Réessaie." };
+  }
+}
+
+/** Supprime une slide. */
+export async function deleteSlide(pitchId: string, index: number): Promise<PitchResult> {
+  try {
+    const pitch = await apiFetch<PitchData>(`/api/v1/pitch/${pitchId}/slides/${index}`, {
+      method: "DELETE",
+    });
+    return { ok: true, pitch };
+  } catch {
+    return { ok: false, message: "Suppression impossible. Réessaie." };
+  }
+}
+
+/** Réordonne les slides (nouvel ordre = permutation des indices). */
+export async function reorderSlides(pitchId: string, order: number[]): Promise<PitchResult> {
+  try {
+    const pitch = await apiFetch<PitchData>(`/api/v1/pitch/${pitchId}/slides/reorder`, {
+      method: "POST",
+      json: { order },
+    });
+    return { ok: true, pitch };
+  } catch {
+    return { ok: false, message: "Réorganisation impossible. Réessaie." };
+  }
+}
+
 /** Change le template (thème) du deck. */
 export async function setTemplate(pitchId: string, templateId: string): Promise<PitchResult> {
   try {
