@@ -16,6 +16,7 @@ export const routes = {
   login: "/login",
   register: "/register",
   onboarding: "/onboarding",
+  verifyEmail: "/verify-email",
   forbidden: "/403",
 
   // Espace porteur (dashboard)

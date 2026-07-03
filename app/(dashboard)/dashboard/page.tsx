@@ -4,7 +4,8 @@ import { ArrowRight, Compass, GraduationCap, Mic, Sparkles } from "lucide-react"
 
 import { routes } from "@/shared/config/routes";
 import { getSession } from "@/shared/auth/server";
-import { ApiError } from "@/shared/api/client";
+import { ApiError, apiFetch } from "@/shared/api/client";
+import { EmailVerifyNudge } from "@/features/auth";
 import { Badge, Button, Card, CardContent } from "@/shared/ui";
 import {
   ComprehensionTable,
@@ -26,6 +27,15 @@ export const metadata: Metadata = { title: "Tableau de bord" };
 export default async function DashboardPage() {
   const session = await getSession();
   const firstName = session?.name.split(" ")[0] ?? "porteur";
+
+  // Statut de vérification email (source autoritative) — défaut `true` pour éviter un faux nudge.
+  let emailVerified = true;
+  try {
+    const me = await apiFetch<{ user: { email_verified?: boolean } }>("/api/v1/auth/me");
+    emailVerified = me.user.email_verified ?? true;
+  } catch {
+    // réseau/session KO → on n'affiche pas le nudge
+  }
 
   // Données réelles : les bilans du porteur. Réseau KO → on dégrade en « pas encore de diagnostic ».
   let reports: Awaited<ReturnType<typeof getMyReports>> = [];
@@ -60,8 +70,11 @@ export default async function DashboardPage() {
       {/* Cas limite : porteur déjà actif qui aurait refait un diagnostic en anonyme. */}
       <ClaimPendingDiagnostic />
 
+      {/* Confiance : confirme l'email (prioritaire sur le nudge d'onboarding). */}
+      {!emailVerified && <EmailVerifyNudge />}
+
       {/* Profilage progressif : nudge doux si l'onboarding a été passé. */}
-      {!session?.onboarding_completed && (
+      {emailVerified && !session?.onboarding_completed && (
         <Link
           href={routes.onboarding}
           className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-primary/25 bg-primary/5 px-4 py-2.5 text-sm transition-colors hover:bg-primary/10"

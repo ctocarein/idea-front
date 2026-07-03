@@ -152,3 +152,23 @@ export async function signOut(): Promise<void> {
   for (const name of [ACCESS_COOKIE, REFRESH_COOKIE, SESSION_COOKIE]) store.delete(name);
   redirect(routes.login);
 }
+
+/** Consomme un lien de vérification d'email (public : le token EST l'auth). */
+export async function verifyEmail(token: string): Promise<{ ok: boolean }> {
+  try {
+    await apiFetch("/api/v1/auth/verify-email", { method: "POST", json: { token } });
+    return { ok: true };
+  } catch {
+    return { ok: false };
+  }
+}
+
+/** Renvoie un email de vérification au porteur connecté. */
+export async function resendVerification(): Promise<{ ok: boolean }> {
+  try {
+    await apiFetch("/api/v1/auth/resend-verification", { method: "POST" });
+    return { ok: true };
+  } catch {
+    return { ok: false };
+  }
+}
