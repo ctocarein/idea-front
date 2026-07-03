@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Bell, CheckCircle2, GraduationCap, Mic } from "lucide-react";
+import { Bell, CheckCircle2, GraduationCap, Mic, AlertTriangle } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import { Button } from "@/shared/ui";
@@ -12,6 +12,7 @@ import type { NotificationOut } from "./api";
 /** Icône selon le type de notification. */
 const TYPE_ICON: Record<string, LucideIcon> = {
   report_ready: CheckCircle2,
+  report_failed: AlertTriangle,
   new_lesson: GraduationCap,
   pitch_progress: Mic,
 };

@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
 
 import { apiFetch } from "@/shared/api/client";
+import { routes } from "@/shared/config/routes";
+import { SectionTabs } from "@/shared/layout";
 import { WeaknessCards } from "@/features/academy/components/WeaknessCards";
 import type { WeaknessListData } from "@/features/academy/actions";
 
 export const metadata: Metadata = { title: "Workshop" };
+
+const WORKSHOP_TABS = [
+  { href: routes.academy, label: "Progression" },
+  { href: routes.besoins, label: "Mes besoins" },
+];
 
 export default async function AcademyPage() {
   let weaknessData: WeaknessListData = {
@@ -23,11 +30,14 @@ export default async function AcademyPage() {
 
   return (
     <div className="space-y-10">
-      <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight">Workshop</h1>
-        <p className="text-muted-foreground">
-          Comprends ton projet, renforce tes faiblesses, exprime tes besoins.
-        </p>
+      <div className="space-y-4">
+        <div>
+          <h1 className="font-display text-2xl font-bold tracking-tight">Workshop</h1>
+          <p className="text-muted-foreground">
+            Comprends ton projet, renforce tes faiblesses, exprime tes besoins.
+          </p>
+        </div>
+        <SectionTabs tabs={WORKSHOP_TABS} />
       </div>
 
       <section className="space-y-4">

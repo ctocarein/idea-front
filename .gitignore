@@ -13,6 +13,9 @@
 # testing
 /coverage
 
+# outillage local
+.claude/
+
 # next.js
 /.next/
 /out/
