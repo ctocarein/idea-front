@@ -1,10 +1,13 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  BadgeCheck,
   Compass,
   GraduationCap,
   HeartHandshake,
+  Lock,
   Mic,
+  PenLine,
   Rocket,
   ShieldCheck,
 } from "lucide-react";
@@ -34,8 +37,26 @@ const STEPS = [
 
 const STATS = [
   { value: "100 %", label: "du parcours porteur, gratuit" },
-  { value: "6", label: "axes pour comprendre ton projet" },
+  { value: "12", label: "dimensions pour comprendre ton projet" },
   { value: "∞", label: "répétitions au simulateur" },
+];
+
+const TRUST = [
+  {
+    icon: Lock,
+    title: "Ton idée reste privée",
+    text: "Chiffrée, jamais revendue. Tu contrôles ce que tu partages, et avec qui.",
+  },
+  {
+    icon: PenLine,
+    title: "Tu restes l'auteur",
+    text: "L'IA t'explique et te questionne — c'est toi qui écris. Ton projet t'appartient.",
+  },
+  {
+    icon: BadgeCheck,
+    title: "Zéro engagement",
+    text: "Gratuit, sans carte bancaire. Tu commences, tu repars quand tu veux (RGPD).",
+  },
 ];
 
 const AUDIENCES = [
@@ -130,6 +151,28 @@ export default function Home() {
               </p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Réassurance : la peur n°1 d'un porteur = se faire voler son idée. On la lève d'entrée. */}
+      <section className="mx-auto max-w-6xl px-5 py-14">
+        <div className="grid gap-6 sm:grid-cols-3">
+          {TRUST.map((t, i) => {
+            const Icon = t.icon;
+            return (
+              <Reveal key={t.title} delay={i * 0.08}>
+                <div className="flex gap-3.5">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-coral/15 text-coral-strong">
+                    <Icon className="size-5" />
+                  </span>
+                  <div>
+                    <h3 className="font-display text-base font-bold">{t.title}</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">{t.text}</p>
+                  </div>
+                </div>
+              </Reveal>
+            );
+          })}
         </div>
       </section>
 
@@ -239,6 +282,9 @@ export default function Home() {
               <ArrowRight className="size-5" />
             </Link>
           </Button>
+          <p className="text-sm text-white/70">
+            Sans inscription · sans carte bancaire · ton idée reste privée.
+          </p>
         </div>
       </section>
     </>
