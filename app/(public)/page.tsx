@@ -97,7 +97,7 @@ export default function Home() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button asChild>
                 <Link href={routes.diagnostic}>
-                  Demarrer maintenant
+                  Teste ton idée gratuitement
                   <ArrowRight className="size-5" />
                 </Link>
               </Button>
@@ -105,6 +105,10 @@ export default function Home() {
                 <Link href={routes.startups}>Comment ça marche</Link>
               </Button>
             </div>
+            {/* Rassurance : lève la friction avant le clic (valeur · effort · zéro engagement). */}
+            <p className="mt-3 text-sm text-muted-foreground">
+              Sans inscription · 3 minutes · ton bilan sur les 12 dimensions clés.
+            </p>
           </Reveal>
 
           <Reveal delay={0.1} className="flex justify-center">

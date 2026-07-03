@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Sparkles } from "lucide-react";
 
 import { Button, Field, Input, Select, SelectItem, Stepper } from "@/shared/ui";
+import { routes } from "@/shared/config/routes";
 import { completeOnboarding } from "../api/actions";
 
 const STEPS = ["Bienvenue", "Ton profil", "C'est parti"];
@@ -218,6 +219,18 @@ export function OnboardingWizard({ name: initialName = "" }: { name?: string }) 
             <ArrowRight className="size-5" />
           </Button>
         )}
+      </div>
+
+      {/* Profilage progressif : jamais un mur. On complètera depuis le profil. */}
+      <div className="text-center">
+        <button
+          type="button"
+          onClick={() => router.push(routes.dashboard)}
+          disabled={pending}
+          className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline disabled:opacity-50"
+        >
+          Passer pour l&apos;instant
+        </button>
       </div>
     </div>
   );

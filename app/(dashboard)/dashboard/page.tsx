@@ -59,6 +59,20 @@ export default async function DashboardPage() {
     <div className="space-y-8">
       {/* Cas limite : porteur déjà actif qui aurait refait un diagnostic en anonyme. */}
       <ClaimPendingDiagnostic />
+
+      {/* Profilage progressif : nudge doux si l'onboarding a été passé. */}
+      {!session?.onboarding_completed && (
+        <Link
+          href={routes.onboarding}
+          className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-primary/25 bg-primary/5 px-4 py-2.5 text-sm transition-colors hover:bg-primary/10"
+        >
+          <span className="text-muted-foreground">
+            Complète ton profil (2 min) — pour un accompagnement plus juste.
+          </span>
+          <span className="font-medium text-primary whitespace-nowrap">Compléter →</span>
+        </Link>
+      )}
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-2xl font-bold tracking-tight">

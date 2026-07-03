@@ -2,6 +2,7 @@
 export { DiagnosticEntry } from "./components/DiagnosticEntry";
 export { DiagnosticResult } from "./components/DiagnosticResult";
 export { ClaimPendingDiagnostic } from "./components/ClaimPendingDiagnostic";
+export { loadPendingDiagnostic, savePendingDiagnostic, clearPendingDiagnostic } from "./lib/pending";
 export { CATEGORIES, getCategory, type Category } from "./data/categories";
 export {
   manualDiagnosticSchema,
