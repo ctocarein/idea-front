@@ -1,27 +1,19 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { ClipboardList, CheckCircle2 } from "lucide-react";
-import { Button } from "@/shared/ui/Button";
+import { Button } from "@/shared/ui";
+import { Link } from "@/i18n/navigation";
 import { routes } from "@/shared/config/routes";
 import type { NeedFicheData } from "../actions";
 import { NeedFicheCard } from "./NeedFicheCard";
 
-const TYPE_LABELS: Record<string, string> = {
-  dev: "Développeur",
-  expert: "Expert",
-  cofondateur: "Cofondateur",
-  partenaire: "Partenaire",
-  outil: "Outil",
-  financement: "Financement",
-  formation: "Formation",
-  autre: "Autre",
-};
-
 const PRIORITY_RANK: Record<string, number> = { high: 0, medium: 1, low: 2 };
 
 export function NeedFichesBoard({ initial }: { initial: NeedFicheData[] }) {
+  const t = useTranslations("Workshop.board");
+  const tType = useTranslations("Workshop.fiche.types");
   const [fiches, setFiches] = useState(initial);
   const [type, setType] = useState<string>("all");
   const [validatedOnly, setValidatedOnly] = useState(false);
@@ -52,13 +44,13 @@ export function NeedFichesBoard({ initial }: { initial: NeedFicheData[] }) {
     return (
       <div className="rounded-xl border border-dashed p-8 text-center">
         <ClipboardList className="mx-auto mb-3 size-8 text-muted-foreground/50" />
-        <p className="text-sm font-medium">Aucun besoin pour l&apos;instant</p>
+        <p className="text-sm font-medium">{t("emptyTitle")}</p>
         <p className="text-xs text-muted-foreground mt-1">
-          Travaille un axe dans le Workshop : le coach transforme tes réponses en besoins concrets.
+          {t("emptyText")}
         </p>
         <Link href={routes.academy}>
           <Button className="mt-4" size="sm" variant="outline">
-            Aller au Workshop
+            {t("emptyCta")}
           </Button>
         </Link>
       </div>
@@ -70,11 +62,14 @@ export function NeedFichesBoard({ initial }: { initial: NeedFicheData[] }) {
       {/* Barre de filtres */}
       <div className="flex flex-wrap items-center gap-2">
         <FilterChip active={type === "all"} onClick={() => setType("all")}>
-          Tous ({fiches.length})
+          {t("all", { count: fiches.length })}
         </FilterChip>
-        {types.map((t) => (
-          <FilterChip key={t} active={type === t} onClick={() => setType(t)}>
-            {TYPE_LABELS[t] ?? t} ({fiches.filter((f) => f.need_type === t).length})
+        {types.map((nt) => (
+          <FilterChip key={nt} active={type === nt} onClick={() => setType(nt)}>
+            {t("typeChip", {
+              label: tType.has(nt) ? tType(nt) : nt,
+              count: fiches.filter((f) => f.need_type === nt).length,
+            })}
           </FilterChip>
         ))}
         <button
@@ -87,14 +82,14 @@ export function NeedFichesBoard({ initial }: { initial: NeedFicheData[] }) {
           }`}
         >
           <CheckCircle2 className="size-3.5" />
-          Confirmés ({validatedCount})
+          {t("confirmedChip", { count: validatedCount })}
         </button>
       </div>
 
       {/* Grille de fiches */}
       {filtered.length === 0 ? (
         <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
-          Aucun besoin ne correspond à ce filtre.
+          {t("noneMatch")}
         </p>
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">

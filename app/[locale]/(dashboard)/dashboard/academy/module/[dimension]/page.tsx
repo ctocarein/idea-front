@@ -1,26 +1,18 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
 
+import { Link } from "@/i18n/navigation";
 import { apiFetch } from "@/shared/api/client";
-import { ModuleFlow } from "@/features/academy/components/ModuleFlow";
+import { routes } from "@/shared/config/routes";
+import { ModuleFlow } from "@/features/academy";
 import type { ModuleSessionData } from "@/features/academy/actions";
 
-const DIMENSION_LABELS: Record<string, string> = {
-  d1: "Problème",
-  d2: "Solution",
-  d3: "Proposition de valeur",
-  d4: "Marché",
-  d5: "Concurrence",
-  d6: "Modèle économique",
-  d7: "Traction & Preuves",
-  d8: "Potentiel de croissance",
-  d9: "Go-to-Market",
-  d10: "Équipe & Compétences",
-  d11: "Niveau d'avancement",
-  d12: "Risques & Freins",
-};
+/** Dimensions valides du radar (les libellés viennent du namespace Radar). */
+const DIMENSIONS = new Set(
+  Array.from({ length: 12 }, (_, i) => `d${i + 1}`),
+);
 
 export async function generateMetadata({
   params,
@@ -28,8 +20,9 @@ export async function generateMetadata({
   params: Promise<{ dimension: string }>;
 }): Promise<Metadata> {
   const { dimension } = await params;
-  const label = DIMENSION_LABELS[dimension] ?? dimension;
-  return { title: `Module — ${label}` };
+  if (!DIMENSIONS.has(dimension)) return { title: "Module" };
+  const tRadar = await getTranslations("Radar");
+  return { title: `Module — ${tRadar(`${dimension}.label`)}` };
 }
 
 export default async function ModulePage({
@@ -41,9 +34,12 @@ export default async function ModulePage({
 }) {
   const { dimension } = await params;
   const { session: sessionId } = await searchParams;
-  const label = DIMENSION_LABELS[dimension];
 
-  if (!label) return notFound();
+  if (!DIMENSIONS.has(dimension)) return notFound();
+
+  const t = await getTranslations("Workshop.module");
+  const tRadar = await getTranslations("Radar");
+  const label = tRadar(`${dimension}.label`);
 
   let session: ModuleSessionData | null = null;
 
@@ -74,13 +70,13 @@ export default async function ModulePage({
     return (
       <div className="space-y-4">
         <Link
-          href="/dashboard/academy"
+          href={routes.academy}
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
         >
-          <ArrowLeft className="size-4" /> Retour au Workshop
+          <ArrowLeft className="size-4" /> {t("back")}
         </Link>
         <p className="text-destructive">
-          Impossible de démarrer ce module. Vérifie ta connexion et réessaie.
+          {t("startError")}
         </p>
       </div>
     );
@@ -89,10 +85,10 @@ export default async function ModulePage({
   return (
     <div className="space-y-6">
       <Link
-        href="/dashboard/academy"
+        href={routes.academy}
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
-        <ArrowLeft className="size-4" /> Retour au Workshop
+        <ArrowLeft className="size-4" /> {t("back")}
       </Link>
 
       <div className="max-w-2xl mx-auto w-full space-y-6">
@@ -104,7 +100,7 @@ export default async function ModulePage({
           </div>
           <h1 className="font-display text-2xl font-bold tracking-tight mt-2">{label}</h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Travaille cet axe avec le coach, complète le formulaire, découvre tes besoins.
+            {t("intro")}
           </p>
         </div>
 

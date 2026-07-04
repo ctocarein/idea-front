@@ -1,20 +1,16 @@
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { AlertTriangle, ArrowRight, CheckCircle2, Target, TrendingUp, Zap, Layers } from "lucide-react";
-import { Card, CardContent } from "@/shared/ui/Card";
-import { Button } from "@/shared/ui/Button";
+import { Link } from "@/i18n/navigation";
+import { routes } from "@/shared/config/routes";
+import { Button, Card, CardContent } from "@/shared/ui";
 import type { WeaknessListData } from "../actions";
 
-const PILLAR_CONFIG: Record<string, { label: string; icon: React.ElementType; color: string }> = {
-  sens: { label: "Sens du projet", icon: Target, color: "text-coral-strong" },
-  viabilite: { label: "Viabilité", icon: TrendingUp, color: "text-amber-500" },
-  scalabilite: { label: "Scalabilité", icon: Zap, color: "text-blue-500" },
-  execution: { label: "Exécution", icon: Layers, color: "text-violet-500" },
-};
-
-const PHASE_LABEL: Record<string, string> = {
-  context: "En cours — Questions",
-  form: "En cours — Formulaire",
-  fiches: "Fiches générées",
+/** Icône + couleur par pilier (le libellé vient du namespace Radar). */
+const PILLAR_CONFIG: Record<string, { icon: React.ElementType; color: string }> = {
+  sens: { icon: Target, color: "text-coral-strong" },
+  viabilite: { icon: TrendingUp, color: "text-amber-500" },
+  scalabilite: { icon: Zap, color: "text-blue-500" },
+  execution: { icon: Layers, color: "text-violet-500" },
 };
 
 function ScoreBar({ score }: { score: number }) {
@@ -31,17 +27,20 @@ function ScoreBar({ score }: { score: number }) {
 }
 
 export function WeaknessCards({ data }: { data: WeaknessListData }) {
+  const t = useTranslations("Workshop.weakness");
+  const tRadar = useTranslations("Radar");
+
   if (!data.has_radar) {
     return (
       <div className="rounded-xl border border-dashed p-8 text-center">
         <AlertTriangle className="mx-auto mb-3 size-8 text-muted-foreground/50" />
-        <p className="text-sm font-medium">Aucun bilan Radar disponible</p>
+        <p className="text-sm font-medium">{t("noRadarTitle")}</p>
         <p className="text-xs text-muted-foreground mt-1">
-          Complète ton diagnostic pour voir tes axes à renforcer.
+          {t("noRadarText")}
         </p>
-        <Link href="/dashboard/diagnostic">
+        <Link href={routes.diagnostic}>
           <Button className="mt-4" size="sm" variant="outline">
-            Faire mon diagnostic
+            {t("noRadarCta")}
           </Button>
         </Link>
       </div>
@@ -52,9 +51,9 @@ export function WeaknessCards({ data }: { data: WeaknessListData }) {
     return (
       <div className="rounded-xl border border-dashed p-8 text-center">
         <CheckCircle2 className="mx-auto mb-3 size-8 text-success" />
-        <p className="text-sm font-medium">Tes scores sont solides sur tous les axes.</p>
+        <p className="text-sm font-medium">{t("allSolidTitle")}</p>
         <p className="text-xs text-muted-foreground mt-1">
-          Continue à travailler tes modules pour consolider ton projet.
+          {t("allSolidText")}
         </p>
       </div>
     );
@@ -64,11 +63,13 @@ export function WeaknessCards({ data }: { data: WeaknessListData }) {
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground">
-          <span className="font-semibold text-foreground">{data.dimensions_reinforced}</span>
-          {" / 12 "}axe{data.dimensions_reinforced > 1 ? "s" : ""} renforcé{data.dimensions_reinforced > 1 ? "s" : ""}
+          {t.rich("reinforced", {
+            count: data.dimensions_reinforced,
+            b: (chunks) => <span className="font-semibold text-foreground">{chunks}</span>,
+          })}
           {data.dimensions_worked > data.dimensions_reinforced && (
             <span className="text-muted-foreground/70">
-              {" · "}{data.dimensions_worked - data.dimensions_reinforced} en cours
+              {t("inProgress", { count: data.dimensions_worked - data.dimensions_reinforced })}
             </span>
           )}
         </p>
@@ -81,7 +82,8 @@ export function WeaknessCards({ data }: { data: WeaknessListData }) {
       </div>
 
       {data.weaknesses.map((w) => {
-        const pillar = PILLAR_CONFIG[w.pillar] ?? { label: w.pillar, icon: Target, color: "text-muted-foreground" };
+        const pillar = PILLAR_CONFIG[w.pillar] ?? { icon: Target, color: "text-muted-foreground" };
+        const pillarLabel = PILLAR_CONFIG[w.pillar] ? tRadar(`pillars.${w.pillar}.label`) : w.pillar;
         const PillarIcon = pillar.icon;
         const hasModule = !!w.module_session_id;
         const phase = w.module_phase;
@@ -98,15 +100,15 @@ export function WeaknessCards({ data }: { data: WeaknessListData }) {
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <span className={`text-xs font-semibold uppercase tracking-wider ${pillar.color}`}>
                       <PillarIcon className="inline size-3 mr-1" />
-                      {pillar.label}
+                      {pillarLabel}
                     </span>
                     {reinforced ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-success/15 px-2 py-0.5 text-xs font-medium text-success">
-                        <CheckCircle2 className="size-3" /> Renforcé
+                        <CheckCircle2 className="size-3" /> {t("reinforcedBadge")}
                       </span>
                     ) : hasModule && phase ? (
                       <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                        {PHASE_LABEL[phase] ?? phase}
+                        {t.has(`phase.${phase}`) ? t(`phase.${phase}`) : phase}
                       </span>
                     ) : null}
                   </div>
@@ -121,7 +123,7 @@ export function WeaknessCards({ data }: { data: WeaknessListData }) {
                 <ScoreBar score={w.score} />
                 {w.is_rescored && w.score !== w.original_score && (
                   <p className="text-xs text-muted-foreground">
-                    Depuis le diagnostic :{" "}
+                    {t("sinceDiagnostic")}{" "}
                     <span className="text-muted-foreground/70">{w.original_score}</span>
                     {" → "}
                     <span className={`font-semibold ${w.score > w.original_score ? "text-success" : "text-foreground"}`}>
@@ -139,7 +141,7 @@ export function WeaknessCards({ data }: { data: WeaknessListData }) {
               <div className="flex justify-end">
                 <Link href={`/dashboard/academy/module/${w.dimension}${w.module_session_id ? `?session=${w.module_session_id}` : ""}`}>
                   <Button size="sm" variant={hasModule ? "outline" : "primary"}>
-                    {reinforced ? "Voir mes besoins" : hasModule ? "Continuer le module" : "Travailler cet axe"}
+                    {reinforced ? t("ctaReinforced") : hasModule ? t("ctaContinue") : t("ctaWork")}
                     <ArrowRight className="ml-1.5 size-3.5" />
                   </Button>
                 </Link>

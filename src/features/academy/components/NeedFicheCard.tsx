@@ -1,27 +1,21 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { Code2, Users, Handshake, Wrench, DollarSign, GraduationCap, CheckCircle2, Circle, Lightbulb, Download, Share2 } from "lucide-react";
-import { Card, CardContent } from "@/shared/ui/Card";
-import { Button } from "@/shared/ui/Button";
-import { toast } from "@/shared/ui";
+import { Button, Card, CardContent, toast } from "@/shared/ui";
 import type { NeedFicheData } from "../actions";
 import { validateFiche, shareFiche } from "../actions";
 
-const TYPE_CONFIG: Record<string, { label: string; icon: React.ElementType; color: string }> = {
-  dev: { label: "Développeur", icon: Code2, color: "text-blue-500 bg-blue-50" },
-  expert: { label: "Expert", icon: Lightbulb, color: "text-amber-500 bg-amber-50" },
-  cofondateur: { label: "Cofondateur", icon: Users, color: "text-violet-500 bg-violet-50" },
-  partenaire: { label: "Partenaire", icon: Handshake, color: "text-teal-500 bg-teal-50" },
-  outil: { label: "Outil", icon: Wrench, color: "text-slate-500 bg-slate-50" },
-  financement: { label: "Financement", icon: DollarSign, color: "text-green-500 bg-green-50" },
-  formation: { label: "Formation", icon: GraduationCap, color: "text-orange-500 bg-orange-50" },
-};
-
-const PRIORITY_LABEL: Record<string, string> = {
-  high: "Priorité haute",
-  medium: "Priorité moyenne",
-  low: "Priorité basse",
+/** Icône + couleur par type de besoin (le libellé vient du namespace Workshop.fiche.types). */
+const TYPE_CONFIG: Record<string, { icon: React.ElementType; color: string }> = {
+  dev: { icon: Code2, color: "text-blue-500 bg-blue-50" },
+  expert: { icon: Lightbulb, color: "text-amber-500 bg-amber-50" },
+  cofondateur: { icon: Users, color: "text-violet-500 bg-violet-50" },
+  partenaire: { icon: Handshake, color: "text-teal-500 bg-teal-50" },
+  outil: { icon: Wrench, color: "text-slate-500 bg-slate-50" },
+  financement: { icon: DollarSign, color: "text-green-500 bg-green-50" },
+  formation: { icon: GraduationCap, color: "text-orange-500 bg-orange-50" },
 };
 
 const PRIORITY_COLOR: Record<string, string> = {
@@ -37,10 +31,12 @@ export function NeedFicheCard({
   fiche: NeedFicheData;
   onValidated?: (id: string) => void;
 }) {
+  const t = useTranslations("Workshop.fiche");
   const [validated, setValidated] = useState(fiche.is_validated);
   const [isPending, startTransition] = useTransition();
 
-  const config = TYPE_CONFIG[fiche.need_type] ?? { label: fiche.need_type, icon: Lightbulb, color: "text-muted-foreground bg-muted" };
+  const config = TYPE_CONFIG[fiche.need_type] ?? { icon: Lightbulb, color: "text-muted-foreground bg-muted" };
+  const typeLabel = TYPE_CONFIG[fiche.need_type] ? t(`types.${fiche.need_type}`) : fiche.need_type;
   const Icon = config.icon;
   const details = fiche.details as Record<string, string | string[]>;
   const priority = (details.priority as string) ?? "medium";
@@ -53,7 +49,7 @@ export function NeedFicheCard({
       if (result.ok) {
         setValidated(true);
         onValidated?.(fiche.id);
-        toast.success("Fiche confirmée.");
+        toast.success(t("toastConfirmed"));
       }
     });
   }
@@ -62,15 +58,15 @@ export function NeedFicheCard({
     startTransition(async () => {
       const result = await shareFiche(fiche.id);
       if (!result.ok) {
-        toast.error("Partage impossible. Réessaie.");
+        toast.error(t("toastShareError"));
         return;
       }
       const url = `${window.location.origin}${result.path}`;
       try {
         await navigator.clipboard.writeText(url);
-        toast.success("Lien de partage copié.");
+        toast.success(t("toastShareCopied"));
       } catch {
-        toast.success(`Lien de partage : ${url}`);
+        toast.success(t("toastShareLink", { url }));
       }
     });
   }
@@ -85,16 +81,16 @@ export function NeedFicheCard({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {config.label}
+                {typeLabel}
               </span>
               {priority && (
                 <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${PRIORITY_COLOR[priority] ?? PRIORITY_COLOR.medium}`}>
-                  {PRIORITY_LABEL[priority] ?? priority}
+                  {t.has(`priority.${priority}`) ? t(`priority.${priority}`) : priority}
                 </span>
               )}
               {validated && (
                 <span className="flex items-center gap-1 rounded-full bg-success/15 px-2 py-0.5 text-xs font-medium text-success">
-                  <CheckCircle2 className="size-3" /> Confirmée
+                  <CheckCircle2 className="size-3" /> {t("confirmed")}
                 </span>
               )}
             </div>
@@ -108,23 +104,23 @@ export function NeedFicheCard({
 
         <div className="grid gap-3 sm:grid-cols-2">
           {details.profile && (
-            <Detail label="Profil recherché" value={details.profile as string} />
+            <Detail label={t("profile")} value={details.profile as string} />
           )}
           {details.budget && (
-            <Detail label="Budget estimatif" value={details.budget as string} />
+            <Detail label={t("budget")} value={details.budget as string} />
           )}
           {details.timeline && (
-            <Detail label="Délai souhaité" value={details.timeline as string} />
+            <Detail label={t("timeline")} value={details.timeline as string} />
           )}
           {details.engagement_type && (
-            <Detail label="Type d'engagement" value={details.engagement_type as string} />
+            <Detail label={t("engagementType")} value={details.engagement_type as string} />
           )}
         </div>
 
         {skills.length > 0 && (
           <div>
             <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Compétences attendues
+              {t("skills")}
             </p>
             <div className="flex flex-wrap gap-1.5">
               {skills.map((s, i) => (
@@ -139,7 +135,7 @@ export function NeedFicheCard({
         {deliverables.length > 0 && (
           <div>
             <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Livrables attendus
+              {t("deliverables")}
             </p>
             <ul className="space-y-1">
               {deliverables.map((d, i) => (
@@ -167,13 +163,13 @@ export function NeedFicheCard({
             disabled={isPending}
             className="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground hover:border-border-strong disabled:opacity-50"
           >
-            <Share2 className="size-3.5" /> Partager
+            <Share2 className="size-3.5" /> {t("share")}
           </button>
 
           {!validated && (
             <Button size="sm" variant="outline" className="ml-auto" onClick={handleValidate} disabled={isPending}>
               <CheckCircle2 className="mr-1.5 size-3.5" />
-              {isPending ? "Confirmation…" : "Confirmer ce besoin"}
+              {isPending ? t("confirming") : t("confirm")}
             </Button>
           )}
         </div>

@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useTransition, useRef, useEffect } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Send, ChevronRight, Loader2, RefreshCw, CheckCircle2, Bot, Sparkles, Gauge, TrendingUp, ArrowRight } from "lucide-react";
-import { Button } from "@/shared/ui/Button";
-import { Card, CardContent } from "@/shared/ui/Card";
-import { toast } from "@/shared/ui";
+import { Link } from "@/i18n/navigation";
+import { routes } from "@/shared/config/routes";
+import { Button, Card, CardContent, toast } from "@/shared/ui";
 import type { ModuleSessionData } from "../actions";
 import {
   sendModuleTurn,
@@ -22,11 +22,8 @@ interface Props {
   initial: ModuleSessionData;
 }
 
-const PHASE_LABELS: Record<string, { label: string; step: number }> = {
-  context: { label: "Échange", step: 1 },
-  form: { label: "Synthèse", step: 2 },
-  fiches: { label: "Tes besoins", step: 3 },
-};
+/** Étapes du module (le libellé vient du namespace Workshop.module.steps). */
+const PHASE_STEPS: Record<string, number> = { context: 1, form: 2, fiches: 3 };
 
 function TypingBubble() {
   return (
@@ -105,6 +102,7 @@ function ProgressPanel({
   isPending: boolean;
   onRescore: () => void;
 }) {
+  const t = useTranslations("Workshop.module.progress");
   // Pas encore mesuré → invitation à mesurer la progression sur l'axe.
   if (after === null) {
     return (
@@ -113,17 +111,17 @@ function ProgressPanel({
           <div className="flex items-start gap-2.5">
             <Gauge className="mt-0.5 size-5 shrink-0 text-primary" />
             <div>
-              <p className="text-sm font-semibold">Mesure ta progression</p>
+              <p className="text-sm font-semibold">{t("measureTitle")}</p>
               <p className="text-xs text-muted-foreground">
-                Re-note cet axe à partir du travail que tu viens de faire, et vois ton score bouger.
+                {t("measureText")}
               </p>
             </div>
           </div>
           <Button onClick={onRescore} disabled={isPending} className="shrink-0">
             {isPending ? (
-              <><Loader2 className="mr-2 size-4 animate-spin" /> Mesure en cours…</>
+              <><Loader2 className="mr-2 size-4 animate-spin" /> {t("measuring")}</>
             ) : (
-              <><Gauge className="mr-1.5 size-4" /> Mesurer mon score</>
+              <><Gauge className="mr-1.5 size-4" /> {t("measureCta")}</>
             )}
           </Button>
         </CardContent>
@@ -140,21 +138,21 @@ function ProgressPanel({
         <div className="flex items-center gap-2 mb-3">
           <TrendingUp className={`size-4 ${improved ? "text-success" : "text-muted-foreground"}`} />
           <p className="text-sm font-semibold">
-            {improved ? "Ton score a progressé" : "Score re-mesuré"}
+            {improved ? t("improved") : t("remeasured")}
           </p>
         </div>
         <div className="flex items-center justify-center gap-4">
           {before !== null && (
             <>
               <div className="text-center">
-                <p className="text-xs text-muted-foreground mb-0.5">Avant</p>
+                <p className="text-xs text-muted-foreground mb-0.5">{t("before")}</p>
                 <p className="font-display text-2xl font-bold tabular-nums text-muted-foreground">{before}<span className="text-sm font-normal">/10</span></p>
               </div>
               <ArrowRight className="size-5 text-muted-foreground/50" />
             </>
           )}
           <div className="text-center">
-            <p className="text-xs text-muted-foreground mb-0.5">Après</p>
+            <p className="text-xs text-muted-foreground mb-0.5">{t("after")}</p>
             <p className={`font-display text-3xl font-extrabold tabular-nums ${improved ? "text-success" : "text-foreground"}`}>
               {after}<span className="text-base font-normal">/10</span>
             </p>
@@ -168,7 +166,7 @@ function ProgressPanel({
         <div className="mt-4 flex justify-center">
           <Button variant="ghost" size="sm" onClick={onRescore} disabled={isPending}>
             <RefreshCw className="mr-1.5 size-3.5" />
-            {isPending ? "Mesure en cours…" : "Re-mesurer"}
+            {isPending ? t("measuring") : t("remeasure")}
           </Button>
         </div>
       </CardContent>
@@ -177,6 +175,7 @@ function ProgressPanel({
 }
 
 export function ModuleFlow({ initial }: Props) {
+  const t = useTranslations("Workshop.module");
   const [session, setSession] = useState(initial);
   const [message, setMessage] = useState("");
   const [formData, setFormData] = useState<Record<string, string>>(
@@ -263,20 +262,20 @@ export function ModuleFlow({ initial }: Props) {
       const before = result.session.axis_score_before;
       const after = result.session.axis_score_after;
       if (after !== null && before !== null && after > before) {
-        toast.success(`Ton score progresse : ${before} → ${after} !`);
+        toast.success(t("progress.toastProgress", { before, after }));
       }
     });
   }
 
-  const currentPhase = PHASE_LABELS[session.phase] ?? { label: session.phase, step: 1 };
-  const canPassToForm = session.turns.filter(t => t.role === "porteur").length >= 1;
+  const currentStep = PHASE_STEPS[session.phase] ?? 1;
+  const canPassToForm = session.turns.filter((turn) => turn.role === "porteur").length >= 1;
 
   return (
     <div className="space-y-6">
       {/* Stepper */}
       <div className="flex items-center gap-1.5 sm:gap-2">
-        {Object.entries(PHASE_LABELS).map(([key, { label, step }], idx, arr) => {
-          const isDone = currentPhase.step > step;
+        {Object.entries(PHASE_STEPS).map(([key, step], idx, arr) => {
+          const isDone = currentStep > step;
           const isCurrent = session.phase === key;
           return (
             <div key={key} className="flex items-center gap-1.5 sm:gap-2">
@@ -298,7 +297,7 @@ export function ModuleFlow({ initial }: Props) {
                     isCurrent ? "text-foreground" : "text-muted-foreground"
                   }`}
                 >
-                  {label}
+                  {t(`steps.${key}`)}
                 </span>
               </div>
               {idx < arr.length - 1 && (
@@ -332,17 +331,17 @@ export function ModuleFlow({ initial }: Props) {
               <div className="flex items-start gap-2.5">
                 <Sparkles className="size-4 text-primary mt-0.5 shrink-0" />
                 <div>
-                  <p className="text-sm font-semibold">Le coach a assez d&apos;éléments.</p>
+                  <p className="text-sm font-semibold">{t("coachEnoughTitle")}</p>
                   <p className="text-xs text-muted-foreground">
-                    Tu peux continuer à échanger, ou structurer tes réponses dès maintenant.
+                    {t("coachEnoughText")}
                   </p>
                 </div>
               </div>
               <Button onClick={handlePrefillForm} disabled={isPending} className="shrink-0">
                 {isPending ? (
-                  <><Loader2 className="mr-2 size-4 animate-spin" /> Synthèse en cours…</>
+                  <><Loader2 className="mr-2 size-4 animate-spin" /> {t("structuring")}</>
                 ) : (
-                  <>Structurer mes réponses <ChevronRight className="ml-1.5 size-4" /></>
+                  <>{t("structure")} <ChevronRight className="ml-1.5 size-4" /></>
                 )}
               </Button>
             </div>
@@ -354,7 +353,7 @@ export function ModuleFlow({ initial }: Props) {
               ref={textareaRef}
               rows={1}
               className="w-full resize-none rounded-t-xl bg-transparent px-4 pt-3 pb-2 text-sm leading-relaxed focus:outline-none min-h-[48px] max-h-[200px] scrollbar-soft"
-              placeholder="Réponds aux questions du coach…"
+              placeholder={t("inputPlaceholder")}
               value={message}
               onChange={handleTextareaChange}
               onKeyDown={(e) => {
@@ -367,7 +366,7 @@ export function ModuleFlow({ initial }: Props) {
             />
             <div className="flex items-center justify-between px-3 pb-2 gap-2">
               <span className="text-xs text-muted-foreground hidden sm:inline">
-                <kbd className="font-sans">Entrée</kbd> pour envoyer · <kbd className="font-sans">Maj+Entrée</kbd> pour un retour à la ligne
+                {t.rich("kbdHint", { k: (chunks) => <kbd className="font-sans">{chunks}</kbd> })}
               </span>
               <Button
                 size="sm"
@@ -376,7 +375,7 @@ export function ModuleFlow({ initial }: Props) {
                 className="ml-auto"
               >
                 <Send className="size-3.5 mr-1.5" />
-                Envoyer
+                {t("send")}
               </Button>
             </div>
           </div>
@@ -390,13 +389,13 @@ export function ModuleFlow({ initial }: Props) {
                 disabled={isPending}
                 className="text-xs text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline disabled:opacity-50"
               >
-                {isPending ? "Synthèse en cours…" : "Structurer mes réponses maintenant →"}
+                {isPending ? t("structuring") : t("structureNow")}
               </button>
             </div>
           )}
           {!canPassToForm && (
             <p className="text-center text-xs text-muted-foreground pt-1">
-              Réponds à au moins une question du coach pour continuer.
+              {t("atLeastOne")}
             </p>
           )}
         </div>
@@ -406,7 +405,9 @@ export function ModuleFlow({ initial }: Props) {
       {session.phase === "form" && (
         <div className="space-y-5">
           <p className="text-sm text-muted-foreground">
-            Voici la <strong className="text-foreground font-semibold">synthèse</strong> de ton échange, structurée par l&apos;IA. Relis, complète ou corrige chaque point avant de générer tes besoins.
+            {t.rich("formIntro", {
+              b: (chunks) => <strong className="text-foreground font-semibold">{chunks}</strong>,
+            })}
           </p>
 
           <div className="space-y-4">
@@ -432,17 +433,17 @@ export function ModuleFlow({ initial }: Props) {
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center pt-2">
             <Button variant="ghost" size="sm" onClick={handlePrefillForm} disabled={isPending}>
               <RefreshCw className="mr-1.5 size-3.5" />
-              Regénérer depuis la conversation
+              {t("regenerate")}
             </Button>
             <div className="flex gap-3">
               <Button variant="outline" onClick={handleSaveForm} disabled={isPending}>
-                {isPending ? <Loader2 className="size-4 animate-spin" /> : "Enregistrer"}
+                {isPending ? <Loader2 className="size-4 animate-spin" /> : t("save")}
               </Button>
               <Button onClick={handleGenerateFiches} disabled={isPending}>
                 {isPending ? (
-                  <><Loader2 className="mr-2 size-4 animate-spin" /> Génération…</>
+                  <><Loader2 className="mr-2 size-4 animate-spin" /> {t("generating")}</>
                 ) : (
-                  <>Générer mes fiches <ChevronRight className="ml-1.5 size-4" /></>
+                  <>{t("generateFiches")} <ChevronRight className="ml-1.5 size-4" /></>
                 )}
               </Button>
             </div>
@@ -455,14 +456,16 @@ export function ModuleFlow({ initial }: Props) {
         <div className="space-y-4">
           <div className="rounded-xl border bg-success/5 border-success/20 px-4 py-3">
             <p className="text-sm font-medium text-success">
-              {session.fiches.length} fiche{session.fiches.length > 1 ? "s" : ""} de besoin générée{session.fiches.length > 1 ? "s" : ""}.
+              {t("fichesGenerated", { count: session.fiches.length })}
             </p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Confirme les besoins qui correspondent à ta réalité — retrouve-les tous dans{" "}
-              <Link href="/dashboard/besoins" className="font-medium text-primary underline-offset-4 hover:underline">
-                Mes besoins
-              </Link>
-              .
+              {t.rich("fichesConfirmHint", {
+                link: (chunks) => (
+                  <Link href={routes.besoins} className="font-medium text-primary underline-offset-4 hover:underline">
+                    {chunks}
+                  </Link>
+                ),
+              })}
             </p>
           </div>
 
@@ -482,14 +485,14 @@ export function ModuleFlow({ initial }: Props) {
             <Card>
               <CardContent className="py-8 text-center">
                 <p className="text-muted-foreground text-sm">
-                  Aucune fiche n&apos;a pu être générée. Complète le formulaire puis réessaie.
+                  {t("noFiches")}
                 </p>
                 <Button
                   className="mt-4"
                   variant="outline"
                   onClick={() => setSession((s) => ({ ...s, phase: "form" }))}
                 >
-                  Retour au formulaire
+                  {t("backToForm")}
                 </Button>
               </CardContent>
             </Card>
