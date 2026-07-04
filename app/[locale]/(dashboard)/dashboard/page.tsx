@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowRight, Compass, GraduationCap, Palette, Sparkles } from "lucide-react";
+import { ArrowRight, Compass, GraduationCap, Palette, Plus, Sparkles } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { routes } from "@/shared/config/routes";
@@ -94,7 +94,15 @@ export default async function DashboardPage() {
           </h1>
           <p className="text-muted-foreground">{t("subtitle")}</p>
         </div>
-        <Badge variant="primary">{radar ? t("badgeDone") : t("badgePending")}</Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant="primary">{radar ? t("badgeDone") : t("badgePending")}</Badge>
+          <Button asChild variant="outline" size="sm">
+            <Link href={routes.diagnostic}>
+              <Plus className="size-3.5" />
+              {t("newProject")}
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {radar && maturity ? (
