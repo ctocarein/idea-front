@@ -7,7 +7,13 @@
     "opportunities": "Opportunities",
     "opportunitiesShort": "Opps",
     "profile": "My profile",
-    "profileShort": "Profile"
+    "profileShort": "Profile",
+    "simulator": "Simulator",
+    "simulatorShort": "Pitch",
+    "mentors": "Mentors",
+    "space": "Founder space",
+    "role": "Founder",
+    "signOut": "Log out"
   },
   "PublicHeader": {
     "startups": "Startups",

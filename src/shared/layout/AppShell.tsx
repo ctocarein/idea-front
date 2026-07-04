@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   ClipboardList,
   Compass,
@@ -91,6 +92,7 @@ export function AppShell({
   signOutAction,
   children,
 }: AppShellProps) {
+  const t = useTranslations("Nav");
   const pathname = usePathname();
   const active = activeHref(nav, pathname);
 
@@ -147,7 +149,7 @@ export function AppShell({
               className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent/60 hover:text-sidebar-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sidebar-ring/25"
             >
               <LogOut className="size-5" />
-              Se déconnecter
+              {t("signOut")}
             </button>
           </form>
         </div>
@@ -165,7 +167,7 @@ export function AppShell({
             <form action={signOutAction}>
               <button
                 type="submit"
-                aria-label="Se déconnecter"
+                aria-label={t("signOut")}
                 className="inline-flex size-9 items-center justify-center rounded-full text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent/60 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sidebar-ring/25"
               >
                 <LogOut className="size-5" />
