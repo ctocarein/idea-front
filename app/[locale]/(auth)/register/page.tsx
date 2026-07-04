@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 import { routes } from "@/shared/config/routes";
+import { Link } from "@/i18n/navigation";
 import { Card, CardContent, ThemeToggle } from "@/shared/ui";
 import { RegisterForm } from "@/features/auth";
 
 export const metadata: Metadata = { title: "Créer mon espace" };
 
 export default function RegisterPage() {
+  const t = useTranslations("Auth.register");
   return (
     <div className="flex flex-1 flex-col bg-paper bg-grid">
       <header className="flex h-16 items-center justify-between px-5">
@@ -27,10 +29,10 @@ export default function RegisterPage() {
         <div className="w-full max-w-sm space-y-6">
           <div className="text-center">
             <h1 className="font-display text-2xl font-bold tracking-tight">
-              On part d&apos;où tu es.
+              {t("title")}
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Gratuit, sans pression.
+              {t("subtitle")}
             </p>
           </div>
 
@@ -38,12 +40,12 @@ export default function RegisterPage() {
             <CardContent className="space-y-5 pt-6">
               <RegisterForm />
               <p className="text-center text-sm text-muted-foreground">
-                Tu as déjà un espace ?{" "}
+                {t("haveAccount")}{" "}
                 <Link
                   href={routes.login}
                   className="font-medium text-coral-strong hover:underline"
                 >
-                  Se connecter
+                  {t("login")}
                 </Link>
               </p>
             </CardContent>

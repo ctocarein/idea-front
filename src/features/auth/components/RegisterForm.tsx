@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 
 import { Button, Checkbox, Field, Input, toast } from "@/shared/ui";
 import { routes } from "@/shared/config/routes";
@@ -13,6 +14,7 @@ import { registerFounder } from "../api/actions";
 
 /** Création de compte porteur. Ton encourageant (charte §1.6). */
 export function RegisterForm() {
+  const t = useTranslations("Auth");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const {
@@ -40,20 +42,20 @@ export function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <Field label="Ton nom" error={errors.name?.message}>
-        <Input autoComplete="name" placeholder="Ex. Awa" {...register("name")} />
+      <Field label={t("register.name")} error={errors.name?.message}>
+        <Input autoComplete="name" placeholder={t("register.namePlaceholder")} {...register("name")} />
       </Field>
-      <Field label="Email" error={errors.email?.message}>
+      <Field label={t("email")} error={errors.email?.message}>
         <Input
           type="email"
           autoComplete="email"
-          placeholder="toi@exemple.com"
+          placeholder={t("emailPlaceholder")}
           {...register("email")}
         />
       </Field>
       <Field
-        label="Mot de passe"
-        description="8 caractères minimum."
+        label={t("password")}
+        description={t("register.passwordHint")}
         error={errors.password?.message}
       >
         <Input
@@ -72,7 +74,7 @@ export function RegisterForm() {
             <Checkbox
               checked={!!field.value}
               onCheckedChange={(v) => field.onChange(v === true)}
-              label="J'accepte la politique de confidentialité (RGPD)."
+              label={t("register.consent")}
             />
             {errors.consent?.message ? (
               <p className="text-xs font-medium text-destructive">
@@ -83,7 +85,7 @@ export function RegisterForm() {
         )}
       />
       <Button type="submit" className="w-full" loading={pending}>
-        Créer mon espace
+        {t("register.submit")}
       </Button>
     </form>
   );
@@ -102,18 +104,15 @@ function passwordScore(pw: string): number {
   return Math.min(s, 4);
 }
 
-const STRENGTH = [
-  { label: "", color: "" },
-  { label: "Faible", color: "bg-destructive" },
-  { label: "Moyen", color: "bg-amber-500" },
-  { label: "Bon", color: "bg-lime-500" },
-  { label: "Fort", color: "bg-emerald-500" },
-];
+const STRENGTH_COLOR = ["", "bg-destructive", "bg-amber-500", "bg-lime-500", "bg-emerald-500"];
+const STRENGTH_KEY = ["", "weak", "medium", "good", "strong"] as const;
 
 function PasswordStrength({ password }: { password: string }) {
+  const t = useTranslations("Auth.register");
   if (!password) return null;
   const score = passwordScore(password);
-  const { label, color } = STRENGTH[score];
+  const color = STRENGTH_COLOR[score];
+  const key = STRENGTH_KEY[score];
   return (
     <div className="mt-2 space-y-1" aria-live="polite">
       <div className="flex gap-1">
@@ -121,7 +120,11 @@ function PasswordStrength({ password }: { password: string }) {
           <span key={i} className={`h-1 flex-1 rounded-full ${i <= score ? color : "bg-border"}`} />
         ))}
       </div>
-      {label && <p className="text-xs text-muted-foreground">Force : {label}</p>}
+      {key && (
+        <p className="text-xs text-muted-foreground">
+          {t("strengthLabel", { level: t(`strength.${key}`) })}
+        </p>
+      )}
     </div>
   );
 }

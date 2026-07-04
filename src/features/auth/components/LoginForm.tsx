@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 
 import { Button, Field, Input, toast } from "@/shared/ui";
 import { loginSchema, type LoginInput } from "../schemas/auth.schema";
@@ -11,6 +12,7 @@ import { login } from "../api/actions";
 
 /** Formulaire de connexion (validation client miroir des DTO backend). */
 export function LoginForm() {
+  const t = useTranslations("Auth");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const {
@@ -29,15 +31,15 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <Field label="Email" error={errors.email?.message}>
+      <Field label={t("email")} error={errors.email?.message}>
         <Input
           type="email"
           autoComplete="email"
-          placeholder="toi@exemple.com"
+          placeholder={t("emailPlaceholder")}
           {...register("email")}
         />
       </Field>
-      <Field label="Mot de passe" error={errors.password?.message}>
+      <Field label={t("password")} error={errors.password?.message}>
         <Input
           type="password"
           autoComplete="current-password"
@@ -46,7 +48,7 @@ export function LoginForm() {
         />
       </Field>
       <Button type="submit" className="w-full" loading={pending}>
-        Se connecter
+        {t("login.submit")}
       </Button>
     </form>
   );

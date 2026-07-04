@@ -63,6 +63,32 @@
     "finalCta": "Commencer, gratuitement",
     "finalReassurance": "Sans inscription · sans carte bancaire · ton idée reste privée."
   },
+  "Auth": {
+    "email": "Email",
+    "emailPlaceholder": "toi@exemple.com",
+    "password": "Mot de passe",
+    "login": {
+      "brandTagline": "Transformez vos idées brutes en projets finançables.",
+      "brandSub": "IA · Scoring Radar · Mentors experts",
+      "welcome": "Content de te revoir !",
+      "submit": "Se connecter",
+      "noAccount": "Pas encore d'espace ?",
+      "createAccount": "Créer mon espace"
+    },
+    "register": {
+      "title": "On part d'où tu es.",
+      "subtitle": "Gratuit, sans pression.",
+      "haveAccount": "Tu as déjà un espace ?",
+      "login": "Se connecter",
+      "name": "Ton nom",
+      "namePlaceholder": "Ex. Awa",
+      "passwordHint": "8 caractères minimum.",
+      "consent": "J'accepte la politique de confidentialité (RGPD).",
+      "submit": "Créer mon espace",
+      "strengthLabel": "Force : {level}",
+      "strength": { "weak": "Faible", "medium": "Moyen", "good": "Bon", "strong": "Fort" }
+    }
+  },
   "Radar": {
     "d1": { "label": "Problème", "short": "Problème" },
     "d2": { "label": "Solution", "short": "Solution" },

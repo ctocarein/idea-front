@@ -63,6 +63,32 @@
     "finalCta": "Start, for free",
     "finalReassurance": "No sign-up · no credit card · your idea stays private."
   },
+  "Auth": {
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "login": {
+      "brandTagline": "Turn your raw ideas into fundable projects.",
+      "brandSub": "AI · Radar scoring · Expert mentors",
+      "welcome": "Good to see you again!",
+      "submit": "Log in",
+      "noAccount": "No account yet?",
+      "createAccount": "Create my space"
+    },
+    "register": {
+      "title": "We start from where you are.",
+      "subtitle": "Free, no pressure.",
+      "haveAccount": "Already have a space?",
+      "login": "Log in",
+      "name": "Your name",
+      "namePlaceholder": "E.g. Awa",
+      "passwordHint": "8 characters minimum.",
+      "consent": "I accept the privacy policy (GDPR).",
+      "submit": "Create my space",
+      "strengthLabel": "Strength: {level}",
+      "strength": { "weak": "Weak", "medium": "Medium", "good": "Good", "strong": "Strong" }
+    }
+  },
   "Radar": {
     "d1": { "label": "Problem", "short": "Problem" },
     "d2": { "label": "Solution", "short": "Solution" },

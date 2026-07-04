@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 import { routes } from "@/shared/config/routes";
+import { Link } from "@/i18n/navigation";
 import { Card, CardContent, ThemeToggle } from "@/shared/ui";
 import { LoginForm } from "@/features/auth";
 
@@ -59,6 +60,7 @@ function RadarIllustration() {
 }
 
 export default function LoginPage() {
+  const t = useTranslations("Auth");
   return (
     <div className="flex min-h-screen w-full">
 
@@ -92,10 +94,10 @@ export default function LoginPage() {
 
           <div className="space-y-3">
             <h2 className="font-display text-[28px] font-extrabold leading-tight tracking-tight text-white">
-              Transformez vos idées brutes en projets finançables.
+              {t("login.brandTagline")}
             </h2>
             <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.50)" }}>
-              IA · Scoring Radar · Mentors experts
+              {t("login.brandSub")}
             </p>
           </div>
 
@@ -153,7 +155,7 @@ export default function LoginPage() {
           <div className="w-full max-w-sm space-y-6">
             <div className="text-center">
               <h1 className="font-display text-2xl font-bold tracking-tight">
-                Content de te revoir !
+                {t("login.welcome")}
               </h1>
             </div>
 
@@ -161,12 +163,12 @@ export default function LoginPage() {
               <CardContent className="space-y-5 pt-6">
                 <LoginForm />
                 <p className="text-center text-sm text-muted-foreground">
-                  Pas encore d&apos;espace ?{" "}
+                  {t("login.noAccount")}{" "}
                   <Link
                     href={routes.register}
                     className="font-medium text-coral-strong hover:underline"
                   >
-                    Créer mon espace
+                    {t("login.createAccount")}
                   </Link>
                 </p>
               </CardContent>
