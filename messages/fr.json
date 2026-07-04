@@ -9,13 +9,59 @@
     "profile": "Mon profil",
     "profileShort": "Profil"
   },
+  "PublicHeader": {
+    "startups": "Startups",
+    "financiers": "Financeurs",
+    "diagnostic": "Diagnostic",
+    "login": "Connexion",
+    "cta": "Démarrer"
+  },
+  "PublicFooter": {
+    "tagline": "© {year} Ideaxion — Deviens capable et confiant.",
+    "blog": "Blog",
+    "contact": "Contact",
+    "privacy": "Confidentialité",
+    "legal": "Mentions légales"
+  },
   "Home": {
     "eyebrow": "Capable et confiant",
     "title": "De l'idée confuse à un projet solide.",
     "subtitle": "<b>Ideaxion</b> t'aide d'abord à comprendre ton projet, puis à le rendre solide. Gratuitement.",
     "ctaPrimary": "Teste ton idée gratuitement",
     "ctaSecondary": "Comment ça marche",
-    "reassurance": "Sans inscription · 3 minutes · ton bilan sur les 12 dimensions clés."
+    "reassurance": "Sans inscription · 3 minutes · ton bilan sur les 12 dimensions clés.",
+    "stats": {
+      "free": "du parcours porteur, gratuit",
+      "dimensions": "dimensions pour comprendre ton projet",
+      "reps": "répétitions au simulateur"
+    },
+    "trust": {
+      "private": { "title": "Ton idée reste privée", "text": "Chiffrée, jamais revendue. Tu contrôles ce que tu partages, et avec qui." },
+      "author": { "title": "Tu restes l'auteur", "text": "L'IA t'explique et te questionne — c'est toi qui écris. Ton projet t'appartient." },
+      "noCommit": { "title": "Zéro engagement", "text": "Gratuit, sans carte bancaire. Tu commences, tu repars quand tu veux (RGPD)." }
+    },
+    "painTitle": "La première douleur n'est pas le manque d'argent.",
+    "painText": "C'est l'impuissance : comprendre comment ça marche, structurer son projet, monter un pitch, perdre la peur. On construit le moteur qui t'y amène.",
+    "steps": {
+      "understand": { "title": "Comprendre", "text": "Un diagnostic produit ton tableau de compréhension : essence, viabilité, scalabilité." },
+      "learn": { "title": "Apprendre", "text": "Le Workshop t'explique le BP, le pitch, le modèle éco — et tu construis ta version, guidé." },
+      "practice": { "title": "S'exercer", "text": "Le simulateur de pitch te fait affronter les vraies questions, sans peur, autant que tu veux." }
+    },
+    "audiencesTitle": "Pour qui ?",
+    "audiences": {
+      "founders": { "title": "Porteurs", "text": "Comprends, apprends, entraîne-toi — et décide toi-même d'aller plus loin.", "cta": "Découvrir le parcours" },
+      "mentors": { "title": "Mentors", "text": "Sois choisi par les porteurs que tu peux vraiment faire progresser.", "cta": "Rejoindre" },
+      "financiers": { "title": "Financeurs", "text": "Ne voyez que des dossiers réellement préparés et qualifiés.", "cta": "En savoir plus" }
+    },
+    "faqTitle": "Questions fréquentes",
+    "faq": {
+      "free": { "q": "Pourquoi c'est gratuit ?", "a": "On construit d'abord la valeur. Tout le parcours porteur — diagnostic, academy, simulateur — est gratuit. L'accompagnement et la certification viendront ensuite, prouvés." },
+      "ai": { "q": "L'IA fait-elle le travail à ma place ?", "a": "Non. Elle t'explique et te questionne ; c'est toi qui écris. Tu restes l'auteur de ton projet — c'est comme ça que tu t'en empares." },
+      "maturity": { "q": "Et si mon idée n'est pas mûre ?", "a": "C'est le point de départ idéal. On part d'où tu es, sans jugement." }
+    },
+    "finalTitle": "Ton projet mérite d'être compris avant d'être jugé.",
+    "finalCta": "Commencer, gratuitement",
+    "finalReassurance": "Sans inscription · sans carte bancaire · ton idée reste privée."
   },
   "LocaleSwitcher": {
     "label": "Langue",

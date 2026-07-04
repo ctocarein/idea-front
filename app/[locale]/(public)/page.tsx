@@ -1,5 +1,6 @@
-import Link from "next/link";
 import { useTranslations } from "next-intl";
+
+import { Link } from "@/i18n/navigation";
 import {
   ArrowRight,
   BadgeCheck,
@@ -18,86 +19,32 @@ import { Button } from "@/shared/ui";
 import { Reveal } from "@/shared/motion";
 import { AnimatedRadarHero } from "@/features/scoring";
 
+// Structure = code (icônes, liens) ; textes dans les catalogues (Home.*).
 const STEPS = [
-  {
-    icon: Compass,
-    title: "Comprendre",
-    text: "Un diagnostic produit ton tableau de compréhension : essence, viabilité, scalabilité.",
-  },
-  {
-    icon: GraduationCap,
-    title: "Apprendre",
-    text: "Le Workshop t'explique le BP, le pitch, le modèle éco — et tu construis ta version, guidé.",
-  },
-  {
-    icon: Mic,
-    title: "S'exercer",
-    text: "Le simulateur de pitch te fait affronter les vraies questions, sans peur, autant que tu veux.",
-  },
-];
+  { icon: Compass, id: "understand" },
+  { icon: GraduationCap, id: "learn" },
+  { icon: Mic, id: "practice" },
+] as const;
 
 const STATS = [
-  { value: "100 %", label: "du parcours porteur, gratuit" },
-  { value: "12", label: "dimensions pour comprendre ton projet" },
-  { value: "∞", label: "répétitions au simulateur" },
-];
+  { value: "100 %", key: "free" },
+  { value: "12", key: "dimensions" },
+  { value: "∞", key: "reps" },
+] as const;
 
 const TRUST = [
-  {
-    icon: Lock,
-    title: "Ton idée reste privée",
-    text: "Chiffrée, jamais revendue. Tu contrôles ce que tu partages, et avec qui.",
-  },
-  {
-    icon: PenLine,
-    title: "Tu restes l'auteur",
-    text: "L'IA t'explique et te questionne — c'est toi qui écris. Ton projet t'appartient.",
-  },
-  {
-    icon: BadgeCheck,
-    title: "Zéro engagement",
-    text: "Gratuit, sans carte bancaire. Tu commences, tu repars quand tu veux (RGPD).",
-  },
-];
+  { icon: Lock, id: "private" },
+  { icon: PenLine, id: "author" },
+  { icon: BadgeCheck, id: "noCommit" },
+] as const;
 
 const AUDIENCES = [
-  {
-    icon: Rocket,
-    title: "Porteurs",
-    text: "Comprends, apprends, entraîne-toi — et décide toi-même d'aller plus loin.",
-    href: routes.startups,
-    cta: "Découvrir le parcours",
-  },
-  {
-    icon: HeartHandshake,
-    title: "Mentors",
-    text: "Sois choisi par les porteurs que tu peux vraiment faire progresser.",
-    href: routes.login,
-    cta: "Rejoindre",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Financeurs",
-    text: "Ne voyez que des dossiers réellement préparés et qualifiés.",
-    href: routes.financeurs,
-    cta: "En savoir plus",
-  },
-];
+  { icon: Rocket, id: "founders", href: routes.startups },
+  { icon: HeartHandshake, id: "mentors", href: routes.login },
+  { icon: ShieldCheck, id: "financiers", href: routes.financeurs },
+] as const;
 
-const FAQ = [
-  {
-    q: "Pourquoi c'est gratuit ?",
-    a: "On construit d'abord la valeur. Tout le parcours porteur — diagnostic, academy, simulateur — est gratuit. L'accompagnement et la certification viendront ensuite, prouvés.",
-  },
-  {
-    q: "L'IA fait-elle le travail à ma place ?",
-    a: "Non. Elle t'explique et te questionne ; c'est toi qui écris. Tu restes l'auteur de ton projet — c'est comme ça que tu t'en empares.",
-  },
-  {
-    q: "Et si mon idée n'est pas mûre ?",
-    a: "C'est le point de départ idéal. On part d'où tu es, sans jugement.",
-  },
-];
+const FAQ = ["free", "ai", "maturity"] as const;
 
 export default function Home() {
   const t = useTranslations("Home");
@@ -141,12 +88,12 @@ export default function Home() {
       <section className="border-y border-border bg-card">
         <div className="mx-auto grid max-w-4xl grid-cols-3 gap-4 px-5 py-10 text-center">
           {STATS.map((s) => (
-            <div key={s.label}>
+            <div key={s.key}>
               <p className="tabular font-display text-3xl font-extrabold text-ink">
                 {s.value}
               </p>
               <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
-                {s.label}
+                {t(`stats.${s.key}`)}
               </p>
             </div>
           ))}
@@ -156,17 +103,17 @@ export default function Home() {
       {/* Réassurance : la peur n°1 d'un porteur = se faire voler son idée. On la lève d'entrée. */}
       <section className="mx-auto max-w-6xl px-5 py-14">
         <div className="grid gap-6 sm:grid-cols-3">
-          {TRUST.map((t, i) => {
-            const Icon = t.icon;
+          {TRUST.map((item, i) => {
+            const Icon = item.icon;
             return (
-              <Reveal key={t.title} delay={i * 0.08}>
+              <Reveal key={item.id} delay={i * 0.08}>
                 <div className="flex gap-3.5">
                   <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-coral/15 text-coral-strong">
                     <Icon className="size-5" />
                   </span>
                   <div>
-                    <h3 className="font-display text-base font-bold">{t.title}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">{t.text}</p>
+                    <h3 className="font-display text-base font-bold">{t(`trust.${item.id}.title`)}</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">{t(`trust.${item.id}.text`)}</p>
                   </div>
                 </div>
               </Reveal>
@@ -179,13 +126,9 @@ export default function Home() {
       <section className="mx-auto max-w-3xl px-5 py-16 text-center">
         <Reveal>
           <h2 className="font-display text-2xl font-bold tracking-tight">
-            La première douleur n&apos;est pas le manque d&apos;argent.
+            {t("painTitle")}
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
-            C&apos;est l&apos;impuissance : comprendre comment ça marche,
-            structurer son projet, monter un pitch, perdre la peur. On construit
-            le moteur qui t&apos;y amène.
-          </p>
+          <p className="mt-4 text-lg text-muted-foreground">{t("painText")}</p>
         </Reveal>
       </section>
 
@@ -195,15 +138,15 @@ export default function Home() {
           {STEPS.map((s, i) => {
             const Icon = s.icon;
             return (
-              <Reveal key={s.title} delay={i * 0.08}>
+              <Reveal key={s.id} delay={i * 0.08}>
                 <div className="h-full rounded-2xl border border-border bg-card p-6">
                   <span className="flex size-12 items-center justify-center rounded-full bg-coral/15 text-coral-strong">
                     <Icon className="size-6" />
                   </span>
                   <h3 className="mt-4 font-display text-lg font-bold">
-                    {s.title}
+                    {t(`steps.${s.id}.title`)}
                   </h3>
-                  <p className="mt-1 text-sm text-muted-foreground">{s.text}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{t(`steps.${s.id}.text`)}</p>
                 </div>
               </Reveal>
             );
@@ -216,29 +159,29 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-5 py-16">
           <Reveal>
             <h2 className="text-center font-display text-2xl font-bold tracking-tight">
-              Pour qui ?
+              {t("audiencesTitle")}
             </h2>
           </Reveal>
           <div className="mt-8 grid gap-6 sm:grid-cols-3">
             {AUDIENCES.map((a, i) => {
               const Icon = a.icon;
               return (
-                <Reveal key={a.title} delay={i * 0.08}>
+                <Reveal key={a.id} delay={i * 0.08}>
                   <div className="flex h-full flex-col rounded-2xl border border-border bg-background p-6">
                     <span className="flex size-11 items-center justify-center rounded-full bg-coral/15 text-coral-strong">
                       <Icon className="size-5" />
                     </span>
                     <h3 className="mt-4 font-display text-lg font-bold">
-                      {a.title}
+                      {t(`audiences.${a.id}.title`)}
                     </h3>
                     <p className="mt-1 flex-1 text-sm text-muted-foreground">
-                      {a.text}
+                      {t(`audiences.${a.id}.text`)}
                     </p>
                     <Link
                       href={a.href}
                       className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-coral-strong hover:underline"
                     >
-                      {a.cta}
+                      {t(`audiences.${a.id}.cta`)}
                       <ArrowRight className="size-4" />
                     </Link>
                   </div>
@@ -253,17 +196,14 @@ export default function Home() {
       <section className="mx-auto max-w-3xl px-5 py-16">
         <Reveal>
           <h2 className="text-center font-display text-2xl font-bold tracking-tight">
-            Questions fréquentes
+            {t("faqTitle")}
           </h2>
         </Reveal>
         <dl className="mt-8 space-y-4">
-          {FAQ.map((f) => (
-            <div
-              key={f.q}
-              className="rounded-2xl border border-border bg-card p-5"
-            >
-              <dt className="font-display text-base font-bold">{f.q}</dt>
-              <dd className="mt-1.5 text-sm text-muted-foreground">{f.a}</dd>
+          {FAQ.map((id) => (
+            <div key={id} className="rounded-2xl border border-border bg-card p-5">
+              <dt className="font-display text-base font-bold">{t(`faq.${id}.q`)}</dt>
+              <dd className="mt-1.5 text-sm text-muted-foreground">{t(`faq.${id}.a`)}</dd>
             </div>
           ))}
         </dl>
@@ -273,17 +213,15 @@ export default function Home() {
       <section className="mx-auto max-w-6xl px-5 pb-20">
         <div className="flex flex-col items-center gap-5 rounded-2xl bg-ink px-6 py-12 text-center text-white">
           <h2 className="max-w-xl font-display text-2xl font-bold tracking-tight sm:text-3xl">
-            Ton projet mérite d&apos;être compris avant d&apos;être jugé.
+            {t("finalTitle")}
           </h2>
           <Button asChild variant="primary">
             <Link href={routes.diagnostic}>
-              Commencer, gratuitement
+              {t("finalCta")}
               <ArrowRight className="size-5" />
             </Link>
           </Button>
-          <p className="text-sm text-white/70">
-            Sans inscription · sans carte bancaire · ton idée reste privée.
-          </p>
+          <p className="text-sm text-white/70">{t("finalReassurance")}</p>
         </div>
       </section>
     </>

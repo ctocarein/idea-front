@@ -9,13 +9,59 @@
     "profile": "My profile",
     "profileShort": "Profile"
   },
+  "PublicHeader": {
+    "startups": "Startups",
+    "financiers": "Investors",
+    "diagnostic": "Diagnostic",
+    "login": "Log in",
+    "cta": "Get started"
+  },
+  "PublicFooter": {
+    "tagline": "© {year} Ideaxion — Become capable and confident.",
+    "blog": "Blog",
+    "contact": "Contact",
+    "privacy": "Privacy",
+    "legal": "Legal notice"
+  },
   "Home": {
     "eyebrow": "Capable and confident",
     "title": "From a fuzzy idea to a solid project.",
     "subtitle": "<b>Ideaxion</b> first helps you understand your project, then make it solid. For free.",
     "ctaPrimary": "Test your idea for free",
     "ctaSecondary": "How it works",
-    "reassurance": "No sign-up · 3 minutes · your scorecard across the 12 key dimensions."
+    "reassurance": "No sign-up · 3 minutes · your scorecard across the 12 key dimensions.",
+    "stats": {
+      "free": "of the founder journey, free",
+      "dimensions": "dimensions to understand your project",
+      "reps": "pitch simulator run-throughs"
+    },
+    "trust": {
+      "private": { "title": "Your idea stays private", "text": "Encrypted, never sold. You control what you share, and with whom." },
+      "author": { "title": "You stay the author", "text": "The AI explains and questions — you do the writing. Your project is yours." },
+      "noCommit": { "title": "Zero commitment", "text": "Free, no credit card. Start now, leave whenever you want (GDPR)." }
+    },
+    "painTitle": "The first pain isn't the lack of money.",
+    "painText": "It's helplessness: understanding how it works, structuring your project, building a pitch, losing the fear. We build the engine that gets you there.",
+    "steps": {
+      "understand": { "title": "Understand", "text": "A diagnostic produces your understanding scorecard: essence, viability, scalability." },
+      "learn": { "title": "Learn", "text": "The Workshop explains the business plan, the pitch, the business model — and you build your own version, guided." },
+      "practice": { "title": "Practice", "text": "The pitch simulator makes you face the real questions, fearlessly, as often as you want." }
+    },
+    "audiencesTitle": "Who is it for?",
+    "audiences": {
+      "founders": { "title": "Founders", "text": "Understand, learn, practice — and decide for yourself when to go further.", "cta": "Explore the journey" },
+      "mentors": { "title": "Mentors", "text": "Get picked by the founders you can truly help move forward.", "cta": "Join" },
+      "financiers": { "title": "Investors", "text": "Only see projects that are genuinely prepared and qualified.", "cta": "Learn more" }
+    },
+    "faqTitle": "Frequently asked questions",
+    "faq": {
+      "free": { "q": "Why is it free?", "a": "We build value first. The whole founder journey — diagnostic, academy, simulator — is free. Mentoring and certification come later, once proven." },
+      "ai": { "q": "Does the AI do the work for me?", "a": "No. It explains and questions you; you do the writing. You stay the author of your project — that's how you own it." },
+      "maturity": { "q": "What if my idea isn't mature?", "a": "That's the ideal starting point. We start from where you are, no judgment." }
+    },
+    "finalTitle": "Your project deserves to be understood before being judged.",
+    "finalCta": "Start, for free",
+    "finalReassurance": "No sign-up · no credit card · your idea stays private."
   },
   "LocaleSwitcher": {
     "label": "Language",
