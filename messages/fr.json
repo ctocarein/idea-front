@@ -225,6 +225,56 @@
       "title": "On analyse ton projet…",
       "text": "On lit ton idée et on construit ta boussole sur les 12 dimensions. Quelques instants.",
       "slow": "Ça prend un peu plus de temps — rafraîchir"
+    },
+    "view": {
+      "redThreadLead": "Ton fil rouge — commence ici",
+      "redThreadText": "C’est ton point de rupture n°1 — le renforcer débloque le reste de ton radar.",
+      "strengthenWorkshop": "Renforcer dans le Workshop",
+      "mentors": "Mentors référents",
+      "compass": "Ta boussole",
+      "readiness": "Suis-je prêt ?",
+      "comprehensionTitle": "Ton tableau de compréhension",
+      "strengths": "Tes forces",
+      "blindSpots": "Tes angles morts",
+      "nextSteps": "Tes prochaines étapes",
+      "goToSpace": "Aller à mon espace",
+      "workWithWorkshop": "Travailler avec le Workshop"
+    },
+    "pdf": { "download": "Télécharger le bilan" },
+    "failed": {
+      "title": "L’analyse n’a pas abouti",
+      "text": "Un souci technique a interrompu la génération de ton bilan. Tu peux relancer un diagnostic — on repart de tes réponses.",
+      "cta": "Relancer un diagnostic"
+    }
+  },
+  "Readiness": {
+    "title": "Suis-je prêt ?",
+    "subtitle": "Une lecture honnête de ton chemin — et de ce qu’il te reste.",
+    "emptyTitle": "Lance d’abord ton diagnostic",
+    "emptyText": "Ta lecture « suis-je prêt ? » se construit à partir de ton bilan.",
+    "emptyCta": "Commencer mon diagnostic",
+    "remaining": "Ce qu’il me reste",
+    "goWorkshop": "Aller au Workshop",
+    "practicePitch": "S’exercer au pitch",
+    "findMentor": "Trouver un mentor",
+    "proTitle": "Aller plus loin, quand tu le sens",
+    "proText": "Un accompagnement réel par un mentor t’amènerait au niveau certifiable — et te relierait au capital. Rien ne presse : c’est ton choix, à partir de ton constat.",
+    "interestDone": "Intérêt enregistré",
+    "interestCta": "Ça m’intéresse",
+    "interestToast": "Noté — on te recontactera quand l’accompagnement ouvrira.",
+    "hints": {
+      "d1": "Clarifie pour qui le problème est le plus aigu.",
+      "d2": "Montre que ta solution résout vraiment ce problème.",
+      "d3": "Affûte ce qui te rend vraiment différent.",
+      "d4": "Chiffre ta demande par le bas, avec des preuves.",
+      "d5": "Situe-toi face aux alternatives existantes.",
+      "d6": "Précise qui paie et tes unit economics.",
+      "d7": "Apporte des preuves d’usage, même petites.",
+      "d8": "Décris ce qui rendra la croissance répétable.",
+      "d9": "Détaille comment tu vas atteindre tes premiers clients.",
+      "d10": "Montre pourquoi ton équipe peut exécuter.",
+      "d11": "Précise où en est concrètement le projet.",
+      "d12": "Nomme tes risques majeurs et comment tu les réduis."
     }
   },
   "EmailVerify": {

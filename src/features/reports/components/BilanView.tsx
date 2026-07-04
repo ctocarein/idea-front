@@ -1,6 +1,7 @@
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { AlertTriangle, ArrowRight, CheckCircle2, Flag, GraduationCap, Sparkles, Users } from "lucide-react";
 
+import { Link } from "@/i18n/navigation";
 import { routes } from "@/shared/config/routes";
 import { features } from "@/shared/config/features";
 import { Badge, Button, Card, CardContent } from "@/shared/ui";
@@ -29,6 +30,8 @@ const VERDICT_BADGE: Record<string, "success" | "warning" | "neutral"> = {
  * le Radar en appui, puis verdict / forces / risques / recommandations. Ton non culpabilisant.
  */
 export function BilanView({ report }: { report: ReportDetail }) {
+  const t = useTranslations("Bilan.view");
+  const tRadar = useTranslations("Radar");
   const radar = report.radar_score ? toRadarScore(report.radar_score) : null;
   const overall = radar ? overallScore(radar) : null;
   const maturity = overall !== null ? maturityLevel(overall) : null;
@@ -40,7 +43,7 @@ export function BilanView({ report }: { report: ReportDetail }) {
 
   // Fil rouge : la dimension la plus faible = le point de rupture n°1 à attaquer en premier.
   const weakest = radar
-    ? AXES.map((a) => ({ key: a.key as AxisKey, label: a.label, score: radar.axes[a.key] ?? 0 })).sort(
+    ? AXES.map((a) => ({ key: a.key as AxisKey, score: radar.axes[a.key] ?? 0 })).sort(
         (x, y) => x.score - y.score,
       )[0]
     : null;
@@ -74,26 +77,26 @@ export function BilanView({ report }: { report: ReportDetail }) {
           <CardContent className="space-y-3 pt-6">
             <div className="flex items-center gap-2 text-sm font-medium text-coral-strong">
               <Flag className="size-4" />
-              Ton fil rouge — commence ici
+              {t("redThreadLead")}
             </div>
             <p className="font-display text-lg font-bold">
-              {weakest.label} · {weakest.score}/10
+              {tRadar(`${weakest.key}.label`)} · {weakest.score}/10
             </p>
             <p className="text-sm text-muted-foreground">
-              C&apos;est ton point de rupture n°1 — le renforcer débloque le reste de ton radar.
+              {t("redThreadText")}
             </p>
             <div className="flex flex-wrap gap-2 pt-1">
               <Button asChild>
                 <Link href={academyUrl}>
                   <GraduationCap className="size-5" />
-                  Renforcer dans le Workshop
+                  {t("strengthenWorkshop")}
                 </Link>
               </Button>
               {features.mentors && (
                 <Button asChild variant="outline">
                   <Link href={routes.mentors}>
                     <Users className="size-5" />
-                    Mentors référents
+                    {t("mentors")}
                   </Link>
                 </Button>
               )}
@@ -113,23 +116,27 @@ export function BilanView({ report }: { report: ReportDetail }) {
               </div>
               <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  Ta boussole
+                  {t("compass")}
                 </p>
                 <div className="flex items-baseline gap-2">
                   <span className="tabular font-display text-3xl font-extrabold">{overall}</span>
                   <span className="text-muted-foreground">/100</span>
                   {maturity ? (
-                    <Badge variant={TONE_TO_BADGE[maturity.tone]}>{maturity.label}</Badge>
+                    <Badge variant={TONE_TO_BADGE[maturity.tone]}>
+                      {tRadar(`maturity.${maturity.key}.label`)}
+                    </Badge>
                   ) : null}
                 </div>
                 {maturity ? (
-                  <p className="text-sm text-muted-foreground">{maturity.description}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {tRadar(`maturity.${maturity.key}.description`)}
+                  </p>
                 ) : verdict?.analysis ? (
                   <p className="text-sm text-muted-foreground">{verdict.analysis}</p>
                 ) : null}
                 <Button asChild variant="ghost" size="sm" className="mt-1 -ml-2">
                   <Link href={routes.readiness}>
-                    Suis-je prêt ?
+                    {t("readiness")}
                     <ArrowRight className="size-4" />
                   </Link>
                 </Button>
@@ -139,7 +146,7 @@ export function BilanView({ report }: { report: ReportDetail }) {
 
           <section className="space-y-3">
             <h2 className="font-display text-lg font-bold tracking-tight">
-              Ton tableau de compréhension
+              {t("comprehensionTitle")}
             </h2>
             <ComprehensionTable score={radar} />
           </section>
@@ -154,7 +161,7 @@ export function BilanView({ report }: { report: ReportDetail }) {
               <CardContent className="space-y-3 pt-6">
                 <h3 className="flex items-center gap-2 font-display text-base font-bold">
                   <CheckCircle2 className="size-5 text-success" />
-                  Tes forces
+                  {t("strengths")}
                 </h3>
                 <ul className="space-y-2">
                   {strengths.map((s, i) => (
@@ -172,7 +179,7 @@ export function BilanView({ report }: { report: ReportDetail }) {
               <CardContent className="space-y-3 pt-6">
                 <h3 className="flex items-center gap-2 font-display text-base font-bold">
                   <AlertTriangle className="size-5 text-warning" />
-                  Tes angles morts
+                  {t("blindSpots")}
                 </h3>
                 <ul className="space-y-2">
                   {risks.map((risk, i) => (
@@ -191,7 +198,7 @@ export function BilanView({ report }: { report: ReportDetail }) {
       {/* Recommandations */}
       {recommendations.length > 0 ? (
         <section className="space-y-3">
-          <h2 className="font-display text-lg font-bold tracking-tight">Tes prochaines étapes</h2>
+          <h2 className="font-display text-lg font-bold tracking-tight">{t("nextSteps")}</h2>
           <div className="space-y-2">
             {recommendations.map((rec, i) => (
               <div
@@ -216,12 +223,12 @@ export function BilanView({ report }: { report: ReportDetail }) {
       <div className="flex flex-wrap gap-3 border-t border-border pt-6">
         <Button asChild>
           <Link href={routes.dashboard}>
-            Aller à mon espace
+            {t("goToSpace")}
             <ArrowRight className="size-5" />
           </Link>
         </Button>
         <Button asChild variant="outline">
-          <Link href={routes.academy}>Travailler avec le Workshop</Link>
+          <Link href={routes.academy}>{t("workWithWorkshop")}</Link>
         </Button>
       </div>
     </div>

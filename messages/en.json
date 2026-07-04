@@ -225,6 +225,56 @@
       "title": "Analyzing your project…",
       "text": "We're reading your idea and building your compass across the 12 dimensions. Just a moment.",
       "slow": "Taking a little longer — refresh"
+    },
+    "view": {
+      "redThreadLead": "Your red thread — start here",
+      "redThreadText": "It's your #1 breaking point — strengthening it unlocks the rest of your radar.",
+      "strengthenWorkshop": "Strengthen in the Workshop",
+      "mentors": "Referring mentors",
+      "compass": "Your compass",
+      "readiness": "Am I ready?",
+      "comprehensionTitle": "Your understanding scorecard",
+      "strengths": "Your strengths",
+      "blindSpots": "Your blind spots",
+      "nextSteps": "Your next steps",
+      "goToSpace": "Go to my space",
+      "workWithWorkshop": "Work with the Workshop"
+    },
+    "pdf": { "download": "Download the report" },
+    "failed": {
+      "title": "The analysis didn't complete",
+      "text": "A technical issue interrupted your report generation. You can restart a diagnostic — we'll pick up from your answers.",
+      "cta": "Restart a diagnostic"
+    }
+  },
+  "Readiness": {
+    "title": "Am I ready?",
+    "subtitle": "An honest read of how far you've come — and what's left.",
+    "emptyTitle": "Run your diagnostic first",
+    "emptyText": "Your \"am I ready?\" read is built from your report.",
+    "emptyCta": "Start my diagnostic",
+    "remaining": "What's left",
+    "goWorkshop": "Go to the Workshop",
+    "practicePitch": "Practice your pitch",
+    "findMentor": "Find a mentor",
+    "proTitle": "Go further, when you feel ready",
+    "proText": "Real support from a mentor would take you to a certifiable level — and connect you to capital. No rush: it's your choice, based on your own assessment.",
+    "interestDone": "Interest saved",
+    "interestCta": "I'm interested",
+    "interestToast": "Noted — we'll reach out when the support program opens.",
+    "hints": {
+      "d1": "Clarify who feels the problem most acutely.",
+      "d2": "Show that your solution truly solves that problem.",
+      "d3": "Sharpen what makes you genuinely different.",
+      "d4": "Size your demand bottom-up, with evidence.",
+      "d5": "Position yourself against existing alternatives.",
+      "d6": "Spell out who pays and your unit economics.",
+      "d7": "Bring proof of usage, however small.",
+      "d8": "Describe what will make growth repeatable.",
+      "d9": "Detail how you'll reach your first customers.",
+      "d10": "Show why your team can execute.",
+      "d11": "Clarify where the project concretely stands.",
+      "d12": "Name your major risks and how you reduce them."
     }
   },
   "EmailVerify": {

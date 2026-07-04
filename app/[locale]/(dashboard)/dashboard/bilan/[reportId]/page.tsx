@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { RefreshCw } from "lucide-react";
 
+import { Link } from "@/i18n/navigation";
 import { routes } from "@/shared/config/routes";
 import { ApiError } from "@/shared/api/client";
 import { Button, Card, CardContent } from "@/shared/ui";
@@ -30,18 +31,18 @@ export default async function BilanPage({
 
   if (report.status === "ready") return <BilanView report={report} />;
   if (report.status === "failed") {
+    const t = await getTranslations("Bilan.failed");
     return (
       <Card>
         <CardContent className="space-y-3 py-12 text-center">
-          <h2 className="font-display text-xl font-bold">L&apos;analyse n&apos;a pas abouti</h2>
+          <h2 className="font-display text-xl font-bold">{t("title")}</h2>
           <p className="mx-auto max-w-md text-muted-foreground">
-            Un souci technique a interrompu la génération de ton bilan. Tu peux relancer un
-            diagnostic — on repart de tes réponses.
+            {t("text")}
           </p>
           <Button asChild>
             <Link href={routes.diagnostic}>
               <RefreshCw className="size-4" />
-              Relancer un diagnostic
+              {t("cta")}
             </Link>
           </Button>
         </CardContent>

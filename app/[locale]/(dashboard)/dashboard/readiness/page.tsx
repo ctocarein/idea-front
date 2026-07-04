@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 import { ArrowRight, ArrowUpRight, GraduationCap, Mic, type LucideIcon } from "lucide-react";
 
+import { Link } from "@/i18n/navigation";
 import { routes } from "@/shared/config/routes";
 import { features } from "@/shared/config/features";
 import { Badge, Button, Card, CardContent } from "@/shared/ui";
@@ -19,38 +21,23 @@ import { ExpressInterest } from "./_interest";
 
 export const metadata: Metadata = { title: "Readiness" };
 
-/** Pistes génériques par dimension. */
-const HINTS: Record<AxisKey, string> = {
-  d1: "Clarifie pour qui le problème est le plus aigu.",
-  d2: "Montre que ta solution résout vraiment ce problème.",
-  d3: "Affûte ce qui te rend vraiment différent.",
-  d4: "Chiffre ta demande par le bas, avec des preuves.",
-  d5: "Situe-toi face aux alternatives existantes.",
-  d6: "Précise qui paie et tes unit economics.",
-  d7: "Apporte des preuves d'usage, même petites.",
-  d8: "Décris ce qui rendra la croissance répétable.",
-  d9: "Détaille comment tu vas atteindre tes premiers clients.",
-  d10: "Montre pourquoi ton équipe peut exécuter.",
-  d11: "Précise où en est concrètement le projet.",
-  d12: "Nomme tes risques majeurs et comment tu les réduis.",
-};
-
-/** Libellé du CTA selon le type de levier. */
-function leverCta(key: AxisKey): { href: string; label: string; icon: LucideIcon } {
+/** Clé de libellé du CTA selon le type de levier (traduit au rendu). */
+type LeverLabelKey = "goWorkshop" | "practicePitch" | "findMentor";
+function leverCta(key: AxisKey): { href: string; labelKey: LeverLabelKey; icon: LucideIcon } {
   const lever = LEVERS[key];
-  const workshop = { href: routes.academy, label: "Aller au Workshop", icon: GraduationCap };
+  const workshop = { href: routes.academy, labelKey: "goWorkshop" as const, icon: GraduationCap };
   switch (lever.type) {
     case "academy":
-      return { href: routes.academyTopic(lever.topic), label: "Aller au Workshop", icon: GraduationCap };
+      return { href: routes.academyTopic(lever.topic), labelKey: "goWorkshop", icon: GraduationCap };
     case "pitchsim":
       // Simulateur repoussé en V2 → on renvoie vers le Workshop tant qu'il est masqué.
       return features.pitchSimulator
-        ? { href: routes.pitchSim, label: "S'exercer au pitch", icon: Mic }
+        ? { href: routes.pitchSim, labelKey: "practicePitch", icon: Mic }
         : workshop;
     case "mentor":
       // Mentorat repoussé en V2 → fallback Workshop.
       return features.mentors
-        ? { href: routes.mentors, label: "Trouver un mentor", icon: ArrowUpRight }
+        ? { href: routes.mentors, labelKey: "findMentor", icon: ArrowUpRight }
         : workshop;
     default:
       return workshop;
@@ -59,14 +46,13 @@ function leverCta(key: AxisKey): { href: string; label: string; icon: LucideIcon
 
 export default async function ReadinessPage() {
   const score = await getLatestRadar();
+  const t = await getTranslations("Readiness");
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight">Suis-je prêt ?</h1>
-        <p className="text-muted-foreground">
-          Une lecture honnête de ton chemin — et de ce qu&apos;il te reste.
-        </p>
+        <h1 className="font-display text-2xl font-bold tracking-tight">{t("title")}</h1>
+        <p className="text-muted-foreground">{t("subtitle")}</p>
       </div>
 
       {score ? (
@@ -76,15 +62,13 @@ export default async function ReadinessPage() {
           <CardContent className="flex flex-wrap items-center justify-between gap-4 py-8">
             <div>
               <h2 className="font-display text-lg font-bold tracking-tight">
-                Lance d&apos;abord ton diagnostic
+                {t("emptyTitle")}
               </h2>
-              <p className="text-sm text-muted-foreground">
-                Ta lecture « suis-je prêt ? » se construit à partir de ton bilan.
-              </p>
+              <p className="text-sm text-muted-foreground">{t("emptyText")}</p>
             </div>
             <Button asChild>
               <Link href={routes.diagnostic}>
-                Commencer mon diagnostic
+                {t("emptyCta")}
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
@@ -96,6 +80,8 @@ export default async function ReadinessPage() {
 }
 
 function ReadinessContent({ score }: { score: NonNullable<Awaited<ReturnType<typeof getLatestRadar>>> }) {
+  const t = useTranslations("Readiness");
+  const tRadar = useTranslations("Radar");
   const overall = overallScore(score);
   const maturity = maturityLevel(overall);
   const weak = [...AXES]
@@ -113,15 +99,19 @@ function ReadinessContent({ score }: { score: NonNullable<Awaited<ReturnType<typ
             <div className="flex items-baseline gap-2">
               <span className="tabular font-display text-3xl font-extrabold">{overall}</span>
               <span className="text-muted-foreground">/100</span>
-              <Badge variant={TONE_TO_BADGE[maturity.tone]}>{maturity.label}</Badge>
+              <Badge variant={TONE_TO_BADGE[maturity.tone]}>
+                {tRadar(`maturity.${maturity.key}.label`)}
+              </Badge>
             </div>
-            <p className="text-sm text-muted-foreground">{maturity.description}</p>
+            <p className="text-sm text-muted-foreground">
+              {tRadar(`maturity.${maturity.key}.description`)}
+            </p>
           </div>
         </CardContent>
       </Card>
 
       <section className="space-y-3">
-        <h2 className="font-display text-lg font-bold tracking-tight">Ce qu&apos;il me reste</h2>
+        <h2 className="font-display text-lg font-bold tracking-tight">{t("remaining")}</h2>
         <div className="space-y-2">
           {weak.map((axis) => {
             const cta = leverCta(axis.key as AxisKey);
@@ -135,12 +125,12 @@ function ReadinessContent({ score }: { score: NonNullable<Awaited<ReturnType<typ
                   {score.axes[axis.key]}
                 </span>
                 <div className="flex-1 space-y-2">
-                  <p className="font-medium">{axis.label}</p>
-                  <p className="text-sm text-muted-foreground">{HINTS[axis.key]}</p>
+                  <p className="font-medium">{tRadar(`${axis.key}.label`)}</p>
+                  <p className="text-sm text-muted-foreground">{t(`hints.${axis.key}`)}</p>
                   <Button asChild variant="outline" size="sm">
                     <Link href={cta.href}>
                       <Icon className="size-4" />
-                      {cta.label}
+                      {t(cta.labelKey)}
                     </Link>
                   </Button>
                 </div>
@@ -156,13 +146,10 @@ function ReadinessContent({ score }: { score: NonNullable<Awaited<ReturnType<typ
           <div className="flex items-center gap-2">
             <ArrowUpRight className="size-5 text-coral-strong" />
             <h2 className="font-display text-lg font-bold tracking-tight">
-              Aller plus loin, quand tu le sens
+              {t("proTitle")}
             </h2>
           </div>
-          <p className="text-sm text-muted-foreground">
-            Un accompagnement réel par un mentor t&apos;amènerait au niveau certifiable — et te
-            relierait au capital. Rien ne presse : c&apos;est ton choix, à partir de ton constat.
-          </p>
+          <p className="text-sm text-muted-foreground">{t("proText")}</p>
           <ExpressInterest />
         </CardContent>
       </Card>
