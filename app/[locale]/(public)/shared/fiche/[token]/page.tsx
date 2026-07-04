@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 
+import { Link } from "@/i18n/navigation";
 import { env } from "@/shared/config/env";
 import { Button } from "@/shared/ui";
 
@@ -13,17 +14,6 @@ interface SharedFiche {
   details: Record<string, unknown>;
   project_title: string | null;
 }
-
-const TYPE_LABELS: Record<string, string> = {
-  dev: "Développeur",
-  expert: "Expert",
-  cofondateur: "Cofondateur",
-  partenaire: "Partenaire",
-  outil: "Outil",
-  financement: "Financement",
-  formation: "Formation",
-  autre: "Autre",
-};
 
 async function getFiche(token: string): Promise<SharedFiche | null> {
   try {
@@ -44,9 +34,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { token } = await params;
   const fiche = await getFiche(token);
-  if (!fiche) return { title: "Besoin introuvable" };
+  const t = await getTranslations("Public.sharedNeed");
+  if (!fiche) return { title: t("notFound") };
   return {
-    title: `${fiche.title} · Besoin IDEAXION`,
+    title: `${fiche.title} · ${t("titleSuffix")}`,
     description: fiche.description?.slice(0, 160),
   };
 }
@@ -70,16 +61,18 @@ export default async function SharedFichePage({
   const fiche = await getFiche(token);
   if (!fiche) notFound();
 
+  const t = await getTranslations("Public.sharedNeed");
+  const tf = await getTranslations("Workshop.fiche");
   const details = fiche.details ?? {};
   const skills = Array.isArray(details.skills) ? (details.skills as string[]) : [];
   const deliverables = Array.isArray(details.deliverables) ? (details.deliverables as string[]) : [];
-  const typeLabel = TYPE_LABELS[fiche.need_type] ?? fiche.need_type;
+  const typeLabel = tf.has(`types.${fiche.need_type}`) ? tf(`types.${fiche.need_type}`) : fiche.need_type;
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-12">
       <div className="rounded-2xl border bg-card p-6 sm:p-8">
         <p className="text-xs font-semibold uppercase tracking-wider text-coral-strong">
-          Fiche de besoin · {typeLabel}
+          {t("eyebrow", { type: typeLabel })}
         </p>
         <h1 className="mt-1 font-display text-2xl font-bold tracking-tight">{fiche.title}</h1>
         {fiche.project_title && (
@@ -91,16 +84,16 @@ export default async function SharedFichePage({
         )}
 
         <div className="mt-6 space-y-0">
-          <Field label="Profil recherché" value={details.profile} />
-          <Field label="Budget estimatif" value={details.budget} />
-          <Field label="Délai souhaité" value={details.timeline} />
-          <Field label="Type d'engagement" value={details.engagement_type} />
+          <Field label={tf("profile")} value={details.profile} />
+          <Field label={tf("budget")} value={details.budget} />
+          <Field label={tf("timeline")} value={details.timeline} />
+          <Field label={tf("engagementType")} value={details.engagement_type} />
         </div>
 
         {skills.length > 0 && (
           <div className="mt-6">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Compétences attendues
+              {tf("skills")}
             </p>
             <div className="flex flex-wrap gap-1.5">
               {skills.map((s, i) => (
@@ -115,7 +108,7 @@ export default async function SharedFichePage({
         {deliverables.length > 0 && (
           <div className="mt-6">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Livrables attendus
+              {tf("deliverables")}
             </p>
             <ul className="list-disc space-y-1 pl-5 text-sm">
               {deliverables.map((d, i) => (
@@ -128,11 +121,11 @@ export default async function SharedFichePage({
 
       <div className="mt-6 flex items-center justify-between gap-4 rounded-xl border border-dashed p-4">
         <p className="text-sm text-muted-foreground">
-          Ce besoin a été structuré avec IDEAXION.
+          {t("structuredWith")}
         </p>
         <Link href="/">
           <Button size="sm" variant="outline">
-            Découvrir <ArrowRight className="ml-1.5 size-3.5" />
+            {t("discover")} <ArrowRight className="ml-1.5 size-3.5" />
           </Button>
         </Link>
       </div>

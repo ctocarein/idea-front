@@ -433,6 +433,62 @@
       "noneMatch": "Aucun besoin ne correspond à ce filtre."
     }
   },
+  "Public": {
+    "startups": {
+      "title": "On te rend capable, puis confiant.",
+      "subtitle": "Tout le parcours porteur est gratuit. Tu comprends ton projet, tu apprends à le structurer, tu t’entraînes — et tu décides toi-même d’aller plus loin.",
+      "journey": {
+        "understand": { "title": "Comprendre", "text": "Diagnostic gratuit (idée guidée ou upload) → ton tableau de compréhension sur 3 lentilles." },
+        "learn": { "title": "Apprendre", "text": "Modules pédagogiques + assistant qui t’explique pendant que TU écris ta propre version." },
+        "practice": { "title": "S’exercer", "text": "Le simulateur de pitch te fait répéter face à une IA-investisseur, sans jugement." },
+        "realize": { "title": "Réaliser", "text": "La page readiness te montre où tu en es — et la suite, sans pression d’achat." }
+      },
+      "cta": "Lancer mon diagnostic"
+    },
+    "financiers": {
+      "title": "Ne voyez que des dossiers prêts.",
+      "subtitle": "Ideaxion prépare les porteurs en amont. Vous recevez des projets qualifiés, évalués sur un référentiel commun — vous gagnez le temps que vous passeriez à trier le bruit.",
+      "value1": "Des projets déjà structurés, pas des idées brutes.",
+      "value2": "Une évaluation commune et lisible (le Radar de Collision).",
+      "value3": "Le temps que tu passerais à trier, économisé.",
+      "note": "Au démarrage, la mise en relation est personnelle : nous vous présentons nous-mêmes les meilleurs projets. Écris-nous pour rejoindre le cercle.",
+      "cta": "Nous contacter"
+    },
+    "blog": {
+      "title": "Le blog",
+      "subtitle": "Des ressources pour comprendre, structurer et défendre ton projet.",
+      "emptyTitle": "Les premiers articles arrivent",
+      "emptyText": "On prépare des guides concrets : BP, pitch, modèle éco."
+    },
+    "contact": {
+      "title": "Parlons de ton projet.",
+      "subtitle": "Porteur, mentor ou financeur — on te répond.",
+      "writeUs": "Écris-nous"
+    },
+    "legal": {
+      "docs": { "mentions": "Mentions légales", "confidentialite": "Politique de confidentialité", "cgv": "Conditions générales" },
+      "fallbackTitle": "Document légal",
+      "body": "Le contenu juridique définitif sera publié avant la mise en production."
+    },
+    "sharedProject": {
+      "notFound": "Fiche introuvable",
+      "titleSuffix": "Fiche projet Ideaxion",
+      "eyebrow": "Fiche projet certifiée",
+      "credential": "Score évalué par <b>{name}</b> — grille d’évaluation multi-dimensionnelle, 12 axes.",
+      "summary": "Synthèse",
+      "strengths": "Points forts identifiés",
+      "poweredBy": "Propulsé par Ideaxion",
+      "poweredByText": "Cette fiche a été préparée et évaluée sur la plateforme Ideaxion — parcours gratuit pour porteurs de projets africains.",
+      "cta": "Évalue ton projet gratuitement"
+    },
+    "sharedNeed": {
+      "notFound": "Besoin introuvable",
+      "titleSuffix": "Besoin IDEAXION",
+      "eyebrow": "Fiche de besoin · {type}",
+      "structuredWith": "Ce besoin a été structuré avec IDEAXION.",
+      "discover": "Découvrir"
+    }
+  },
   "Opportunities": {
     "title": "Opportunités",
     "subtitle": "Programmes, concours et incubateurs — filtrés selon la solidité de ton projet.",

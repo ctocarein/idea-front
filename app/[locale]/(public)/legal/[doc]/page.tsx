@@ -1,10 +1,5 @@
 import type { Metadata } from "next";
-
-const TITLES: Record<string, string> = {
-  mentions: "Mentions légales",
-  confidentialite: "Politique de confidentialité",
-  cgv: "Conditions générales",
-};
+import { getTranslations } from "next-intl/server";
 
 export async function generateMetadata({
   params,
@@ -12,7 +7,8 @@ export async function generateMetadata({
   params: Promise<{ doc: string }>;
 }): Promise<Metadata> {
   const { doc } = await params;
-  return { title: TITLES[doc] ?? "Document légal" };
+  const t = await getTranslations("Public.legal");
+  return { title: t.has(`docs.${doc}`) ? t(`docs.${doc}`) : t("fallbackTitle") };
 }
 
 /* En Next 16, `params` est asynchrone. Contenu juridique réel au Sprint D6/OPS. */
@@ -22,13 +18,15 @@ export default async function LegalPage({
   params: Promise<{ doc: string }>;
 }) {
   const { doc } = await params;
+  const t = await getTranslations("Public.legal");
+  const title = t.has(`docs.${doc}`) ? t(`docs.${doc}`) : t("fallbackTitle");
   return (
     <div className="mx-auto max-w-2xl px-5 py-16">
       <h1 className="font-display text-3xl font-extrabold tracking-tight text-ink">
-        {TITLES[doc] ?? "Document légal"}
+        {title}
       </h1>
       <p className="mt-4 text-muted-foreground">
-        Le contenu juridique définitif sera publié avant la mise en production.
+        {t("body")}
       </p>
     </div>
   );

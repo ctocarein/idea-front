@@ -433,6 +433,62 @@
       "noneMatch": "No need matches this filter."
     }
   },
+  "Public": {
+    "startups": {
+      "title": "We make you capable, then confident.",
+      "subtitle": "The whole founder journey is free. You understand your project, learn to structure it, practice — and decide for yourself when to go further.",
+      "journey": {
+        "understand": { "title": "Understand", "text": "Free diagnostic (guided idea or upload) → your understanding scorecard across 3 lenses." },
+        "learn": { "title": "Learn", "text": "Educational modules + an assistant that explains while YOU write your own version." },
+        "practice": { "title": "Practice", "text": "The pitch simulator makes you rehearse in front of an AI investor, no judgment." },
+        "realize": { "title": "Deliver", "text": "The readiness page shows you where you stand — and what's next, no purchase pressure." }
+      },
+      "cta": "Run my diagnostic"
+    },
+    "financiers": {
+      "title": "See only ready projects.",
+      "subtitle": "Ideaxion prepares founders upstream. You receive qualified projects, assessed on a shared framework — you save the time you'd spend sorting through noise.",
+      "value1": "Projects that are already structured, not raw ideas.",
+      "value2": "A shared, legible evaluation (the Collision Radar).",
+      "value3": "The time you'd spend triaging, saved.",
+      "note": "At the start, matchmaking is personal: we introduce the best projects ourselves. Write to us to join the circle.",
+      "cta": "Contact us"
+    },
+    "blog": {
+      "title": "The blog",
+      "subtitle": "Resources to understand, structure and defend your project.",
+      "emptyTitle": "The first articles are coming",
+      "emptyText": "We're preparing concrete guides: business plan, pitch, business model."
+    },
+    "contact": {
+      "title": "Let's talk about your project.",
+      "subtitle": "Founder, mentor or investor — we'll get back to you.",
+      "writeUs": "Write to us"
+    },
+    "legal": {
+      "docs": { "mentions": "Legal notice", "confidentialite": "Privacy policy", "cgv": "Terms & conditions" },
+      "fallbackTitle": "Legal document",
+      "body": "The final legal content will be published before going live."
+    },
+    "sharedProject": {
+      "notFound": "Sheet not found",
+      "titleSuffix": "Ideaxion project sheet",
+      "eyebrow": "Certified project sheet",
+      "credential": "Score evaluated by <b>{name}</b> — multi-dimensional evaluation grid, 12 axes.",
+      "summary": "Summary",
+      "strengths": "Identified strengths",
+      "poweredBy": "Powered by Ideaxion",
+      "poweredByText": "This sheet was prepared and evaluated on the Ideaxion platform — a free journey for African project founders.",
+      "cta": "Evaluate your project for free"
+    },
+    "sharedNeed": {
+      "notFound": "Need not found",
+      "titleSuffix": "IDEAXION need",
+      "eyebrow": "Need card · {type}",
+      "structuredWith": "This need was structured with IDEAXION.",
+      "discover": "Discover"
+    }
+  },
   "Opportunities": {
     "title": "Opportunities",
     "subtitle": "Programs, contests and incubators — filtered by how solid your project is.",

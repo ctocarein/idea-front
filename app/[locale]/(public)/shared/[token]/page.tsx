@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { ArrowRight, CheckCircle2, ShieldCheck, Star } from "lucide-react";
 import { notFound } from "next/navigation";
 
+import { Link } from "@/i18n/navigation";
 import { env } from "@/shared/config/env";
 import { routes } from "@/shared/config/routes";
 import { Button } from "@/shared/ui";
@@ -37,9 +38,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { token } = await params;
   const fiche = await getFiche(token);
-  if (!fiche) return { title: "Fiche introuvable" };
+  const t = await getTranslations("Public.sharedProject");
+  if (!fiche) return { title: t("notFound") };
   return {
-    title: `${fiche.project_title} · Fiche projet Ideaxion`,
+    title: `${fiche.project_title} · ${t("titleSuffix")}`,
     description: fiche.summary?.slice(0, 160),
   };
 }
@@ -70,6 +72,7 @@ export default async function SharedFichePage({
 }) {
   const { token } = await params;
   const fiche = await getFiche(token);
+  const t = await getTranslations("Public.sharedProject");
 
   if (!fiche) notFound();
 
@@ -79,7 +82,7 @@ export default async function SharedFichePage({
       <div className="mb-8 flex items-start justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            Fiche projet certifiée
+            {t("eyebrow")}
           </p>
           <h1 className="mt-1 font-display text-3xl font-extrabold tracking-tight">
             {fiche.project_title}
@@ -96,9 +99,10 @@ export default async function SharedFichePage({
       <div className="mb-6 flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-3">
         <ShieldCheck className="size-5 shrink-0 text-emerald-500" />
         <p className="text-sm text-muted-foreground">
-          Score évalué par{" "}
-          <span className="font-semibold text-foreground">{fiche.scored_by}</span>{" "}
-          — grille d&apos;évaluation multi-dimensionnelle, 12 axes.
+          {t.rich("credential", {
+            name: fiche.scored_by,
+            b: (chunks) => <span className="font-semibold text-foreground">{chunks}</span>,
+          })}
         </p>
       </div>
 
@@ -106,7 +110,7 @@ export default async function SharedFichePage({
       {fiche.summary && (
         <section className="mb-6">
           <h2 className="mb-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-            Synthèse
+            {t("summary")}
           </h2>
           <p className="text-base leading-relaxed">{fiche.summary}</p>
         </section>
@@ -116,7 +120,7 @@ export default async function SharedFichePage({
       {fiche.strengths.length > 0 && (
         <section className="mb-8">
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-            Points forts identifiés
+            {t("strengths")}
           </h2>
           <ul className="space-y-2">
             {fiche.strengths.map((s, i) => (
@@ -134,16 +138,15 @@ export default async function SharedFichePage({
         <div className="mb-1 flex items-center justify-center gap-1.5">
           <Star className="size-4 text-amber-400" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Propulsé par Ideaxion
+            {t("poweredBy")}
           </span>
         </div>
         <p className="mt-2 text-sm text-muted-foreground">
-          Cette fiche a été préparée et évaluée sur la plateforme Ideaxion —
-          parcours gratuit pour porteurs de projets africains.
+          {t("poweredByText")}
         </p>
         <Button asChild className="mt-4">
           <Link href={routes.diagnostic}>
-            Évalue ton projet gratuitement
+            {t("cta")}
             <ArrowRight className="size-4" />
           </Link>
         </Button>
