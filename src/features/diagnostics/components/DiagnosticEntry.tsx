@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { ArrowLeft, PenLine, UploadCloud } from "lucide-react";
 
 import { Button, Card } from "@/shared/ui";
@@ -15,6 +16,7 @@ type Mode = "manual" | "upload";
 type Extracted = { extract: IdeaExtract; description: string };
 
 export function DiagnosticEntry({ isAuthed = false }: { isAuthed?: boolean }) {
+  const t = useTranslations("Diagnostic.entry");
   const [mode, setMode] = useState<Mode | null>(null);
   const [extracted, setExtracted] = useState<Extracted | null>(null);
   const [submitted, setSubmitted] = useState<string | null>(null);
@@ -48,9 +50,9 @@ export function DiagnosticEntry({ isAuthed = false }: { isAuthed?: boolean }) {
           <span className="flex size-12 items-center justify-center rounded-full bg-coral/15 text-coral-strong">
             <PenLine className="size-6" />
           </span>
-          <h3 className="mt-4 font-display text-lg font-bold">Raconte ton idée</h3>
+          <h3 className="mt-4 font-display text-lg font-bold">{t("manualTitle")}</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            En quelques phrases — le LLM organise, on comble les trous ensemble.
+            {t("manualText")}
           </p>
         </button>
 
@@ -62,9 +64,9 @@ export function DiagnosticEntry({ isAuthed = false }: { isAuthed?: boolean }) {
           <span className="flex size-12 items-center justify-center rounded-full bg-secondary text-muted-foreground">
             <UploadCloud className="size-6" />
           </span>
-          <h3 className="mt-4 font-display text-lg font-bold">Uploader mon projet</h3>
+          <h3 className="mt-4 font-display text-lg font-bold">{t("uploadTitle")}</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            Tu as déjà un document ? On l&apos;analyse — même pipeline que le récit libre.
+            {t("uploadText")}
           </p>
         </button>
       </div>
@@ -75,7 +77,7 @@ export function DiagnosticEntry({ isAuthed = false }: { isAuthed?: boolean }) {
     <div className="space-y-5">
       <Button variant="ghost" size="sm" onClick={reset}>
         <ArrowLeft className="size-4" />
-        Changer de méthode
+        {t("changeMethod")}
       </Button>
       <Card className="p-6">
         {mode === "manual" ? (

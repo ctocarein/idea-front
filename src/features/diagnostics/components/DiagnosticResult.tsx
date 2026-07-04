@@ -1,6 +1,7 @@
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Download, Sparkles } from "lucide-react";
 
+import { Link } from "@/i18n/navigation";
 import { routes } from "@/shared/config/routes";
 import { Button } from "@/shared/ui";
 import {
@@ -27,6 +28,8 @@ export function DiagnosticResult({
 }) {
   const overall = overallScore(score);
   const r = reading(overall);
+  const t = useTranslations("Diagnostic.result");
+  const tRadar = useTranslations("Radar");
 
   return (
     <div className="space-y-8">
@@ -35,11 +38,10 @@ export function DiagnosticResult({
           <Sparkles className="size-6" />
         </span>
         <h2 className="mt-3 font-display text-2xl font-bold tracking-tight">
-          Voici ton tableau de compréhension
+          {t("title")}
         </h2>
         <p className="mt-1 text-muted-foreground">
-          {projectName} — une lecture honnête de tes forces et de tes angles
-          morts. {r.label} dans l&apos;ensemble.
+          {t("subtitle", { projectName, reading: tRadar(`tones.${r.tone}`) })}
         </p>
       </div>
 
@@ -51,32 +53,28 @@ export function DiagnosticResult({
         </div>
         <div className="space-y-3">
           <h3 className="font-display text-lg font-bold">
-            La vue d&apos;ensemble
+            {t("overviewTitle")}
           </h3>
           <p className="text-sm text-muted-foreground">
-            Le Radar de Collision résume tes 12 dimensions. C&apos;est ta boussole : tu
-            le verras progresser au fil du Workshop et du simulateur de
-            pitch.
+            {t("overviewText")}
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
             {isAuthed ? (
               <Button asChild>
-                <Link href={routes.dashboard}>Voir mon bilan complet</Link>
+                <Link href={routes.dashboard}>{t("seeFull")}</Link>
               </Button>
             ) : (
               <Button asChild>
-                <Link href={routes.register}>Garder mon bilan</Link>
+                <Link href={routes.register}>{t("keep")}</Link>
               </Button>
             )}
             <Button variant="outline" disabled>
               <Download className="size-5" />
-              Télécharger le PDF
+              {t("downloadPdf")}
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">
-            {isAuthed
-              ? "Ton bilan est rattaché à ton espace — retrouve-le et télécharge le PDF depuis ton tableau de bord."
-              : "Crée ton espace (gratuit) pour conserver ce bilan, le télécharger en PDF et démarrer ton parcours."}
+            {isAuthed ? t("authedNote") : t("anonNote")}
           </p>
         </div>
       </div>

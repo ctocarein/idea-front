@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
-import { UploadCloud } from "lucide-react";
+import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 
 import { Button, FileUpload, toast } from "@/shared/ui";
 import { type IdeaExtract, extractFileIdea } from "../api/actions";
@@ -23,6 +23,7 @@ export function UploadDiagnostic({
   onExtracted: (extract: IdeaExtract, description: string) => void;
   onAnonSubmit?: (projectName: string) => void;
 }) {
+  const t = useTranslations("Diagnostic.upload");
   const [file, setFile] = useState<File | null>(null);
   const [analyzing, startTransition] = useTransition();
 
@@ -55,7 +56,7 @@ export function UploadDiagnostic({
       <FileUpload
         accept=".pdf,.docx"
         onFileChange={setFile}
-        hint="PDF ou DOCX, 20 Mo max — on en extrait ton projet."
+        hint={t("hint")}
       />
       <Button
         onClick={analyze}
@@ -63,10 +64,10 @@ export function UploadDiagnostic({
         loading={analyzing}
         className="w-full"
       >
-        {analyzing ? "Extraction en cours…" : "Analyser mon projet"}
+        {analyzing ? t("analyzing") : t("analyze")}
       </Button>
       <p className="text-center text-xs text-muted-foreground">
-        Le texte de ton document sera analysé par le LLM — même pipeline que &quot;Raconte ton idée&quot;.
+        {t("note")}
       </p>
     </div>
   );

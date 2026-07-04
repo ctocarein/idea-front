@@ -119,6 +119,68 @@
       "availabilities": { "lt5": "Less than 5h / week", "h5_10": "5 to 10h / week", "h10_20": "10 to 20h / week", "gt20": "More than 20h / week" }
     }
   },
+  "Diagnostic": {
+    "page": {
+      "eyebrow": "Free · no pressure",
+      "title": "Understand your project",
+      "subtitle": "In a few minutes, get your understanding scorecard — essence, viability, scalability. We start from where you are."
+    },
+    "entry": {
+      "manualTitle": "Tell us your idea",
+      "manualText": "In a few sentences — the AI organizes it, and we fill the gaps together.",
+      "uploadTitle": "Upload my project",
+      "uploadText": "Already have a document? We analyze it — same pipeline as the free-form story.",
+      "changeMethod": "Change method"
+    },
+    "raconte": {
+      "nameLabel": "Does your project already have a name? (optional)",
+      "namePlaceholder": "E.g. AgriConnect",
+      "ideaLabel": "Tell us about your project",
+      "ideaDescription": "In 3 sentences: the problem, your solution, where you're at. No structure required.",
+      "ideaPlaceholder": "My project helps…",
+      "consent": "I agree to have my idea analyzed (GDPR).",
+      "organizeCta": "Organize my idea",
+      "errTooShort": "Tell us a bit more — 2 or 3 sentences is enough.",
+      "errConsent": "Tick the GDPR consent to start the analysis.",
+      "captured": "We captured <b>{captured} of {total} dimensions</b>{gaps, plural, =0 {.} one { — {gaps} thing is missing.} other { — {gaps} things are missing.}}",
+      "completeCta": "{gaps, plural, one {Complete (# question)} other {Complete (# questions)}}",
+      "seeReportCta": "See my report",
+      "gapPlaceholder": "In one sentence…",
+      "validate": "Confirm",
+      "finish": "Finish",
+      "preparing": "Preparing your report…"
+    },
+    "upload": {
+      "hint": "PDF or DOCX, 20 MB max — we extract your project from it.",
+      "analyze": "Analyze my project",
+      "analyzing": "Extracting…",
+      "note": "Your document's text will be analyzed by the AI — same pipeline as \"Tell us your idea\"."
+    },
+    "teaser": {
+      "title": "Your report is ready",
+      "projectFallback": "Your project",
+      "subtitle": "<b>{projectName}</b> was assessed across <b>12 dimensions</b> — strengths, blind spots and an action plan.",
+      "locked": "Locked",
+      "unlock": "Create your space (free) to reveal: your <b>Collision Radar</b> across 12 dimensions, your <b>strengths</b> and <b>blind spots</b> explained, a <b>prioritized action plan</b> and a <b>downloadable report</b>.",
+      "cta": "Create my space to see my report",
+      "note": "Your diagnostic is waiting — it'll be attached to your space as soon as you sign up."
+    },
+    "claim": {
+      "toast": "Your report was waiting — we've attached it to your space.",
+      "loading": "Attaching your diagnostic to your space…"
+    },
+    "result": {
+      "title": "Here's your understanding scorecard",
+      "subtitle": "{projectName} — an honest read of your strengths and blind spots. {reading} overall.",
+      "overviewTitle": "The big picture",
+      "overviewText": "The Collision Radar sums up your 12 dimensions. It's your compass: you'll watch it progress through the Workshop and the pitch simulator.",
+      "seeFull": "See my full report",
+      "keep": "Keep my report",
+      "downloadPdf": "Download the PDF",
+      "authedNote": "Your report is attached to your space — find it and download the PDF from your dashboard.",
+      "anonNote": "Create your space (free) to keep this report, download it as a PDF and start your journey."
+    }
+  },
   "Dashboard": {
     "greeting": "Hi {name} 👋",
     "subtitle": "Here's where your project stands today.",
@@ -156,6 +218,13 @@
         "structure": { "label": "Structure", "text": "Strengthen your weak axes in the Workshop and build your project, guided." },
         "dress": { "label": "Dress up", "text": "Create your logo, pitch and deck in the Studio." }
       }
+    }
+  },
+  "Bilan": {
+    "pending": {
+      "title": "Analyzing your project…",
+      "text": "We're reading your idea and building your compass across the 12 dimensions. Just a moment.",
+      "slow": "Taking a little longer — refresh"
     }
   },
   "EmailVerify": {

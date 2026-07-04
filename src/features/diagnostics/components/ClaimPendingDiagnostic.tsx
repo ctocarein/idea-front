@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 
 import { routes } from "@/shared/config/routes";
@@ -16,6 +17,7 @@ import { clearPendingDiagnostic, loadPendingDiagnostic } from "../lib/pending";
  */
 export function ClaimPendingDiagnostic() {
   const router = useRouter();
+  const t = useTranslations("Diagnostic.claim");
   const ran = useRef(false);
   const [claiming, setClaiming] = useState(false);
 
@@ -32,21 +34,21 @@ export function ClaimPendingDiagnostic() {
       const res = await startManualDiagnostic(pending);
       clearPendingDiagnostic();
       if (res.ok) {
-        toast.success("Ton bilan t'attendait — on l'a rattaché à ton espace.");
+        toast.success(t("toast"));
         router.push(routes.bilan(res.reportId));
       } else {
         setClaiming(false);
         toast.error(res.message);
       }
     })();
-  }, [router]);
+  }, [router, t]);
 
   if (!claiming) return null;
 
   return (
     <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
       <Loader2 className="size-4 animate-spin text-coral-strong" />
-      On rattache ton diagnostic à ton espace…
+      {t("loading")}
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { ArrowRight, Check, CircleDashed, Loader2, Sparkles, Wand2 } from "lucide-react";
 
 import { Button, Checkbox, Field, Input, Textarea, toast } from "@/shared/ui";
@@ -33,6 +34,7 @@ export function RaconteDiagnostic({
   initialDescription?: string;
 }) {
   const router = useRouter();
+  const t = useTranslations("Diagnostic.raconte");
   const [pending, startTransition] = useTransition();
   const [step, setStep] = useState<Step>(initialExtract ? "organize" : "tell");
   const [idea, setIdea] = useState(initialDescription);
@@ -45,11 +47,11 @@ export function RaconteDiagnostic({
 
   function organize() {
     if (idea.trim().length < 20) {
-      toast.error("Raconte un peu plus — 2 ou 3 phrases suffisent.");
+      toast.error(t("errTooShort"));
       return;
     }
     if (!consent) {
-      toast.error("Coche le consentement RGPD pour lancer l'analyse.");
+      toast.error(t("errConsent"));
       return;
     }
     startTransition(async () => {
@@ -140,21 +142,21 @@ export function RaconteDiagnostic({
   if (step === "tell") {
     return (
       <div className="space-y-5">
-        <Field label="Ton projet a déjà un nom ? (optionnel)">
+        <Field label={t("nameLabel")}>
           <Input
-            placeholder="Ex. AgriConnect"
+            placeholder={t("namePlaceholder")}
             value={name}
             onChange={(e) => setName(e.target.value)}
             maxLength={120}
           />
         </Field>
         <Field
-          label="Raconte ton projet"
-          description="En 3 phrases : le problème, ta solution, où tu en es. Pas de structure à respecter."
+          label={t("ideaLabel")}
+          description={t("ideaDescription")}
         >
           <Textarea
             rows={6}
-            placeholder="Mon projet aide…"
+            placeholder={t("ideaPlaceholder")}
             value={idea}
             onChange={(e) => setIdea(e.target.value)}
           />
@@ -162,11 +164,11 @@ export function RaconteDiagnostic({
         <Checkbox
           checked={consent}
           onCheckedChange={(v) => setConsent(v === true)}
-          label="J'accepte que mon idée soit analysée (RGPD)."
+          label={t("consent")}
         />
         <Button onClick={organize} loading={pending} className="w-full">
           <Wand2 className="size-5" />
-          On organise mon idée
+          {t("organizeCta")}
         </Button>
       </div>
     );
@@ -178,17 +180,18 @@ export function RaconteDiagnostic({
       <div className="space-y-5">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Sparkles className="size-4 text-coral-strong" />
-          On a capté{" "}
-          <span className="font-medium text-ink">
-            {extract.captured_count} dimensions sur {extract.total}
-          </span>
-          {extract.gaps.length > 0 ? ` — il nous manque ${extract.gaps.length} choses.` : "."}
+          {t.rich("captured", {
+            captured: extract.captured_count,
+            total: extract.total,
+            gaps: extract.gaps.length,
+            b: (chunks) => <span className="font-medium text-ink">{chunks}</span>,
+          })}
         </div>
         {chips(extract)}
         <Button onClick={startFill} loading={pending} className="w-full">
           {extract.gaps.length > 0
-            ? `Compléter (${extract.gaps.length} question${extract.gaps.length > 1 ? "s" : ""})`
-            : "Voir mon bilan"}
+            ? t("completeCta", { gaps: extract.gaps.length })
+            : t("seeReportCta")}
           <ArrowRight className="size-5" />
         </Button>
       </div>
@@ -213,13 +216,13 @@ export function RaconteDiagnostic({
           <p className="mb-3 font-display text-lg font-bold">{gap.question}</p>
           <Textarea
             rows={3}
-            placeholder="En une phrase…"
+            placeholder={t("gapPlaceholder")}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
           />
           <div className="mt-3 flex justify-end">
             <Button onClick={validateGap} loading={pending} disabled={!draft.trim()}>
-              {gapIdx + 1 < extract.gaps.length ? "Valider" : "Terminer"}
+              {gapIdx + 1 < extract.gaps.length ? t("validate") : t("finish")}
               <Check className="size-5" />
             </Button>
           </div>
@@ -231,7 +234,7 @@ export function RaconteDiagnostic({
   return (
     <div className="flex items-center justify-center gap-2 py-8 text-muted-foreground">
       <Loader2 className="size-5 animate-spin" />
-      On prépare ton bilan…
+      {t("preparing")}
     </div>
   );
 }

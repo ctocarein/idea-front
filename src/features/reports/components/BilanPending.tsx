@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 
 import { Button } from "@/shared/ui";
@@ -13,6 +14,7 @@ import { pollReportStatus } from "../actions";
  */
 export function BilanPending({ reportId }: { reportId: string }) {
   const router = useRouter();
+  const t = useTranslations("Bilan.pending");
   const [slow, setSlow] = useState(false);
   const tries = useRef(0);
 
@@ -44,15 +46,15 @@ export function BilanPending({ reportId }: { reportId: string }) {
       <Loader2 className="size-10 animate-spin text-coral-strong" />
       <div className="space-y-1">
         <h2 className="font-display text-xl font-bold tracking-tight">
-          On analyse ton projet…
+          {t("title")}
         </h2>
         <p className="text-muted-foreground">
-          On lit ton idée et on construit ta boussole sur les 12 dimensions. Quelques instants.
+          {t("text")}
         </p>
       </div>
       {slow ? (
         <Button variant="outline" size="sm" onClick={() => router.refresh()}>
-          Ça prend un peu plus de temps — rafraîchir
+          {t("slow")}
         </Button>
       ) : null}
     </div>

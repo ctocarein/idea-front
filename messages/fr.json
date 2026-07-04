@@ -119,6 +119,68 @@
       "availabilities": { "lt5": "Moins de 5h / semaine", "h5_10": "5 à 10h / semaine", "h10_20": "10 à 20h / semaine", "gt20": "Plus de 20h / semaine" }
     }
   },
+  "Diagnostic": {
+    "page": {
+      "eyebrow": "Gratuit · sans pression",
+      "title": "Comprends ton projet",
+      "subtitle": "En quelques minutes, obtiens ton tableau de compréhension — essence, viabilité, scalabilité. On part d’où tu es."
+    },
+    "entry": {
+      "manualTitle": "Raconte ton idée",
+      "manualText": "En quelques phrases — le LLM organise, on comble les trous ensemble.",
+      "uploadTitle": "Uploader mon projet",
+      "uploadText": "Tu as déjà un document ? On l’analyse — même pipeline que le récit libre.",
+      "changeMethod": "Changer de méthode"
+    },
+    "raconte": {
+      "nameLabel": "Ton projet a déjà un nom ? (optionnel)",
+      "namePlaceholder": "Ex. AgriConnect",
+      "ideaLabel": "Raconte ton projet",
+      "ideaDescription": "En 3 phrases : le problème, ta solution, où tu en es. Pas de structure à respecter.",
+      "ideaPlaceholder": "Mon projet aide…",
+      "consent": "J’accepte que mon idée soit analysée (RGPD).",
+      "organizeCta": "On organise mon idée",
+      "errTooShort": "Raconte un peu plus — 2 ou 3 phrases suffisent.",
+      "errConsent": "Coche le consentement RGPD pour lancer l’analyse.",
+      "captured": "On a capté <b>{captured} dimensions sur {total}</b>{gaps, plural, =0 {.} one { — il nous manque {gaps} chose.} other { — il nous manque {gaps} choses.}}",
+      "completeCta": "{gaps, plural, one {Compléter (# question)} other {Compléter (# questions)}}",
+      "seeReportCta": "Voir mon bilan",
+      "gapPlaceholder": "En une phrase…",
+      "validate": "Valider",
+      "finish": "Terminer",
+      "preparing": "On prépare ton bilan…"
+    },
+    "upload": {
+      "hint": "PDF ou DOCX, 20 Mo max — on en extrait ton projet.",
+      "analyze": "Analyser mon projet",
+      "analyzing": "Extraction en cours…",
+      "note": "Le texte de ton document sera analysé par le LLM — même pipeline que « Raconte ton idée »."
+    },
+    "teaser": {
+      "title": "Ton bilan est prêt",
+      "projectFallback": "Ton projet",
+      "subtitle": "<b>{projectName}</b> a été passé au crible sur <b>12 dimensions</b> — forces, angles morts et plan d’action.",
+      "locked": "Verrouillé",
+      "unlock": "Crée ton espace (gratuit) pour révéler : ton <b>Radar de Collision</b> sur 12 dimensions, tes <b>forces</b> et <b>angles morts</b> expliqués, un <b>plan d’action priorisé</b> et un <b>rapport téléchargeable</b>.",
+      "cta": "Créer mon espace pour voir mon bilan",
+      "note": "Ton diagnostic t’attend — il sera rattaché à ton espace dès l’inscription."
+    },
+    "claim": {
+      "toast": "Ton bilan t’attendait — on l’a rattaché à ton espace.",
+      "loading": "On rattache ton diagnostic à ton espace…"
+    },
+    "result": {
+      "title": "Voici ton tableau de compréhension",
+      "subtitle": "{projectName} — une lecture honnête de tes forces et de tes angles morts. {reading} dans l’ensemble.",
+      "overviewTitle": "La vue d’ensemble",
+      "overviewText": "Le Radar de Collision résume tes 12 dimensions. C’est ta boussole : tu le verras progresser au fil du Workshop et du simulateur de pitch.",
+      "seeFull": "Voir mon bilan complet",
+      "keep": "Garder mon bilan",
+      "downloadPdf": "Télécharger le PDF",
+      "authedNote": "Ton bilan est rattaché à ton espace — retrouve-le et télécharge le PDF depuis ton tableau de bord.",
+      "anonNote": "Crée ton espace (gratuit) pour conserver ce bilan, le télécharger en PDF et démarrer ton parcours."
+    }
+  },
   "Dashboard": {
     "greeting": "Bonjour, {name} 👋",
     "subtitle": "Voici où en est ton projet aujourd'hui.",
@@ -156,6 +218,13 @@
         "structure": { "label": "Structurer", "text": "Renforce tes axes faibles au Workshop et construis ton projet, guidé." },
         "dress": { "label": "Habiller", "text": "Crée ton logo, ton pitch et ton deck au Studio." }
       }
+    }
+  },
+  "Bilan": {
+    "pending": {
+      "title": "On analyse ton projet…",
+      "text": "On lit ton idée et on construit ta boussole sur les 12 dimensions. Quelques instants.",
+      "slow": "Ça prend un peu plus de temps — rafraîchir"
     }
   },
   "EmailVerify": {
