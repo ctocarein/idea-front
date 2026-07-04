@@ -1,21 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { CalendarDays, CheckCircle2, Heart, Lock } from "lucide-react";
 
 import { Badge, Button, Card, CardContent, toast } from "@/shared/ui";
 import { expressInterest } from "../actions";
 import type { Opportunity } from "../api";
-
-const KIND_LABEL: Record<string, string> = {
-  program: "Programme",
-  contest: "Concours",
-  incubator: "Incubateur",
-  grant: "Subvention",
-  event: "Événement",
-};
-
-const dateFmt = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long" });
 
 export function OpportunityCard({
   opportunity,
@@ -24,6 +15,8 @@ export function OpportunityCard({
   opportunity: Opportunity;
   projectId: string;
 }) {
+  const t = useTranslations("Opportunities.card");
+  const locale = useLocale();
   const [pending, startTransition] = useTransition();
   const [done, setDone] = useState(false);
 
@@ -32,15 +25,17 @@ export function OpportunityCard({
       const res = await expressInterest(opportunity.id, projectId);
       if (res.ok) {
         setDone(true);
-        toast.success("Intérêt transmis ✦");
+        toast.success(t("toastInterest"));
       } else {
         toast.error(res.message);
       }
     });
   }
 
-  const deadline = opportunity.deadline ? dateFmt.format(new Date(opportunity.deadline)) : null;
-  const kind = KIND_LABEL[opportunity.kind] ?? opportunity.kind;
+  const deadline = opportunity.deadline
+    ? new Intl.DateTimeFormat(locale, { day: "numeric", month: "long" }).format(new Date(opportunity.deadline))
+    : null;
+  const kind = t.has(`kinds.${opportunity.kind}`) ? t(`kinds.${opportunity.kind}`) : opportunity.kind;
 
   return (
     <Card className={opportunity.eligible ? "" : "opacity-90"}>
@@ -48,11 +43,11 @@ export function OpportunityCard({
         <div className="flex items-start justify-between gap-2">
           <Badge variant="neutral">{kind}</Badge>
           {opportunity.eligible ? (
-            <Badge variant="success">Éligible</Badge>
+            <Badge variant="success">{t("eligible")}</Badge>
           ) : (
             <Badge variant="outline">
               <Lock className="size-3" />
-              À débloquer
+              {t("locked")}
             </Badge>
           )}
         </div>
@@ -76,7 +71,7 @@ export function OpportunityCard({
 
         {!opportunity.eligible && opportunity.missing.length > 0 ? (
           <div className="rounded-lg bg-secondary/60 p-3">
-            <p className="text-xs font-semibold text-muted-foreground">Il te reste à :</p>
+            <p className="text-xs font-semibold text-muted-foreground">{t("remaining")}</p>
             <ul className="mt-1 space-y-1">
               {opportunity.missing.map((m, i) => (
                 <li key={i} className="flex gap-2 text-xs text-muted-foreground">
@@ -93,17 +88,17 @@ export function OpportunityCard({
             done ? (
               <span className="inline-flex items-center gap-2 text-sm font-medium text-success">
                 <CheckCircle2 className="size-4" />
-                Intérêt transmis
+                {t("interestSent")}
               </span>
             ) : (
               <Button size="sm" onClick={interested} loading={pending}>
                 <Heart className="size-4" />
-                Ça m&apos;intéresse
+                {t("interested")}
               </Button>
             )
           ) : (
             <span className="text-xs text-muted-foreground">
-              Renforce ton projet pour y accéder.
+              {t("strengthenToAccess")}
             </span>
           )}
         </div>

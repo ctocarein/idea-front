@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 import { apiFetch } from "@/shared/api/client";
 import { routes } from "@/shared/config/routes";
 import { SectionTabs } from "@/shared/layout";
-import { ProfileEditClient } from "@/features/iam/ProfileEditClient";
+import { ProfileEditClient } from "@/features/iam";
 
 export const metadata: Metadata = { title: "Mon profil" };
-
-const PROFILE_TABS = [
-  { href: routes.profile, label: "Profil" },
-  { href: routes.shares, label: "Partages" },
-];
 
 interface MeOut {
   user: {
@@ -25,6 +21,11 @@ interface MeOut {
 }
 
 export default async function ProfilePage() {
+  const t = await getTranslations("Profile");
+  const PROFILE_TABS = [
+    { href: routes.profile, label: t("tabs.profile") },
+    { href: routes.shares, label: t("tabs.shares") },
+  ];
   let me: MeOut | null = null;
   try {
     me = await apiFetch<MeOut>("/api/v1/auth/me");
@@ -35,8 +36,8 @@ export default async function ProfilePage() {
   if (!me) {
     return (
       <div className="space-y-6">
-        <h1 className="font-display text-2xl font-bold tracking-tight">Mon profil</h1>
-        <p className="text-muted-foreground">Impossible de charger le profil.</p>
+        <h1 className="font-display text-2xl font-bold tracking-tight">{t("title")}</h1>
+        <p className="text-muted-foreground">{t("loadError")}</p>
       </div>
     );
   }
@@ -45,9 +46,9 @@ export default async function ProfilePage() {
     <div className="space-y-6">
       <div className="space-y-4">
         <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight">Mon profil</h1>
+          <h1 className="font-display text-2xl font-bold tracking-tight">{t("title")}</h1>
           <p className="text-muted-foreground">
-            Mets à jour tes informations personnelles et la situation de ton projet.
+            {t("subtitle")}
           </p>
         </div>
         <SectionTabs tabs={PROFILE_TABS} />

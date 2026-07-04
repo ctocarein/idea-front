@@ -433,6 +433,78 @@
       "noneMatch": "Aucun besoin ne correspond à ce filtre."
     }
   },
+  "Opportunities": {
+    "title": "Opportunités",
+    "subtitle": "Programmes, concours et incubateurs — filtrés selon la solidité de ton projet.",
+    "emptyDiagTitle": "Lance d’abord ton diagnostic",
+    "emptyDiagText": "Les opportunités s’ouvrent en fonction de la maturité de ton projet.",
+    "emptyDiagCta": "Commencer mon diagnostic",
+    "none": "Aucune opportunité pour le moment. Reviens bientôt — on en ajoute régulièrement.",
+    "forYou": "Pour toi maintenant",
+    "toUnlock": "À débloquer en renforçant ton projet",
+    "card": {
+      "kinds": { "program": "Programme", "contest": "Concours", "incubator": "Incubateur", "grant": "Subvention", "event": "Événement" },
+      "eligible": "Éligible",
+      "locked": "À débloquer",
+      "remaining": "Il te reste à :",
+      "interested": "Ça m’intéresse",
+      "interestSent": "Intérêt transmis",
+      "toastInterest": "Intérêt transmis ✦",
+      "strengthenToAccess": "Renforce ton projet pour y accéder."
+    }
+  },
+  "Profile": {
+    "title": "Mon profil",
+    "subtitle": "Mets à jour tes informations personnelles et la situation de ton projet.",
+    "loadError": "Impossible de charger le profil.",
+    "tabs": { "profile": "Profil", "shares": "Partages" },
+    "identity": "Identité",
+    "fullName": "Nom complet",
+    "email": "Adresse email",
+    "founderProfile": "Profil porteur",
+    "country": "Pays",
+    "countryPlaceholder": "Sélectionne ton pays",
+    "city": "Ville (optionnel)",
+    "cityPlaceholder": "Ex : Abidjan",
+    "proStatus": "Statut professionnel",
+    "proStatusPlaceholder": "Sélectionne ton statut",
+    "stage": "Stade du projet",
+    "stagePlaceholder": "Où en es-tu ?",
+    "availability": "Disponibilité hebdomadaire",
+    "availabilityPlaceholder": "Combien de temps par semaine ?",
+    "saved": "Sauvegardé",
+    "saving": "Enregistrement…",
+    "save": "Enregistrer les modifications",
+    "toastSaved": "Profil mis à jour !"
+  },
+  "Shares": {
+    "title": "Mon profil",
+    "subtitle": "Visibilité du projet, liens de partage actifs et statistiques de vues.",
+    "privacy": "Confidentialité",
+    "emptyTitle": "Aucun lien de partage pour l’instant.",
+    "emptyText": "Crée un lien depuis la page Opportunités pour partager ta fiche projet.",
+    "activeLinks": "Liens actifs ({count})",
+    "revokedLinks": "Liens révoqués ({count})",
+    "card": {
+      "createdOn": "Créé le {date}",
+      "active": "Actif",
+      "revoked": "Révoqué",
+      "views": "Vues",
+      "expires": "Expire",
+      "lastView": "Dernière vue",
+      "copied": "Copié !",
+      "revoking": "Révocation…",
+      "revoke": "Révoquer ce lien",
+      "toastRevoked": "Lien révoqué.",
+      "today": "aujourd’hui"
+    },
+    "visibility": {
+      "publicDesc": "Visible par les mentors et financeurs de l’écosystème",
+      "privateDesc": "Projet privé — seuls toi et les analystes assignés peuvent le voir",
+      "toastPublic": "Projet visible dans l’écosystème.",
+      "toastPrivate": "Projet repassé en privé."
+    }
+  },
   "EmailVerify": {
     "nudge": "Confirme ton adresse email pour sécuriser ton espace.",
     "resend": "Renvoyer le lien",

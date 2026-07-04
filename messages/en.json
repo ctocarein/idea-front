@@ -433,6 +433,78 @@
       "noneMatch": "No need matches this filter."
     }
   },
+  "Opportunities": {
+    "title": "Opportunities",
+    "subtitle": "Programs, contests and incubators — filtered by how solid your project is.",
+    "emptyDiagTitle": "Run your diagnostic first",
+    "emptyDiagText": "Opportunities open up based on your project's maturity.",
+    "emptyDiagCta": "Start my diagnostic",
+    "none": "No opportunities right now. Check back soon — we add them regularly.",
+    "forYou": "For you now",
+    "toUnlock": "To unlock by strengthening your project",
+    "card": {
+      "kinds": { "program": "Program", "contest": "Contest", "incubator": "Incubator", "grant": "Grant", "event": "Event" },
+      "eligible": "Eligible",
+      "locked": "To unlock",
+      "remaining": "What's left to do:",
+      "interested": "I'm interested",
+      "interestSent": "Interest sent",
+      "toastInterest": "Interest sent ✦",
+      "strengthenToAccess": "Strengthen your project to access it."
+    }
+  },
+  "Profile": {
+    "title": "My profile",
+    "subtitle": "Update your personal info and your project's situation.",
+    "loadError": "Couldn't load the profile.",
+    "tabs": { "profile": "Profile", "shares": "Shares" },
+    "identity": "Identity",
+    "fullName": "Full name",
+    "email": "Email address",
+    "founderProfile": "Founder profile",
+    "country": "Country",
+    "countryPlaceholder": "Select your country",
+    "city": "City (optional)",
+    "cityPlaceholder": "E.g. Abidjan",
+    "proStatus": "Professional status",
+    "proStatusPlaceholder": "Select your status",
+    "stage": "Project stage",
+    "stagePlaceholder": "Where are you?",
+    "availability": "Weekly availability",
+    "availabilityPlaceholder": "How much time per week?",
+    "saved": "Saved",
+    "saving": "Saving…",
+    "save": "Save changes",
+    "toastSaved": "Profile updated!"
+  },
+  "Shares": {
+    "title": "My profile",
+    "subtitle": "Project visibility, active share links and view stats.",
+    "privacy": "Privacy",
+    "emptyTitle": "No share links yet.",
+    "emptyText": "Create a link from the Opportunities page to share your project sheet.",
+    "activeLinks": "Active links ({count})",
+    "revokedLinks": "Revoked links ({count})",
+    "card": {
+      "createdOn": "Created on {date}",
+      "active": "Active",
+      "revoked": "Revoked",
+      "views": "Views",
+      "expires": "Expires",
+      "lastView": "Last view",
+      "copied": "Copied!",
+      "revoking": "Revoking…",
+      "revoke": "Revoke this link",
+      "toastRevoked": "Link revoked.",
+      "today": "today"
+    },
+    "visibility": {
+      "publicDesc": "Visible to mentors and investors in the ecosystem",
+      "privateDesc": "Private project — only you and assigned analysts can see it",
+      "toastPublic": "Project visible in the ecosystem.",
+      "toastPrivate": "Project set back to private."
+    }
+  },
   "EmailVerify": {
     "nudge": "Confirm your email address to secure your space.",
     "resend": "Resend the link",

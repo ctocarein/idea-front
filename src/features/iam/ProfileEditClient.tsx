@@ -1,65 +1,21 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { Save, CheckCircle2 } from "lucide-react";
 
-import { Field } from "@/shared/ui/Field";
-import { Input } from "@/shared/ui/Input";
-import { Select, SelectItem } from "@/shared/ui/Select";
-import { Button } from "@/shared/ui/Button";
-import { Card, CardContent } from "@/shared/ui/Card";
-import { toast } from "@/shared/ui";
+import { Field, Input, Select, SelectItem, Button, Card, CardContent, toast } from "@/shared/ui";
 
 import { updateProfile, type ProfileFormData } from "./profileActions";
 
-const COUNTRIES = [
-  { code: "CI", label: "Côte d'Ivoire" },
-  { code: "SN", label: "Sénégal" },
-  { code: "CM", label: "Cameroun" },
-  { code: "GN", label: "Guinée" },
-  { code: "ML", label: "Mali" },
-  { code: "BF", label: "Burkina Faso" },
-  { code: "TG", label: "Togo" },
-  { code: "BJ", label: "Bénin" },
-  { code: "CD", label: "RD Congo" },
-  { code: "CG", label: "Congo-Brazzaville" },
-  { code: "GA", label: "Gabon" },
-  { code: "MG", label: "Madagascar" },
-  { code: "MA", label: "Maroc" },
-  { code: "TN", label: "Tunisie" },
-  { code: "DZ", label: "Algérie" },
-  { code: "NG", label: "Nigeria" },
-  { code: "GH", label: "Ghana" },
-  { code: "FR", label: "France" },
-  { code: "BE", label: "Belgique" },
-  { code: "CH", label: "Suisse" },
-  { code: "CA", label: "Canada" },
-  { code: "US", label: "États-Unis" },
+// Codes pays (les noms sont résolus via Intl.DisplayNames selon la langue active).
+const COUNTRY_CODES = [
+  "CI", "SN", "CM", "GN", "ML", "BF", "TG", "BJ", "CD", "CG", "GA", "MG",
+  "MA", "TN", "DZ", "NG", "GH", "FR", "BE", "CH", "CA", "US",
 ];
-
-const PROFESSIONAL_STATUS = [
-  { value: "student",       label: "Étudiant(e)" },
-  { value: "employee",      label: "Salarié(e)" },
-  { value: "entrepreneur",  label: "Entrepreneur(e)" },
-  { value: "freelance",     label: "Freelance / Indépendant(e)" },
-  { value: "career_change", label: "En reconversion" },
-  { value: "unemployed",    label: "Sans emploi" },
-];
-
-const PROJECT_STAGE = [
-  { value: "idea",       label: "Idée — je cherche à valider" },
-  { value: "validation", label: "En validation — j'ai des premiers retours" },
-  { value: "mvp",        label: "MVP — j'ai un produit" },
-  { value: "traction",   label: "Traction — j'ai des clients" },
-  { value: "scale",      label: "Scale — je cherche à croître" },
-];
-
-const AVAILABILITY = [
-  { value: "lt5",   label: "Moins de 5h / semaine" },
-  { value: "h5_10", label: "5 à 10h / semaine" },
-  { value: "h10_20",label: "10 à 20h / semaine" },
-  { value: "gt20",  label: "Plus de 20h / semaine" },
-];
+const PRO_STATUS_VALUES = ["student", "employee", "entrepreneur", "freelance", "career_change", "unemployed"];
+const PROJECT_STAGE_VALUES = ["idea", "validation", "mvp", "traction", "scale"];
+const AVAILABILITY_VALUES = ["lt5", "h5_10", "h10_20", "gt20"];
 
 export interface UserProfile {
   full_name: string;
@@ -76,6 +32,14 @@ interface Props {
 }
 
 export function ProfileEditClient({ profile }: Props) {
+  const t = useTranslations("Profile");
+  const tOnb = useTranslations("Auth.onboarding");
+  const locale = useLocale();
+  const countries = useMemo(() => {
+    const names = new Intl.DisplayNames([locale], { type: "region" });
+    return COUNTRY_CODES.map((code) => ({ code, label: names.of(code) ?? code }))
+      .sort((a, b) => a.label.localeCompare(b.label, locale));
+  }, [locale]);
   const [form, setForm] = useState<ProfileFormData>({
     country:              profile.country              ?? "",
     city:                 profile.city                 ?? "",
@@ -100,7 +64,7 @@ export function ProfileEditClient({ profile }: Props) {
         return;
       }
       setSaved(true);
-      toast.success("Profil mis à jour !");
+      toast.success(t("toastSaved"));
     });
   }
 
@@ -110,13 +74,13 @@ export function ProfileEditClient({ profile }: Props) {
       <Card>
         <CardContent className="space-y-4 pt-5">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-            Identité
+            {t("identity")}
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Nom complet">
+            <Field label={t("fullName")}>
               <Input value={profile.full_name} disabled />
             </Field>
-            <Field label="Adresse email">
+            <Field label={t("email")}>
               <Input value={profile.email} disabled type="email" />
             </Field>
           </div>
@@ -127,17 +91,17 @@ export function ProfileEditClient({ profile }: Props) {
       <Card>
         <CardContent className="space-y-4 pt-5">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-            Profil porteur
+            {t("founderProfile")}
           </h2>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Pays">
+            <Field label={t("country")}>
               <Select
                 value={form.country}
                 onValueChange={(v) => set("country", v)}
-                placeholder="Sélectionne ton pays"
+                placeholder={t("countryPlaceholder")}
               >
-                {COUNTRIES.map((c) => (
+                {countries.map((c) => (
                   <SelectItem key={c.code} value={c.code}>
                     {c.label}
                   </SelectItem>
@@ -145,52 +109,52 @@ export function ProfileEditClient({ profile }: Props) {
               </Select>
             </Field>
 
-            <Field label="Ville (optionnel)">
+            <Field label={t("city")}>
               <Input
                 value={form.city}
                 onChange={(e) => set("city", e.target.value)}
-                placeholder="Ex : Abidjan"
+                placeholder={t("cityPlaceholder")}
               />
             </Field>
           </div>
 
-          <Field label="Statut professionnel">
+          <Field label={t("proStatus")}>
             <Select
               value={form.professional_status}
               onValueChange={(v) => set("professional_status", v)}
-              placeholder="Sélectionne ton statut"
+              placeholder={t("proStatusPlaceholder")}
             >
-              {PROFESSIONAL_STATUS.map((s) => (
-                <SelectItem key={s.value} value={s.value}>
-                  {s.label}
+              {PRO_STATUS_VALUES.map((v) => (
+                <SelectItem key={v} value={v}>
+                  {tOnb(`proStatuses.${v}`)}
                 </SelectItem>
               ))}
             </Select>
           </Field>
 
-          <Field label="Stade du projet">
+          <Field label={t("stage")}>
             <Select
               value={form.project_stage}
               onValueChange={(v) => set("project_stage", v)}
-              placeholder="Où en es-tu ?"
+              placeholder={t("stagePlaceholder")}
             >
-              {PROJECT_STAGE.map((s) => (
-                <SelectItem key={s.value} value={s.value}>
-                  {s.label}
+              {PROJECT_STAGE_VALUES.map((v) => (
+                <SelectItem key={v} value={v}>
+                  {tOnb(`stages.${v}`)}
                 </SelectItem>
               ))}
             </Select>
           </Field>
 
-          <Field label="Disponibilité hebdomadaire">
+          <Field label={t("availability")}>
             <Select
               value={form.weekly_availability}
               onValueChange={(v) => set("weekly_availability", v)}
-              placeholder="Combien de temps par semaine ?"
+              placeholder={t("availabilityPlaceholder")}
             >
-              {AVAILABILITY.map((a) => (
-                <SelectItem key={a.value} value={a.value}>
-                  {a.label}
+              {AVAILABILITY_VALUES.map((v) => (
+                <SelectItem key={v} value={v}>
+                  {tOnb(`availabilities.${v}`)}
                 </SelectItem>
               ))}
             </Select>
@@ -203,14 +167,14 @@ export function ProfileEditClient({ profile }: Props) {
           {saved ? (
             <>
               <CheckCircle2 className="mr-1.5 size-4 text-success" />
-              Sauvegardé
+              {t("saved")}
             </>
           ) : isPending ? (
-            "Enregistrement…"
+            t("saving")
           ) : (
             <>
               <Save className="mr-1.5 size-4" />
-              Enregistrer les modifications
+              {t("save")}
             </>
           )}
         </Button>

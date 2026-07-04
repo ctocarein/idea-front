@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { ArrowRight } from "lucide-react";
 
+import { Link } from "@/i18n/navigation";
 import { routes } from "@/shared/config/routes";
 import { ApiError } from "@/shared/api/client";
 import { Button, Card, CardContent } from "@/shared/ui";
@@ -12,13 +13,14 @@ export const metadata: Metadata = { title: "Opportunités" };
 
 export default async function OpportunitesPage() {
   const projectId = await getMyProjectId();
+  const t = await getTranslations("Opportunities");
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight">Opportunités</h1>
+        <h1 className="font-display text-2xl font-bold tracking-tight">{t("title")}</h1>
         <p className="text-muted-foreground">
-          Programmes, concours et incubateurs — filtrés selon la solidité de ton projet.
+          {t("subtitle")}
         </p>
       </div>
 
@@ -29,15 +31,15 @@ export default async function OpportunitesPage() {
           <CardContent className="flex flex-wrap items-center justify-between gap-4 py-8">
             <div>
               <h2 className="font-display text-lg font-bold tracking-tight">
-                Lance d&apos;abord ton diagnostic
+                {t("emptyDiagTitle")}
               </h2>
               <p className="text-sm text-muted-foreground">
-                Les opportunités s&apos;ouvrent en fonction de la maturité de ton projet.
+                {t("emptyDiagText")}
               </p>
             </div>
             <Button asChild>
               <Link href={routes.diagnostic}>
-                Commencer mon diagnostic
+                {t("emptyDiagCta")}
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
@@ -49,6 +51,7 @@ export default async function OpportunitesPage() {
 }
 
 async function OpportunitiesList({ projectId }: { projectId: string }) {
+  const t = await getTranslations("Opportunities");
   let opportunities: Opportunity[] = [];
   try {
     opportunities = await getOpportunities(projectId);
@@ -60,7 +63,7 @@ async function OpportunitiesList({ projectId }: { projectId: string }) {
     return (
       <Card>
         <CardContent className="py-10 text-center text-muted-foreground">
-          Aucune opportunité pour le moment. Reviens bientôt — on en ajoute régulièrement.
+          {t("none")}
         </CardContent>
       </Card>
     );
@@ -74,7 +77,7 @@ async function OpportunitiesList({ projectId }: { projectId: string }) {
       {eligible.length > 0 ? (
         <section className="space-y-3">
           <h2 className="font-display text-lg font-bold tracking-tight">
-            Pour toi maintenant
+            {t("forYou")}
             <span className="ml-2 text-sm font-medium text-muted-foreground">
               {eligible.length}
             </span>
@@ -90,7 +93,7 @@ async function OpportunitiesList({ projectId }: { projectId: string }) {
       {locked.length > 0 ? (
         <section className="space-y-3">
           <h2 className="font-display text-lg font-bold tracking-tight">
-            À débloquer en renforçant ton projet
+            {t("toUnlock")}
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {locked.map((o) => (

@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { Copy, Link2, Eye, Clock, Trash2, CheckCircle2, AlertCircle, Globe, Lock } from "lucide-react";
 
-import { Card, CardContent } from "@/shared/ui/Card";
-import { Button } from "@/shared/ui/Button";
-import { toast } from "@/shared/ui";
+import { Button, Card, CardContent, toast } from "@/shared/ui";
 
 import { revokeShare, setProjectVisibility } from "./sharingActions";
 
@@ -27,24 +26,9 @@ export interface ShareStats {
   created_at: string;
 }
 
-const dateFmt = new Intl.DateTimeFormat("fr-FR", {
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-});
-
-const relativeFmt = new Intl.RelativeTimeFormat("fr-FR", { numeric: "auto" });
-
 function daysUntil(iso: string): number {
   const diff = new Date(iso).getTime() - Date.now();
   return Math.ceil(diff / (1000 * 60 * 60 * 24));
-}
-
-function formatRelative(iso: string): string {
-  const days = daysUntil(iso);
-  if (Math.abs(days) < 1) return "aujourd'hui";
-  if (Math.abs(days) < 30) return relativeFmt.format(days, "day");
-  return dateFmt.format(new Date(iso));
 }
 
 interface ShareCardProps {
@@ -53,6 +37,16 @@ interface ShareCardProps {
 }
 
 function ShareCard({ share, onRevoked }: ShareCardProps) {
+  const t = useTranslations("Shares.card");
+  const locale = useLocale();
+  const dateFmt = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" });
+  const relativeFmt = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+  const formatRelative = (iso: string): string => {
+    const days = daysUntil(iso);
+    if (Math.abs(days) < 1) return t("today");
+    if (Math.abs(days) < 30) return relativeFmt.format(days, "day");
+    return dateFmt.format(new Date(iso));
+  };
   const [copied, setCopied] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -73,7 +67,7 @@ function ShareCard({ share, onRevoked }: ShareCardProps) {
         toast.error(result.message);
         return;
       }
-      toast.success("Lien révoqué.");
+      toast.success(t("toastRevoked"));
       onRevoked(share.id);
     });
   }
@@ -88,7 +82,7 @@ function ShareCard({ share, onRevoked }: ShareCardProps) {
           <div className="min-w-0">
             <p className="font-semibold leading-tight truncate">{share.project_title}</p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Créé le {dateFmt.format(new Date(share.created_at))}
+              {t("createdOn", { date: dateFmt.format(new Date(share.created_at)) })}
             </p>
           </div>
           <span
@@ -99,9 +93,9 @@ function ShareCard({ share, onRevoked }: ShareCardProps) {
             }`}
           >
             {share.is_active ? (
-              <><CheckCircle2 className="size-3" /> Actif</>
+              <><CheckCircle2 className="size-3" /> {t("active")}</>
             ) : (
-              <><AlertCircle className="size-3" /> Révoqué</>
+              <><AlertCircle className="size-3" /> {t("revoked")}</>
             )}
           </span>
         </div>
@@ -111,14 +105,14 @@ function ShareCard({ share, onRevoked }: ShareCardProps) {
           <div className="rounded-lg bg-muted/50 p-3 text-center">
             <div className="flex items-center justify-center gap-1 text-muted-foreground mb-0.5">
               <Eye className="size-3.5" />
-              <span className="text-xs">Vues</span>
+              <span className="text-xs">{t("views")}</span>
             </div>
             <p className="text-xl font-bold">{share.view_count}</p>
           </div>
           <div className="rounded-lg bg-muted/50 p-3 text-center">
             <div className="flex items-center justify-center gap-1 text-muted-foreground mb-0.5">
               <Clock className="size-3.5" />
-              <span className="text-xs">Expire</span>
+              <span className="text-xs">{t("expires")}</span>
             </div>
             <p className={`text-xs font-semibold mt-1 ${expiringSoon ? "text-warning" : ""}`}>
               {share.is_active ? formatRelative(share.expires_at) : "—"}
@@ -127,7 +121,7 @@ function ShareCard({ share, onRevoked }: ShareCardProps) {
           <div className="rounded-lg bg-muted/50 p-3 text-center">
             <div className="flex items-center justify-center gap-1 text-muted-foreground mb-0.5">
               <Eye className="size-3.5" />
-              <span className="text-xs">Dernière vue</span>
+              <span className="text-xs">{t("lastView")}</span>
             </div>
             <p className="text-xs font-semibold mt-1">
               {share.last_viewed_at ? formatRelative(share.last_viewed_at) : "—"}
@@ -147,7 +141,7 @@ function ShareCard({ share, onRevoked }: ShareCardProps) {
               onClick={handleCopy}
               className="shrink-0 text-xs font-medium text-primary hover:underline"
             >
-              {copied ? "Copié !" : <Copy className="size-3.5" />}
+              {copied ? t("copied") : <Copy className="size-3.5" />}
             </button>
           </div>
         )}
@@ -162,7 +156,7 @@ function ShareCard({ share, onRevoked }: ShareCardProps) {
               className="text-destructive hover:text-destructive hover:bg-destructive/10"
             >
               <Trash2 className="mr-1.5 size-3.5" />
-              {isPending ? "Révocation…" : "Révoquer ce lien"}
+              {isPending ? t("revoking") : t("revoke")}
             </Button>
           </div>
         )}
@@ -172,6 +166,7 @@ function ShareCard({ share, onRevoked }: ShareCardProps) {
 }
 
 function ProjectVisibilityCard({ visibility }: { visibility: ProjectVisibility }) {
+  const t = useTranslations("Shares.visibility");
   const [isPublic, setIsPublic] = useState(visibility.is_public);
   const [isPending, startTransition] = useTransition();
 
@@ -184,7 +179,7 @@ function ProjectVisibilityCard({ visibility }: { visibility: ProjectVisibility }
         return;
       }
       setIsPublic(next);
-      toast.success(next ? "Projet visible dans l'écosystème." : "Projet repassé en privé.");
+      toast.success(next ? t("toastPublic") : t("toastPrivate"));
     });
   }
 
@@ -199,9 +194,7 @@ function ProjectVisibilityCard({ visibility }: { visibility: ProjectVisibility }
             <div>
               <p className="font-semibold text-sm">{visibility.project_title}</p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {isPublic
-                  ? "Visible par les mentors et financeurs de l'écosystème"
-                  : "Projet privé — seuls toi et les analystes assignés peuvent le voir"}
+                {isPublic ? t("publicDesc") : t("privateDesc")}
               </p>
             </div>
           </div>
@@ -229,6 +222,7 @@ interface Props {
 }
 
 export function SharesDashboard({ shares: initialShares, projectVisibility }: Props) {
+  const t = useTranslations("Shares");
   const [shares, setShares] = useState(initialShares);
 
   function handleRevoked(id: string) {
@@ -245,7 +239,7 @@ export function SharesDashboard({ shares: initialShares, projectVisibility }: Pr
       {projectVisibility && (
         <section className="space-y-3">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-            Confidentialité
+            {t("privacy")}
           </h2>
           <ProjectVisibilityCard visibility={projectVisibility} />
         </section>
@@ -254,17 +248,17 @@ export function SharesDashboard({ shares: initialShares, projectVisibility }: Pr
       {shares.length === 0 && (
         <div className="rounded-xl border border-dashed p-12 text-center">
           <p className="text-muted-foreground text-sm">
-            Aucun lien de partage pour l&apos;instant.
+            {t("emptyTitle")}
           </p>
           <p className="text-muted-foreground text-xs mt-1">
-            Crée un lien depuis la page Opportunités pour partager ta fiche projet.
+            {t("emptyText")}
           </p>
         </div>
       )}
       {active.length > 0 && (
         <section className="space-y-3">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-            Liens actifs ({active.length})
+            {t("activeLinks", { count: active.length })}
           </h2>
           {active.map((s) => (
             <ShareCard key={s.id} share={s} onRevoked={handleRevoked} />
@@ -275,7 +269,7 @@ export function SharesDashboard({ shares: initialShares, projectVisibility }: Pr
       {revoked.length > 0 && (
         <section className="space-y-3">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-            Liens révoqués ({revoked.length})
+            {t("revokedLinks", { count: revoked.length })}
           </h2>
           {revoked.map((s) => (
             <ShareCard key={s.id} share={s} onRevoked={handleRevoked} />
