@@ -63,6 +63,32 @@
     "finalCta": "Start, for free",
     "finalReassurance": "No sign-up · no credit card · your idea stays private."
   },
+  "Radar": {
+    "d1": { "label": "Problem", "short": "Problem" },
+    "d2": { "label": "Solution", "short": "Solution" },
+    "d3": { "label": "Value proposition", "short": "Value" },
+    "d4": { "label": "Market", "short": "Market" },
+    "d5": { "label": "Competition & Benchmark", "short": "Competition" },
+    "d6": { "label": "Business model", "short": "Business model" },
+    "d7": { "label": "Traction & Proof", "short": "Traction" },
+    "d8": { "label": "Growth potential", "short": "Growth" },
+    "d9": { "label": "Go-to-Market strategy", "short": "Go-to-market" },
+    "d10": { "label": "Team & Skills", "short": "Team" },
+    "d11": { "label": "Progress level", "short": "Progress" },
+    "d12": { "label": "Risks & Blockers", "short": "Risks" },
+    "pillars": {
+      "sens": { "label": "Project purpose", "question": "Does it solve a real problem with a relevant solution?" },
+      "viabilite": { "label": "Viability", "question": "Can it be economically sustainable?" },
+      "scalabilite": { "label": "Scalability", "question": "Can it grow without breaking?" },
+      "execution": { "label": "Execution", "question": "Can the team execute and deliver?" }
+    },
+    "tones": {
+      "strong": "Solid",
+      "good": "On track",
+      "watch": "To strengthen",
+      "fragile": "To explore"
+    }
+  },
   "LocaleSwitcher": {
     "label": "Language",
     "fr": "Français",

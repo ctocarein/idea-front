@@ -63,6 +63,32 @@
     "finalCta": "Commencer, gratuitement",
     "finalReassurance": "Sans inscription · sans carte bancaire · ton idée reste privée."
   },
+  "Radar": {
+    "d1": { "label": "Problème", "short": "Problème" },
+    "d2": { "label": "Solution", "short": "Solution" },
+    "d3": { "label": "Proposition de valeur", "short": "Valeur" },
+    "d4": { "label": "Marché", "short": "Marché" },
+    "d5": { "label": "Concurrence & Benchmark", "short": "Concurrence" },
+    "d6": { "label": "Modèle économique", "short": "Modèle éco" },
+    "d7": { "label": "Traction & Preuves", "short": "Traction" },
+    "d8": { "label": "Potentiel de croissance", "short": "Croissance" },
+    "d9": { "label": "Stratégie Go-to-Market", "short": "Go-to-market" },
+    "d10": { "label": "Équipe & Compétences", "short": "Équipe" },
+    "d11": { "label": "Niveau d'avancement", "short": "Avancement" },
+    "d12": { "label": "Risques & Freins", "short": "Risques" },
+    "pillars": {
+      "sens": { "label": "Sens du projet", "question": "Répond-il à un vrai problème avec une solution pertinente ?" },
+      "viabilite": { "label": "Viabilité", "question": "Peut-il tenir économiquement ?" },
+      "scalabilite": { "label": "Scalabilité", "question": "Peut-il grandir sans se casser ?" },
+      "execution": { "label": "Exécution", "question": "L'équipe peut-elle exécuter et livrer ?" }
+    },
+    "tones": {
+      "strong": "Solide",
+      "good": "En bonne voie",
+      "watch": "À renforcer",
+      "fragile": "À explorer"
+    }
+  },
   "LocaleSwitcher": {
     "label": "Langue",
     "fr": "Français",

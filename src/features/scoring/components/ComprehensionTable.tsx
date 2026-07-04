@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 import { cn } from "@/shared/lib/utils";
 import { Badge } from "@/shared/ui";
 import {
@@ -47,6 +49,7 @@ export function ComprehensionTable({
   score: RadarScore;
   className?: string;
 }) {
+  const t = useTranslations("Radar");
   return (
     <div className={cn("grid gap-4 sm:grid-cols-2 xl:grid-cols-4", className)}>
       {PILLARS.map((pillar) => {
@@ -60,10 +63,10 @@ export function ComprehensionTable({
           >
             <div className="flex items-start justify-between gap-2">
               <div>
-                <h3 className="font-display text-base font-bold">{pillar.label}</h3>
-                <p className="text-xs text-muted-foreground">{pillar.question}</p>
+                <h3 className="font-display text-base font-bold">{t(`pillars.${pillar.key}.label`)}</h3>
+                <p className="text-xs text-muted-foreground">{t(`pillars.${pillar.key}.question`)}</p>
               </div>
-              <Badge variant={TONE_BADGE[r.tone]}>{r.label}</Badge>
+              <Badge variant={TONE_BADGE[r.tone]}>{t(`tones.${r.tone}`)}</Badge>
             </div>
 
             <div className="flex items-baseline gap-1">
@@ -78,7 +81,7 @@ export function ComprehensionTable({
                   key={axis.key}
                   className="flex items-center justify-between text-sm"
                 >
-                  <span className="truncate text-muted-foreground">{axis.label}</span>
+                  <span className="truncate text-muted-foreground">{t(`${axis.key}.label`)}</span>
                   <span className="tabular shrink-0 font-medium">
                     {score.axes[axis.key] ?? 0}
                   </span>

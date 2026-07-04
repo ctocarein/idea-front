@@ -2,6 +2,7 @@
 
 import { useId } from "react";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 import { cn } from "@/shared/lib/utils";
 import { AXES, SCALE_MAX, type RadarScore } from "../types/scoring.types";
@@ -46,6 +47,7 @@ export function RadarChart({
   compare,
   className,
 }: RadarChartProps) {
+  const t = useTranslations("Radar");
   const gradientId = useId();
   const cx = size / 2;
   const cy = size / 2;
@@ -167,7 +169,7 @@ export function RadarChart({
                 dominantBaseline="middle"
                 className="fill-muted-foreground text-[10px] font-medium"
               >
-                {axis.short}
+                {t(`${axis.key}.short`)}
               </text>
             );
           })
