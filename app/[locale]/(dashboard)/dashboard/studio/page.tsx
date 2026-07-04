@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { ArrowRight, Presentation, Shapes, Palette, FileText, type LucideIcon } from "lucide-react";
 
+import { Link } from "@/i18n/navigation";
 import { apiFetch } from "@/shared/api/client";
 import { routes } from "@/shared/config/routes";
 import { Card, CardContent } from "@/shared/ui";
@@ -11,6 +12,7 @@ import type { LogoData } from "@/features/studio";
 export const metadata: Metadata = { title: "Studio" };
 
 export default async function StudioPage() {
+  const t = await getTranslations("Studio");
   const [pitch, logo] = await Promise.all([
     apiFetch<PitchData>("/api/v1/pitch").catch(() => null),
     apiFetch<LogoData>("/api/v1/studio/logo").catch(() => null),
@@ -22,42 +24,45 @@ export default async function StudioPage() {
   return (
     <div className="space-y-8 max-w-4xl">
       <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight">Studio</h1>
+        <h1 className="font-display text-2xl font-bold tracking-tight">{t("title")}</h1>
         <p className="text-muted-foreground">
-          Donne un visage à ton projet. Chaque asset part de ton diagnostic et de ton travail
-          dans le Workshop — pour une identité cohérente partout.
+          {t("subtitle")}
         </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Door
           icon={Presentation}
-          title="Pitch / Deck"
-          desc="Un deck visuel prêt à pitcher, généré et éditable."
+          title={t("doors.deckTitle")}
+          desc={t("doors.deckDesc")}
           href={routes.pitchEditor}
-          status={deckCount > 0 ? `${deckCount} slides` : "À créer"}
+          status={deckCount > 0 ? t("status.slides", { count: deckCount }) : t("status.todo")}
           ready={deckCount > 0}
+          cta={deckCount > 0 ? t("continue") : t("start")}
         />
         <Door
           icon={Shapes}
-          title="Logo & identité"
-          desc="Une marque vectorielle sur mesure — icône, monogramme, couleurs, typo."
+          title={t("doors.logoTitle")}
+          desc={t("doors.logoDesc")}
           href={`${routes.studio}/logo`}
-          status={logoReady ? "Prêt" : "À créer"}
+          status={logoReady ? t("status.ready") : t("status.todo")}
           ready={logoReady}
+          cta={logoReady ? t("continue") : t("start")}
         />
         <Door
           icon={Palette}
-          title="Kit de marque"
-          desc="Palette et typographies dérivées de ton logo, réutilisées dans le deck."
+          title={t("doors.kitTitle")}
+          desc={t("doors.kitDesc")}
           href={`${routes.studio}/kit`}
-          status={logoReady ? "Prêt" : "À créer"}
+          status={logoReady ? t("status.ready") : t("status.todo")}
           ready={logoReady}
+          cta={logoReady ? t("continue") : t("start")}
         />
         <Door
           icon={FileText}
-          title="One-pager"
-          desc="Une fiche projet d'une page, à envoyer ou imprimer."
+          title={t("doors.onePagerTitle")}
+          desc={t("doors.onePagerDesc")}
+          soonLabel={t("status.soon")}
           soon
         />
       </div>
@@ -73,6 +78,8 @@ function Door({
   status,
   ready,
   soon,
+  soonLabel,
+  cta,
 }: {
   icon: LucideIcon;
   title: string;
@@ -81,6 +88,8 @@ function Door({
   status?: string;
   ready?: boolean;
   soon?: boolean;
+  soonLabel?: string;
+  cta?: string;
 }) {
   const inner = (
     <Card className={`h-full transition-shadow ${soon ? "opacity-60" : "hover:shadow-sm hover:border-border-strong"}`}>
@@ -91,7 +100,7 @@ function Door({
           </div>
           {soon ? (
             <span className="rounded-full border px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
-              Bientôt
+              {soonLabel}
             </span>
           ) : (
             <span
@@ -109,7 +118,7 @@ function Door({
         </div>
         {!soon && (
           <span className="inline-flex items-center gap-1.5 text-sm font-medium text-primary">
-            {ready ? "Continuer" : "Commencer"} <ArrowRight className="size-3.5" />
+            {cta} <ArrowRight className="size-3.5" />
           </span>
         )}
       </CardContent>

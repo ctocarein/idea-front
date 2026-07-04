@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { Sparkles, Loader2, Download, Check, Trash2, Plus } from "lucide-react";
 
 import { Button, toast } from "@/shared/ui";
@@ -25,6 +26,7 @@ function SvgBox({ svg, className = "" }: { svg: string; className?: string }) {
 }
 
 export function LogoStudio({ initial }: { initial: LogoData }) {
+  const t = useTranslations("Studio.logo");
   const [logo, setLogo] = useState(initial);
   const [busy, setBusy] = useState(false);
   const [pending, start] = useTransition();
@@ -33,7 +35,7 @@ export function LogoStudio({ initial }: { initial: LogoData }) {
   function run(fn: () => Promise<{ ok: boolean; logo?: LogoData; message?: string }>) {
     start(async () => {
       const res = await fn();
-      if (!res.ok) { toast.error(res.message ?? "Erreur."); return; }
+      if (!res.ok) { toast.error(res.message ?? t("genericError")); return; }
       if (res.logo) setLogo(res.logo);
     });
   }
@@ -70,14 +72,13 @@ export function LogoStudio({ initial }: { initial: LogoData }) {
         <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
           <Sparkles className="size-7" />
         </div>
-        <h2 className="font-display text-lg font-bold">Crée ton logo</h2>
+        <h2 className="font-display text-lg font-bold">{t("emptyTitle")}</h2>
         <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
-          L&apos;IA propose 4 concepts à partir de ton projet — marque, couleurs et typo. Tu
-          choisis, puis tu ajustes tout.
+          {t("emptyText")}
         </p>
         <Button className="mt-5" onClick={generate} disabled={pending}>
           {busy ? <Loader2 className="mr-1.5 size-4 animate-spin" /> : <Sparkles className="mr-1.5 size-4" />}
-          Générer mes logos
+          {t("generate")}
         </Button>
       </div>
     );
@@ -93,10 +94,10 @@ export function LogoStudio({ initial }: { initial: LogoData }) {
       {logo.variations.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">Concepts proposés</span>
+            <span className="text-xs font-medium text-muted-foreground">{t("concepts")}</span>
             <button type="button" onClick={generate} disabled={pending}
               className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
-              {busy ? <Loader2 className="size-3 animate-spin" /> : <Sparkles className="size-3" />} Regénérer
+              {busy ? <Loader2 className="size-3 animate-spin" /> : <Sparkles className="size-3" />} {t("regenerate")}
             </button>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -127,53 +128,57 @@ export function LogoStudio({ initial }: { initial: LogoData }) {
             </div>
             <div className="flex justify-end">
               <Button size="sm" variant="outline" onClick={downloadSvg}>
-                <Download className="mr-1.5 size-3.5" /> Télécharger le SVG
+                <Download className="mr-1.5 size-3.5" /> {t("downloadSvg")}
               </Button>
             </div>
           </div>
 
           {/* Éditeur */}
           <div className="space-y-4 rounded-2xl border bg-card p-5">
-            <Text label="Nom" value={spec.name} onCommit={(v) => patch({ name: v })} />
+            <Text label={t("fields.name")} value={spec.name} onCommit={(v) => patch({ name: v })} />
 
             <WordmarkColor spec={spec} onPatch={patch} />
 
-            <Text label="Slogan (optionnel)" value={spec.tagline ?? ""} onCommit={(v) => patch({ tagline: v })} />
+            <Text label={t("fields.tagline")} value={spec.tagline ?? ""} onCommit={(v) => patch({ tagline: v })} />
             {(spec.tagline ?? "").trim() && (
               <div className="grid grid-cols-[1fr_auto_auto] items-end gap-2">
-                <Select label="Police du slogan" options={["", ...FONTS]} labels={{ "": "Comme le nom" }}
+                <Select label={t("fields.taglineFont")} options={["", ...FONTS]} labels={{ "": t("fields.taglineFontDefault") }}
                   value={spec.tagline_font ?? ""} onChange={(v) => patch({ tagline_font: v })} />
-                <Seg label="Taille" options={["s", "m", "l"]} value={spec.tagline_size ?? "m"}
+                <Seg label={t("fields.size")} options={["s", "m", "l"]}
+                  optionLabels={{ s: t("seg.s"), m: t("seg.m"), l: t("seg.l") }}
+                  value={spec.tagline_size ?? "m"}
                   onChange={(v) => patch({ tagline_size: v as "s" | "m" | "l" })} compact />
                 <Color value={spec.tagline_color ?? spec.palette.secondary}
-                  onChange={(v) => patch({ tagline_color: v })} title="Couleur" />
+                  onChange={(v) => patch({ tagline_color: v })} title={t("fields.color")} />
               </div>
             )}
 
-            <Seg label="Marque" options={MARK_TYPES} value={spec.mark_type}
+            <Seg label={t("fields.mark")} options={MARK_TYPES}
+              optionLabels={{ geometric: t("seg.geometric"), icon: t("seg.icon"), monogram: t("seg.monogram") }}
+              value={spec.mark_type}
               onChange={(v) => patch({ mark_type: v as LogoSpec["mark_type"] })} />
 
             {spec.mark_type === "icon" && (
-              <Select label="Icône" options={ICONS} value={spec.icon ?? "spark"} onChange={(v) => patch({ icon: v })} />
+              <Select label={t("fields.icon")} options={ICONS} value={spec.icon ?? "spark"} onChange={(v) => patch({ icon: v })} />
             )}
             {spec.mark_type === "geometric" && (
-              <Select label="Forme" options={GEOMETRICS} value={spec.geometric ?? "orbit"} onChange={(v) => patch({ geometric: v })} />
+              <Select label={t("fields.shape")} options={GEOMETRICS} value={spec.geometric ?? "orbit"} onChange={(v) => patch({ geometric: v })} />
             )}
             {spec.mark_type === "monogram" && (
-              <Text label="Initiales (1-2 lettres)" value={spec.monogram ?? ""} onCommit={(v) => patch({ monogram: v })} />
+              <Text label={t("fields.monogram")} value={spec.monogram ?? ""} onCommit={(v) => patch({ monogram: v })} />
             )}
 
-            <Select label="Disposition" options={LAYOUTS} value={spec.layout} onChange={(v) => patch({ layout: v })} />
-            <Select label="Conteneur" options={CONTAINERS} value={spec.container} onChange={(v) => patch({ container: v })} />
-            <Select label="Typographie" options={FONTS} value={spec.font} onChange={(v) => patch({ font: v })} />
+            <Select label={t("fields.layout")} options={LAYOUTS} value={spec.layout} onChange={(v) => patch({ layout: v })} />
+            <Select label={t("fields.container")} options={CONTAINERS} value={spec.container} onChange={(v) => patch({ container: v })} />
+            <Select label={t("fields.font")} options={FONTS} value={spec.font} onChange={(v) => patch({ font: v })} />
 
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Couleurs</label>
+              <label className="mb-1.5 block text-xs font-medium text-muted-foreground">{t("fields.colors")}</label>
               <div className="flex gap-2">
-                <Color value={spec.palette.primary} onChange={(v) => patch({ palette: { ...spec.palette, primary: v } })} title="Primaire" />
-                <Color value={spec.palette.secondary} onChange={(v) => patch({ palette: { ...spec.palette, secondary: v } })} title="Secondaire" />
-                <Color value={spec.palette.accent} onChange={(v) => patch({ palette: { ...spec.palette, accent: v } })} title="Accent" />
-                <Color value={spec.palette.bg} onChange={(v) => patch({ palette: { ...spec.palette, bg: v } })} title="Fond" />
+                <Color value={spec.palette.primary} onChange={(v) => patch({ palette: { ...spec.palette, primary: v } })} title={t("palette.primary")} />
+                <Color value={spec.palette.secondary} onChange={(v) => patch({ palette: { ...spec.palette, secondary: v } })} title={t("palette.secondary")} />
+                <Color value={spec.palette.accent} onChange={(v) => patch({ palette: { ...spec.palette, accent: v } })} title={t("palette.accent")} />
+                <Color value={spec.palette.bg} onChange={(v) => patch({ palette: { ...spec.palette, bg: v } })} title={t("palette.bg")} />
               </div>
             </div>
           </div>
@@ -208,12 +213,9 @@ function Select({ label, options, value, onChange, labels }: {
   );
 }
 
-const SEG_LABEL: Record<string, string> = {
-  geometric: "Forme", icon: "Icône", monogram: "Mono", s: "S", m: "M", l: "L",
-};
-
-function Seg({ label, options, value, onChange, compact }: {
+function Seg({ label, options, value, onChange, compact, optionLabels }: {
   label: string; options: string[]; value: string; onChange: (v: string) => void; compact?: boolean;
+  optionLabels?: Record<string, string>;
 }) {
   return (
     <div>
@@ -224,7 +226,7 @@ function Seg({ label, options, value, onChange, compact }: {
             className={`rounded-md py-1 text-xs font-medium capitalize transition-colors ${compact ? "px-2.5" : "flex-1 px-2"} ${
               value === o ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
             }`}>
-            {SEG_LABEL[o] ?? o}
+            {optionLabels?.[o] ?? o}
           </button>
         ))}
       </div>
@@ -244,13 +246,14 @@ function seedParts(spec: LogoSpec): { text: string; color: string }[] {
 }
 
 function WordmarkColor({ spec, onPatch }: { spec: LogoSpec; onPatch: (p: Partial<LogoSpec>) => void }) {
+  const t = useTranslations("Studio.logo");
   const isMulti = !!spec.name_parts?.length;
   return (
     <div>
       <div className="mb-1.5 flex items-center justify-between">
-        <label className="text-xs font-medium text-muted-foreground">Couleur du nom</label>
+        <label className="text-xs font-medium text-muted-foreground">{t("fields.nameColor")}</label>
         <div className="flex gap-1 rounded-lg border p-0.5">
-          {[["uni", "Unie"], ["multi", "Multicolore"]].map(([k, lbl]) => {
+          {[["uni", t("fields.solid")], ["multi", t("fields.multicolor")]].map(([k, lbl]) => {
             const active = k === "multi" ? isMulti : !isMulti;
             return (
               <button key={k} type="button"
@@ -267,7 +270,7 @@ function WordmarkColor({ spec, onPatch }: { spec: LogoSpec; onPatch: (p: Partial
       {isMulti ? (
         <SegmentsEditor parts={spec.name_parts!} onChange={(p) => onPatch({ name_parts: p })} />
       ) : (
-        <Color value={spec.name_color ?? spec.palette.primary} onChange={(v) => onPatch({ name_color: v })} title="Nom" />
+        <Color value={spec.name_color ?? spec.palette.primary} onChange={(v) => onPatch({ name_color: v })} title={t("palette.name")} />
       )}
     </div>
   );
@@ -276,6 +279,7 @@ function WordmarkColor({ spec, onPatch }: { spec: LogoSpec; onPatch: (p: Partial
 function SegmentsEditor({ parts, onChange }: {
   parts: { text: string; color: string }[]; onChange: (p: { text: string; color: string }[]) => void;
 }) {
+  const t = useTranslations("Studio.logo");
   const set = (i: number, p: Partial<{ text: string; color: string }>) =>
     onChange(parts.map((seg, j) => (j === i ? { ...seg, ...p } : seg)));
   return (
@@ -296,7 +300,7 @@ function SegmentsEditor({ parts, onChange }: {
       ))}
       <button type="button" onClick={() => onChange([...parts, { text: "", color: "#111827" }])}
         className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline">
-        <Plus className="size-3" /> Ajouter un segment
+        <Plus className="size-3" /> {t("fields.addSegment")}
       </button>
     </div>
   );
