@@ -3,12 +3,13 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
 import { Button, Field, Input, Select, SelectItem, Stepper } from "@/shared/ui";
 import { routes } from "@/shared/config/routes";
 import { completeOnboarding } from "../api/actions";
 
-const STEPS = ["Bienvenue", "Ton profil", "C'est parti"];
+const STEP_COUNT = 3;
 
 const COUNTRIES = [
   { code: "CI", label: "Côte d'Ivoire" },
@@ -60,6 +61,10 @@ const AVAILABILITY = [
 ];
 
 export function OnboardingWizard({ name: initialName = "" }: { name?: string }) {
+  const t = useTranslations("Auth.onboarding");
+  const locale = useLocale();
+  const regionNames = new Intl.DisplayNames([locale], { type: "region" });
+  const steps = [t("steps.welcome"), t("steps.profile"), t("steps.ready")];
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [pending, startTransition] = useTransition();
@@ -93,7 +98,7 @@ export function OnboardingWizard({ name: initialName = "" }: { name?: string }) 
 
   return (
     <div className="space-y-8">
-      <Stepper steps={STEPS} current={step} />
+      <Stepper steps={steps} current={step} />
 
       {step === 0 ? (
         <div className="space-y-4 text-center">
@@ -101,77 +106,74 @@ export function OnboardingWizard({ name: initialName = "" }: { name?: string }) 
             <Sparkles className="size-7" />
           </span>
           <h1 className="font-display text-2xl font-bold tracking-tight">
-            On part d&apos;où tu es.
+            {t("step0Title")}
           </h1>
-          <p className="mx-auto max-w-sm text-muted-foreground">
-            Quelques infos rapides pour personnaliser ton parcours — mentors,
-            modules Workshop et opportunités adaptés à ton profil.
-          </p>
+          <p className="mx-auto max-w-sm text-muted-foreground">{t("step0Text")}</p>
         </div>
       ) : null}
 
       {step === 1 ? (
         <div className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Pays *">
+            <Field label={t("country")}>
               <Select
                 value={country}
                 onValueChange={setCountry}
-                placeholder="Ton pays"
+                placeholder={t("countryPlaceholder")}
               >
                 {COUNTRIES.map((c) => (
                   <SelectItem key={c.code} value={c.code}>
-                    {c.label}
+                    {regionNames.of(c.code) ?? c.label}
                   </SelectItem>
                 ))}
               </Select>
             </Field>
-            <Field label="Ville (optionnel)">
+            <Field label={t("city")}>
               <Input
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                placeholder="Ex. Abidjan"
+                placeholder={t("cityPlaceholder")}
               />
             </Field>
           </div>
 
-          <Field label="Statut professionnel *">
+          <Field label={t("proStatus")}>
             <Select
               value={proStatus}
               onValueChange={setProStatus}
-              placeholder="Ton situation actuelle"
+              placeholder={t("proStatusPlaceholder")}
             >
               {PRO_STATUS.map((s) => (
                 <SelectItem key={s.value} value={s.value}>
-                  {s.label}
+                  {t(`proStatuses.${s.value}`)}
                 </SelectItem>
               ))}
             </Select>
           </Field>
 
-          <Field label="Où en est ton projet ? *">
+          <Field label={t("stage")}>
             <Select
               value={projectStage}
               onValueChange={setProjectStage}
-              placeholder="Le stade actuel"
+              placeholder={t("stagePlaceholder")}
             >
               {PROJECT_STAGES.map((s) => (
                 <SelectItem key={s.value} value={s.value}>
-                  {s.label}
+                  {t(`stages.${s.value}`)}
                 </SelectItem>
               ))}
             </Select>
           </Field>
 
-          <Field label="Temps disponible / semaine (optionnel)">
+          <Field label={t("availability")}>
             <Select
               value={availability}
               onValueChange={setAvailability}
-              placeholder="Ta disponibilité"
+              placeholder={t("availabilityPlaceholder")}
             >
               {AVAILABILITY.map((a) => (
                 <SelectItem key={a.value} value={a.value}>
-                  {a.label}
+                  {t(`availabilities.${a.value}`)}
                 </SelectItem>
               ))}
             </Select>
@@ -182,12 +184,9 @@ export function OnboardingWizard({ name: initialName = "" }: { name?: string }) 
       {step === 2 ? (
         <div className="space-y-3 text-center">
           <h2 className="font-display text-xl font-bold">
-            Bienvenue, {initialName || "porteur"} !
+            {t("welcomeName", { name: initialName || "porteur" })}
           </h2>
-          <p className="mx-auto max-w-sm text-muted-foreground">
-            Ton espace est prêt. Retrouve ton diagnostic, les modules Workshop
-            et les mentors adaptés à ton profil.
-          </p>
+          <p className="mx-auto max-w-sm text-muted-foreground">{t("readyText")}</p>
           {error ? (
             <p className="rounded-md bg-destructive/10 px-4 py-2 text-sm text-destructive">
               {error}
@@ -202,20 +201,20 @@ export function OnboardingWizard({ name: initialName = "" }: { name?: string }) 
           onClick={() => setStep((s) => Math.max(0, s - 1))}
           disabled={step === 0 || pending}
         >
-          Retour
+          {t("back")}
         </Button>
 
-        {step < STEPS.length - 1 ? (
+        {step < STEP_COUNT - 1 ? (
           <Button
             onClick={() => setStep((s) => s + 1)}
             disabled={step === 1 && !profileComplete}
           >
-            Continuer
+            {t("continue")}
             <ArrowRight className="size-5" />
           </Button>
         ) : (
           <Button onClick={finish} loading={pending}>
-            Accéder à mon espace
+            {t("finish")}
             <ArrowRight className="size-5" />
           </Button>
         )}
@@ -229,7 +228,7 @@ export function OnboardingWizard({ name: initialName = "" }: { name?: string }) 
           disabled={pending}
           className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline disabled:opacity-50"
         >
-          Passer pour l&apos;instant
+          {t("skip")}
         </button>
       </div>
     </div>

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { CheckCircle2, XCircle } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { Button, Card, CardContent } from "@/shared/ui";
 import { routes } from "@/shared/config/routes";
+import { Link } from "@/i18n/navigation";
 import { verifyEmail } from "@/features/auth";
 
 export const metadata: Metadata = { title: "Vérification de l'email" };
@@ -16,6 +17,7 @@ export default async function VerifyEmailPage({
 }) {
   const { token } = await searchParams;
   const res = token ? await verifyEmail(token) : { ok: false };
+  const t = await getTranslations("EmailVerify");
 
   return (
     <Card className="mx-auto mt-16 w-full max-w-md">
@@ -23,23 +25,19 @@ export default async function VerifyEmailPage({
         {res.ok ? (
           <>
             <CheckCircle2 className="size-12 text-emerald-500" />
-            <h1 className="font-display text-xl font-bold tracking-tight">Adresse confirmée</h1>
-            <p className="max-w-xs text-sm text-muted-foreground">
-              Merci — ton email est vérifié et ton espace est sécurisé.
-            </p>
+            <h1 className="font-display text-xl font-bold tracking-tight">{t("okTitle")}</h1>
+            <p className="max-w-xs text-sm text-muted-foreground">{t("okText")}</p>
             <Button asChild className="mt-2">
-              <Link href={routes.dashboard}>Aller à mon espace</Link>
+              <Link href={routes.dashboard}>{t("okCta")}</Link>
             </Button>
           </>
         ) : (
           <>
             <XCircle className="size-12 text-muted-foreground" />
-            <h1 className="font-display text-xl font-bold tracking-tight">Lien invalide ou expiré</h1>
-            <p className="max-w-xs text-sm text-muted-foreground">
-              Le lien a peut-être expiré (24 h). Depuis ton espace, tu peux t&apos;en renvoyer un.
-            </p>
+            <h1 className="font-display text-xl font-bold tracking-tight">{t("koTitle")}</h1>
+            <p className="max-w-xs text-sm text-muted-foreground">{t("koText")}</p>
             <Button asChild variant="outline" className="mt-2">
-              <Link href={routes.dashboard}>Mon espace</Link>
+              <Link href={routes.dashboard}>{t("koCta")}</Link>
             </Button>
           </>
         )}
