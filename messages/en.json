@@ -119,6 +119,44 @@
       "availabilities": { "lt5": "Less than 5h / week", "h5_10": "5 to 10h / week", "h10_20": "10 to 20h / week", "gt20": "More than 20h / week" }
     }
   },
+  "Dashboard": {
+    "greeting": "Hi {name} 👋",
+    "subtitle": "Here's where your project stands today.",
+    "badgeDone": "Diagnostic done",
+    "badgePending": "Analysis in progress",
+    "compassEyebrow": "Your compass",
+    "readiness": "Am I ready?",
+    "comprehensionTitle": "Your understanding scorecard",
+    "preparingTitle": "Your report is being prepared",
+    "preparingText": "Your project analysis is running. You can follow its progress.",
+    "seeProgress": "See progress",
+    "profileNudge": "Complete your profile (2 min) — for more tailored support.",
+    "profileNudgeCta": "Complete →",
+    "nextTitle": "What's next?",
+    "next": {
+      "workshopTitle": "Strengthen your project",
+      "workshopText": "Work on your weak axes in the Workshop and raise your score.",
+      "studioTitle": "Prepare your presentation",
+      "studioText": "Logo, pitch, deck — give your project a face in the Studio.",
+      "opportunitiesTitle": "Find opportunities",
+      "opportunitiesText": "Programs and contests matched to your maturity."
+    },
+    "empty": {
+      "subtitle": "Welcome to your space. We start from where you are.",
+      "compassPlaceholder": "Your compass will appear here",
+      "ctaTitle": "Run your first diagnostic",
+      "ctaText": "In a few minutes, get your understanding scorecard — essence, viability, scalability. Free, no judgment.",
+      "ctaButton": "Start my diagnostic",
+      "journeyTitle": "Your journey",
+      "toStart": "To start",
+      "upcoming": "Coming up",
+      "steps": {
+        "understand": { "label": "Understand", "text": "A diagnostic produces your compass: strengths and blind spots." },
+        "structure": { "label": "Structure", "text": "Strengthen your weak axes in the Workshop and build your project, guided." },
+        "dress": { "label": "Dress up", "text": "Create your logo, pitch and deck in the Studio." }
+      }
+    }
+  },
   "EmailVerify": {
     "nudge": "Confirm your email address to secure your space.",
     "resend": "Resend the link",
@@ -156,6 +194,14 @@
       "good": "On track",
       "watch": "To strengthen",
       "fragile": "To explore"
+    },
+    "maturity": {
+      "idee_brute": { "label": "Raw idea", "description": "The project is still very fuzzy — let's work on the fundamentals." },
+      "a_structurer": { "label": "Project to structure", "description": "The potential is there, but the foundations need strengthening." },
+      "prometteur": { "label": "Promising project", "description": "The project is becoming legible — you're on the right track." },
+      "pre_viable": { "label": "Pre-viable project", "description": "The project can be seriously tested." },
+      "business_ready": { "label": "Business Ready", "description": "Ready to meet partners, incubators or first customers." },
+      "investor_ready": { "label": "Investor Ready", "description": "Structured enough for investors or institutions." }
     }
   },
   "LocaleSwitcher": {

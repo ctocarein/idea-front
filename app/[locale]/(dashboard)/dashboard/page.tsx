@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRight, Compass, GraduationCap, Mic, Sparkles } from "lucide-react";
+import { ArrowRight, Compass, GraduationCap, Palette, Sparkles } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { routes } from "@/shared/config/routes";
+import { Link } from "@/i18n/navigation";
 import { getSession } from "@/shared/auth/server";
 import { ApiError, apiFetch } from "@/shared/api/client";
 import { EmailVerifyNudge } from "@/features/auth";
@@ -27,6 +28,8 @@ export const metadata: Metadata = { title: "Tableau de bord" };
 export default async function DashboardPage() {
   const session = await getSession();
   const firstName = session?.name.split(" ")[0] ?? "porteur";
+  const t = await getTranslations("Dashboard");
+  const tr = await getTranslations("Radar");
 
   // Statut de vérification email (source autoritative) — défaut `true` pour éviter un faux nudge.
   let emailVerified = true;
@@ -79,23 +82,19 @@ export default async function DashboardPage() {
           href={routes.onboarding}
           className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-primary/25 bg-primary/5 px-4 py-2.5 text-sm transition-colors hover:bg-primary/10"
         >
-          <span className="text-muted-foreground">
-            Complète ton profil (2 min) — pour un accompagnement plus juste.
-          </span>
-          <span className="font-medium text-primary whitespace-nowrap">Compléter →</span>
+          <span className="text-muted-foreground">{t("profileNudge")}</span>
+          <span className="font-medium text-primary whitespace-nowrap">{t("profileNudgeCta")}</span>
         </Link>
       )}
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-2xl font-bold tracking-tight">
-            Bonjour, {firstName} 👋
+            {t("greeting", { name: firstName })}
           </h1>
-          <p className="text-muted-foreground">
-            Voici où en est ton projet aujourd&apos;hui.
-          </p>
+          <p className="text-muted-foreground">{t("subtitle")}</p>
         </div>
-        <Badge variant="primary">{radar ? "Diagnostic fait" : "Analyse en cours"}</Badge>
+        <Badge variant="primary">{radar ? t("badgeDone") : t("badgePending")}</Badge>
       </div>
 
       {radar && maturity ? (
@@ -107,17 +106,21 @@ export default async function DashboardPage() {
               </div>
               <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  Ta boussole
+                  {t("compassEyebrow")}
                 </p>
                 <div className="flex items-baseline gap-2">
                   <span className="tabular font-display text-3xl font-extrabold">{overall}</span>
                   <span className="text-muted-foreground">/100</span>
-                  <Badge variant={TONE_TO_BADGE[maturity.tone]}>{maturity.label}</Badge>
+                  <Badge variant={TONE_TO_BADGE[maturity.tone]}>
+                    {tr(`maturity.${maturity.key}.label`)}
+                  </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground">{maturity.description}</p>
+                <p className="text-sm text-muted-foreground">
+                  {tr(`maturity.${maturity.key}.description`)}
+                </p>
                 <Button asChild variant="ghost" size="sm" className="mt-1 -ml-2">
                   <Link href={routes.readiness}>
-                    Suis-je prêt ?
+                    {t("readiness")}
                     <ArrowRight className="size-4" />
                   </Link>
                 </Button>
@@ -127,25 +130,46 @@ export default async function DashboardPage() {
 
           <section className="space-y-3">
             <h2 className="font-display text-lg font-bold tracking-tight">
-              Ton tableau de compréhension
+              {t("comprehensionTitle")}
             </h2>
             <ComprehensionTable score={radar} />
+          </section>
+
+          {/* Prochaines étapes — connecte la boussole au parcours (Workshop → Studio → Orbit). */}
+          <section className="space-y-3">
+            <h2 className="font-display text-lg font-bold tracking-tight">{t("nextTitle")}</h2>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <NextCard
+                icon={GraduationCap}
+                href={routes.academy}
+                title={t("next.workshopTitle")}
+                text={t("next.workshopText")}
+              />
+              <NextCard
+                icon={Palette}
+                href={routes.studio}
+                title={t("next.studioTitle")}
+                text={t("next.studioText")}
+              />
+              <NextCard
+                icon={Compass}
+                href={routes.opportunities}
+                title={t("next.opportunitiesTitle")}
+                text={t("next.opportunitiesText")}
+              />
+            </div>
           </section>
         </>
       ) : (
         <Card>
           <CardContent className="flex flex-wrap items-center justify-between gap-4 py-6">
             <div>
-              <h2 className="font-display text-lg font-bold tracking-tight">
-                Ton bilan se prépare
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                L&apos;analyse de ton projet est en cours. Tu peux suivre son avancement.
-              </p>
+              <h2 className="font-display text-lg font-bold tracking-tight">{t("preparingTitle")}</h2>
+              <p className="text-sm text-muted-foreground">{t("preparingText")}</p>
             </div>
             <Button asChild>
               <Link href={routes.bilan(reports[0].id)}>
-                Voir l&apos;avancement
+                {t("seeProgress")}
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
@@ -163,31 +187,45 @@ export default async function DashboardPage() {
   );
 }
 
+/** Carte d'action « prochaine étape » — mène vers un espace du parcours. */
+function NextCard({
+  icon: Icon,
+  href,
+  title,
+  text,
+}: {
+  icon: React.ElementType;
+  href: string;
+  title: string;
+  text: string;
+}) {
+  return (
+    <Link href={href} className="group">
+      <Card className="h-full transition-shadow hover:border-border-strong hover:shadow-sm">
+        <CardContent className="flex h-full flex-col gap-2 pt-6">
+          <span className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <Icon className="size-5" />
+          </span>
+          <h3 className="font-display font-bold">{title}</h3>
+          <p className="flex-1 text-sm text-muted-foreground">{text}</p>
+          <ArrowRight className="size-4 text-primary transition-transform group-hover:translate-x-0.5" />
+        </CardContent>
+      </Card>
+    </Link>
+  );
+}
+
 /**
  * Espace porteur sans diagnostic (état réel d'un compte frais). On ne montre pas de fausses
- * données : un accueil chaleureux (charte §1.1) et une seule action claire — lancer le diagnostic.
+ * données : un accueil chaleureux et une seule action claire — lancer le diagnostic.
  */
-function EmptyDashboard({ firstName }: { firstName: string }) {
+async function EmptyDashboard({ firstName }: { firstName: string }) {
+  const t = await getTranslations("Dashboard");
   const steps = [
-    {
-      icon: Compass,
-      label: "Comprendre",
-      text: "Un diagnostic produit ta boussole : forces et angles morts.",
-      active: true,
-    },
-    {
-      icon: GraduationCap,
-      label: "Apprendre",
-      text: "Le Workshop t'explique le BP, le modèle éco, le pitch — et tu construis ta version.",
-      active: false,
-    },
-    {
-      icon: Mic,
-      label: "S'exercer",
-      text: "Le simulateur te fait affronter les vraies questions, autant que tu veux.",
-      active: false,
-    },
-  ];
+    { icon: Compass, key: "understand", active: true },
+    { icon: GraduationCap, key: "structure", active: false },
+    { icon: Palette, key: "dress", active: false },
+  ] as const;
 
   return (
     <div className="space-y-8">
@@ -195,11 +233,9 @@ function EmptyDashboard({ firstName }: { firstName: string }) {
       <ClaimPendingDiagnostic />
       <div>
         <h1 className="font-display text-2xl font-bold tracking-tight">
-          Bonjour, {firstName} 👋
+          {t("greeting", { name: firstName })}
         </h1>
-        <p className="text-muted-foreground">
-          Bienvenue dans ton espace. On part d&apos;où tu es.
-        </p>
+        <p className="text-muted-foreground">{t("empty.subtitle")}</p>
       </div>
 
       <Card className="overflow-hidden">
@@ -209,10 +245,8 @@ function EmptyDashboard({ firstName }: { firstName: string }) {
             <div className="opacity-25 blur-[1px]">
               <RadarChart score={sampleScore} size={220} />
             </div>
-            <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-center text-xs font-medium text-muted-foreground">
-              Ta boussole
-              <br />
-              apparaîtra ici
+            <span className="pointer-events-none absolute inset-0 flex items-center justify-center px-6 text-center text-xs font-medium text-muted-foreground">
+              {t("empty.compassPlaceholder")}
             </span>
           </div>
 
@@ -221,17 +255,12 @@ function EmptyDashboard({ firstName }: { firstName: string }) {
               <Sparkles className="size-6" />
             </span>
             <div className="space-y-1">
-              <h2 className="font-display text-xl font-bold tracking-tight">
-                Lance ton premier diagnostic
-              </h2>
-              <p className="max-w-md text-muted-foreground">
-                En quelques minutes, obtiens ton tableau de compréhension — essence, viabilité,
-                scalabilité. Gratuit, sans jugement.
-              </p>
+              <h2 className="font-display text-xl font-bold tracking-tight">{t("empty.ctaTitle")}</h2>
+              <p className="max-w-md text-muted-foreground">{t("empty.ctaText")}</p>
             </div>
             <Button asChild size="md">
               <Link href={routes.diagnostic}>
-                Commencer mon diagnostic
+                {t("empty.ctaButton")}
                 <ArrowRight className="size-5" />
               </Link>
             </Button>
@@ -240,23 +269,21 @@ function EmptyDashboard({ firstName }: { firstName: string }) {
       </Card>
 
       <section className="space-y-3">
-        <h2 className="font-display text-lg font-bold tracking-tight">Ton parcours</h2>
+        <h2 className="font-display text-lg font-bold tracking-tight">{t("empty.journeyTitle")}</h2>
         <div className="grid gap-4 sm:grid-cols-3">
-          {steps.map(({ icon: Icon, label, text, active }) => (
-            <Card key={label} className={active ? "" : "opacity-70"}>
+          {steps.map(({ icon: Icon, key, active }) => (
+            <Card key={key} className={active ? "" : "opacity-70"}>
               <CardContent className="space-y-2 pt-6">
                 <div className="flex items-center justify-between">
                   <span className="flex size-9 items-center justify-center rounded-md bg-secondary text-muted-foreground">
                     <Icon className="size-5" />
                   </span>
-                  {active ? (
-                    <Badge variant="primary">À commencer</Badge>
-                  ) : (
-                    <Badge variant="outline">À venir</Badge>
-                  )}
+                  <Badge variant={active ? "primary" : "outline"}>
+                    {active ? t("empty.toStart") : t("empty.upcoming")}
+                  </Badge>
                 </div>
-                <h3 className="font-display text-base font-bold">{label}</h3>
-                <p className="text-sm text-muted-foreground">{text}</p>
+                <h3 className="font-display text-base font-bold">{t(`empty.steps.${key}.label`)}</h3>
+                <p className="text-sm text-muted-foreground">{t(`empty.steps.${key}.text`)}</p>
               </CardContent>
             </Card>
           ))}

@@ -119,6 +119,44 @@
       "availabilities": { "lt5": "Moins de 5h / semaine", "h5_10": "5 à 10h / semaine", "h10_20": "10 à 20h / semaine", "gt20": "Plus de 20h / semaine" }
     }
   },
+  "Dashboard": {
+    "greeting": "Bonjour, {name} 👋",
+    "subtitle": "Voici où en est ton projet aujourd'hui.",
+    "badgeDone": "Diagnostic fait",
+    "badgePending": "Analyse en cours",
+    "compassEyebrow": "Ta boussole",
+    "readiness": "Suis-je prêt ?",
+    "comprehensionTitle": "Ton tableau de compréhension",
+    "preparingTitle": "Ton bilan se prépare",
+    "preparingText": "L'analyse de ton projet est en cours. Tu peux suivre son avancement.",
+    "seeProgress": "Voir l'avancement",
+    "profileNudge": "Complète ton profil (2 min) — pour un accompagnement plus juste.",
+    "profileNudgeCta": "Compléter →",
+    "nextTitle": "Et maintenant ?",
+    "next": {
+      "workshopTitle": "Renforce ton projet",
+      "workshopText": "Travaille tes axes faibles au Workshop et fais remonter ton score.",
+      "studioTitle": "Prépare ta présentation",
+      "studioText": "Logo, pitch, deck — donne un visage à ton projet au Studio.",
+      "opportunitiesTitle": "Trouve des opportunités",
+      "opportunitiesText": "Programmes et concours adaptés à ta maturité."
+    },
+    "empty": {
+      "subtitle": "Bienvenue dans ton espace. On part d'où tu es.",
+      "compassPlaceholder": "Ta boussole apparaîtra ici",
+      "ctaTitle": "Lance ton premier diagnostic",
+      "ctaText": "En quelques minutes, obtiens ton tableau de compréhension — essence, viabilité, scalabilité. Gratuit, sans jugement.",
+      "ctaButton": "Commencer mon diagnostic",
+      "journeyTitle": "Ton parcours",
+      "toStart": "À commencer",
+      "upcoming": "À venir",
+      "steps": {
+        "understand": { "label": "Comprendre", "text": "Un diagnostic produit ta boussole : forces et angles morts." },
+        "structure": { "label": "Structurer", "text": "Renforce tes axes faibles au Workshop et construis ton projet, guidé." },
+        "dress": { "label": "Habiller", "text": "Crée ton logo, ton pitch et ton deck au Studio." }
+      }
+    }
+  },
   "EmailVerify": {
     "nudge": "Confirme ton adresse email pour sécuriser ton espace.",
     "resend": "Renvoyer le lien",
@@ -156,6 +194,14 @@
       "good": "En bonne voie",
       "watch": "À renforcer",
       "fragile": "À explorer"
+    },
+    "maturity": {
+      "idee_brute": { "label": "Idée brute", "description": "Le projet est encore très flou — travaillons les fondamentaux." },
+      "a_structurer": { "label": "Projet à structurer", "description": "Le potentiel existe, mais les bases sont à renforcer." },
+      "prometteur": { "label": "Projet prometteur", "description": "Le projet commence à être lisible — tu es sur la bonne voie." },
+      "pre_viable": { "label": "Projet pré-viable", "description": "Le projet peut être testé sérieusement." },
+      "business_ready": { "label": "Business Ready", "description": "Prêt à rencontrer des partenaires, incubateurs ou premiers clients." },
+      "investor_ready": { "label": "Investor Ready", "description": "Suffisamment structuré pour des financeurs ou institutions." }
     }
   },
   "LocaleSwitcher": {
