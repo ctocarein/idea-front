@@ -1,0 +1,25 @@
+{
+  "Nav": {
+    "dashboard": "Tableau de bord",
+    "dashboardShort": "Accueil",
+    "workshop": "Workshop",
+    "studio": "Studio",
+    "opportunities": "Opportunités",
+    "opportunitiesShort": "Opports",
+    "profile": "Mon profil",
+    "profileShort": "Profil"
+  },
+  "Home": {
+    "eyebrow": "Capable et confiant",
+    "title": "De l'idée confuse à un projet solide.",
+    "subtitle": "<b>Ideaxion</b> t'aide d'abord à comprendre ton projet, puis à le rendre solide. Gratuitement.",
+    "ctaPrimary": "Teste ton idée gratuitement",
+    "ctaSecondary": "Comment ça marche",
+    "reassurance": "Sans inscription · 3 minutes · ton bilan sur les 12 dimensions clés."
+  },
+  "LocaleSwitcher": {
+    "label": "Langue",
+    "fr": "Français",
+    "en": "English"
+  }
+}

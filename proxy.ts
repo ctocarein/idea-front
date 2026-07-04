@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import createMiddleware from "next-intl/middleware";
 
 import {
   ACCESS_COOKIE,
@@ -8,19 +9,29 @@ import {
 } from "@/shared/auth/session";
 import { SPACE_ROLES } from "@/shared/auth/rbac";
 import { env } from "@/shared/config/env";
+import { routing } from "@/i18n/routing";
 
 /**
- * Proxy (ex-middleware, renommé en Next 16) — première porte UX par rôle, AVANT le rendu.
- * Miroir du RBAC backend, mais le backend reste la vraie barrière (ARCHITECTURE_FRONTEND §5.1).
- *
- * Assure aussi le **refresh silencieux** : le miroir de session (`idx_session`, 30 j) survit à
- * l'access JWT (`idx_access`, 15 min). Quand l'access a expiré mais que le refresh est là, on
- * rejoue `/auth/refresh` et on repose les cookies — sur la réponse (navigateur) ET sur la requête
- * forwardée (pour que le rendu courant voie déjà le nouveau jeton).
+ * Proxy (ex-middleware, renommé en Next 16). Deux rôles composés :
+ *  1. i18n (next-intl) : détecte la locale, redirige `/` → `/fr`, pose le cookie de locale.
+ *  2. RBAC : première porte UX par rôle sur les espaces gardés (le backend reste la vraie
+ *     barrière) + refresh silencieux du token.
+ * Les chemins sont désormais préfixés (`/fr/dashboard`) : on retire la locale pour le RBAC,
+ * et les redirections repassent par la locale courante.
  */
 const GUARDS = Object.entries(SPACE_ROLES); // [["/admin", [...]], ...]
-
+const LOCALES = routing.locales as readonly string[];
 const cookieBase = { httpOnly: true, sameSite: "lax" as const, secure: env.isProd, path: "/" };
+
+const intlMiddleware = createMiddleware(routing);
+
+function stripLocale(pathname: string): { locale: string; rest: string } {
+  const segs = pathname.split("/");
+  if (LOCALES.includes(segs[1])) {
+    return { locale: segs[1], rest: "/" + segs.slice(2).join("/") };
+  }
+  return { locale: routing.defaultLocale, rest: pathname };
+}
 
 async function refreshTokens(
   refreshToken: string,
@@ -40,30 +51,34 @@ async function refreshTokens(
 }
 
 export async function proxy(req: NextRequest) {
+  // 1. i18n : locale (redirection éventuelle vers une URL localisée).
+  const intlResponse = intlMiddleware(req);
+  if (intlResponse.headers.get("location")) return intlResponse;
+
+  // 2. RBAC sur le chemin dé-localisé.
   const { pathname } = req.nextUrl;
-  const guard = GUARDS.find(([prefix]) => pathname.startsWith(prefix));
-  if (!guard) return NextResponse.next();
+  const { locale, rest } = stripLocale(pathname);
+  const guard = GUARDS.find(([prefix]) => rest === prefix || rest.startsWith(prefix + "/"));
+  if (!guard) return intlResponse;
 
   const [, roles] = guard;
   const session = decodeSession(req.cookies.get(SESSION_COOKIE)?.value);
 
   if (!session) {
-    const url = new URL("/login", req.url);
+    const url = new URL(`/${locale}/login`, req.url);
     url.searchParams.set("next", pathname);
     return NextResponse.redirect(url);
   }
-
   if (!roles.includes(session.role)) {
-    return NextResponse.redirect(new URL("/403", req.url));
+    return NextResponse.redirect(new URL(`/${locale}/403`, req.url));
   }
 
-  // Refresh silencieux : session valide mais access expiré (cookie disparu) + refresh dispo.
+  // Refresh silencieux : access expiré mais refresh présent.
   const refreshToken = req.cookies.get(REFRESH_COOKIE)?.value;
   if (!req.cookies.has(ACCESS_COOKIE) && refreshToken) {
     const tokens = await refreshTokens(refreshToken);
     if (!tokens) {
-      // refresh invalide/révoqué → on purge et on renvoie au login
-      const url = new URL("/login", req.url);
+      const url = new URL(`/${locale}/login`, req.url);
       url.searchParams.set("next", pathname);
       const res = NextResponse.redirect(url);
       res.cookies.delete(ACCESS_COOKIE);
@@ -71,21 +86,20 @@ export async function proxy(req: NextRequest) {
       res.cookies.delete(SESSION_COOKIE);
       return res;
     }
-    // le rendu courant doit voir le nouvel access → on mute la requête forwardée…
-    req.cookies.set(ACCESS_COOKIE, tokens.access_token);
-    const res = NextResponse.next({ request: { headers: req.headers } });
-    // …et on pose les cookies (rotation) côté navigateur pour les requêtes suivantes.
-    res.cookies.set(ACCESS_COOKIE, tokens.access_token, { ...cookieBase, maxAge: 60 * 15 });
-    res.cookies.set(REFRESH_COOKIE, tokens.refresh_token, {
+    // On pose les nouveaux cookies sur la réponse i18n (le rendu courant retombe sur
+    // le retry 401 de apiFetch si besoin ; les requêtes suivantes ont le bon jeton).
+    intlResponse.cookies.set(ACCESS_COOKIE, tokens.access_token, { ...cookieBase, maxAge: 60 * 15 });
+    intlResponse.cookies.set(REFRESH_COOKIE, tokens.refresh_token, {
       ...cookieBase,
       maxAge: 60 * 60 * 24 * 30,
     });
-    return res;
+    return intlResponse;
   }
 
-  return NextResponse.next();
+  return intlResponse;
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/mentor/:path*", "/dashboard/:path*"],
+  // next-intl doit voir toutes les pages ; on exclut l'API (BFF), les assets et _next.
+  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
 };

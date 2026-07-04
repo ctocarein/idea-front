@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import {
   ArrowRight,
   BadgeCheck,
@@ -99,6 +100,7 @@ const FAQ = [
 ];
 
 export default function Home() {
+  const t = useTranslations("Home");
   return (
     <>
       {/* Hero */}
@@ -106,30 +108,27 @@ export default function Home() {
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 py-16 sm:py-24 lg:grid-cols-2">
           <Reveal>
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              Capable et confiant
+              {t("eyebrow")}
             </p>
             <h1 className="mt-4 font-display text-[34px] font-extrabold leading-[1.05] tracking-tight text-ink sm:text-5xl">
-              De l&apos;idée confuse à un projet solide.
+              {t("title")}
             </h1>
             <p className="mt-5 max-w-lg text-lg text-muted-foreground">
-              <b>Ideaxion </b>t&apos;aide d&apos;abord à comprendre ton projet, puis à
-              le rendre solide. Gratuitement.
+              {t.rich("subtitle", { b: (chunks) => <b>{chunks}</b> })}
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button asChild>
                 <Link href={routes.diagnostic}>
-                  Teste ton idée gratuitement
+                  {t("ctaPrimary")}
                   <ArrowRight className="size-5" />
                 </Link>
               </Button>
               <Button asChild variant="ghost">
-                <Link href={routes.startups}>Comment ça marche</Link>
+                <Link href={routes.startups}>{t("ctaSecondary")}</Link>
               </Button>
             </div>
             {/* Rassurance : lève la friction avant le clic (valeur · effort · zéro engagement). */}
-            <p className="mt-3 text-sm text-muted-foreground">
-              Sans inscription · 3 minutes · ton bilan sur les 12 dimensions clés.
-            </p>
+            <p className="mt-3 text-sm text-muted-foreground">{t("reassurance")}</p>
           </Reveal>
 
           <Reveal delay={0.1} className="flex justify-center">

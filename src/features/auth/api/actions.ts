@@ -163,6 +163,15 @@ export async function verifyEmail(token: string): Promise<{ ok: boolean }> {
   }
 }
 
+/** Persiste la langue préférée du porteur connecté (best-effort : ignore si anonyme). */
+export async function setLocalePreference(language: "fr" | "en"): Promise<void> {
+  try {
+    await apiFetch("/api/v1/auth/me", { method: "PATCH", json: { language } });
+  } catch {
+    // anonyme ou réseau KO → le cookie de locale (next-intl) suffit
+  }
+}
+
 /** Renvoie un email de vérification au porteur connecté. */
 export async function resendVerification(): Promise<{ ok: boolean }> {
   try {

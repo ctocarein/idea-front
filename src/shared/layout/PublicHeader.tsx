@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { routes } from "@/shared/config/routes";
 import { Button, ThemeToggle } from "@/shared/ui";
+import { LocaleSwitcher } from "./LocaleSwitcher";
 
 const links = [
   { href: routes.startups, label: "Startups" },
@@ -34,6 +35,7 @@ export function PublicHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <LocaleSwitcher />
           <ThemeToggle />
           <Button asChild size="sm" variant="ghost">
             <Link href={routes.login}>Connexion</Link>

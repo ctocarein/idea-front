@@ -1,0 +1,25 @@
+{
+  "Nav": {
+    "dashboard": "Dashboard",
+    "dashboardShort": "Home",
+    "workshop": "Workshop",
+    "studio": "Studio",
+    "opportunities": "Opportunities",
+    "opportunitiesShort": "Opps",
+    "profile": "My profile",
+    "profileShort": "Profile"
+  },
+  "Home": {
+    "eyebrow": "Capable and confident",
+    "title": "From a fuzzy idea to a solid project.",
+    "subtitle": "<b>Ideaxion</b> first helps you understand your project, then make it solid. For free.",
+    "ctaPrimary": "Test your idea for free",
+    "ctaSecondary": "How it works",
+    "reassurance": "No sign-up · 3 minutes · your scorecard across the 12 key dimensions."
+  },
+  "LocaleSwitcher": {
+    "label": "Language",
+    "fr": "Français",
+    "en": "English"
+  }
+}
