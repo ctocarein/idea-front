@@ -220,6 +220,122 @@
       }
     }
   },
+  "Admin": {
+    "space": "Back-office",
+    "roles": { "admin": "Administrateur", "analyst": "Analyste" },
+    "nav": { "overview": "Vue d’ensemble", "overviewShort": "Aperçu", "projects": "Projets", "mentors": "Mentors", "opportunities": "Opportunités", "grid": "Grille", "audit": "Audit" },
+    "overview": {
+      "title": "Tableau d’apprentissage",
+      "subtitle": "La métrique nord : la transformation, pas le revenu.",
+      "stats": {
+        "activeFounders": "Porteurs actifs", "activeFoundersHint": "30 derniers jours",
+        "diagnostics": "Diagnostics réalisés",
+        "pitches": "Pitchs joués",
+        "retention": "Rétention 30j",
+        "radarProgress": "Progression Radar moy.", "radarProgressHint": "avant / après",
+        "proInterest": "Intérêt Phase Pro", "proInterestHint": "signaux d’intention"
+      },
+      "transformationTitle": "Transformation (Radar avant / après)",
+      "transformationText": "Pointillés = entrée, plein = aujourd’hui. La preuve que le freemium rend les porteurs plus solides.",
+      "retentionTitle": "Rétention par semaine"
+    },
+    "projects": {
+      "title": "Projets",
+      "subtitle": "Filtre, trie et pilote le cycle de vie des projets.",
+      "fallbackTitle": "Projet",
+      "cols": { "project": "Projet", "sector": "Secteur", "status": "Statut", "score": "Score", "createdAt": "Créé le" },
+      "allSectors": "Tous secteurs",
+      "allStatuses": "Tous statuts",
+      "search": "Rechercher un projet…",
+      "status": {
+        "new_diagnostic": "Nouveau", "in_review": "En analyse", "needs_work": "À retravailler",
+        "qualified": "Qualifié", "excellence": "Excellence", "rejected": "Hors cible"
+      },
+      "detail": {
+        "back": "Projets",
+        "digital": "Digital", "terrain": "Terrain",
+        "steering": "Pilotage",
+        "advanceStatus": "Faire avancer le statut",
+        "noTransition": "Aucune transition disponible depuis ce statut.",
+        "noPermission": "Ton rôle ne permet pas de changer le statut.",
+        "assignedAnalyst": "Analyste assigné",
+        "assignPlaceholder": "Assigner…",
+        "assignedTo": "Assigné à",
+        "documents": "Documents",
+        "history": "Historique",
+        "toastStatus": "Statut : {label}",
+        "toastAssigned": "Assigné à {name}",
+        "eventNow": "maintenant",
+        "eventDiagnostic": "Diagnostic généré",
+        "eventCreated": "Projet créé"
+      }
+    },
+    "audit": {
+      "title": "Audit logs",
+      "subtitle": "Chaque action sensible est tracée — pouvoir = traçabilité.",
+      "empty": "Aucune action tracée pour le moment.",
+      "on": "sur {entity}",
+      "actions": {
+        "project_review_status": "a fait évoluer le statut",
+        "project_assignee": "a (ré)assigné",
+        "mentor_application_approved": "a approuvé la candidature mentor",
+        "mentor_application_rejected": "a rejeté la candidature mentor",
+        "mentor_activated": "a activé le mentor",
+        "mentor_suspended": "a suspendu le mentor",
+        "scoring_grid_activated": "a activé la grille",
+        "diagnostic_created": "a lancé un diagnostic"
+      }
+    },
+    "mentors": {
+      "title": "Mentors",
+      "subtitle": "Le garde-fou qualité : examine les candidatures, gère les comptes.",
+      "applications": "Candidatures",
+      "noApplications": "Aucune candidature en attente.",
+      "decline": "Refuser",
+      "createAccount": "Créer le compte",
+      "activeMentors": "Mentors actifs",
+      "noActiveMentors": "Aucun mentor actif pour l’instant.",
+      "active": "Actif",
+      "suspend": "Suspendre",
+      "toastCreated": "Compte créé pour {name}",
+      "toastDeclined": "Candidature refusée",
+      "toastSuspended": "{name} suspendu"
+    },
+    "opportunities": {
+      "title": "Opportunités",
+      "subtitle": "Catalogue des concours, hackathons, incubateurs et financements proposés aux porteurs.",
+      "kinds": { "concours": "Concours", "hackathon": "Hackathon", "incubateur": "Incubateur", "mentorat": "Mentorat", "financement": "Financement" },
+      "activeCount": "{count, plural, one {# active} other {# actives}}",
+      "archivedCount": ", {count, plural, one {# archivée} other {# archivées}}",
+      "new": "Nouvelle opportunité",
+      "emptyCatalogue": "Aucune opportunité dans le catalogue.",
+      "sectionActive": "Actives",
+      "sectionArchived": "Archivées",
+      "cols": { "title": "Titre", "type": "Type", "minScore": "Score min", "sector": "Secteur", "deadline": "Deadline", "actions": "Actions" },
+      "minScoreVal": "≥ {score}/10",
+      "allSectorsShort": "Tous",
+      "edit": "Modifier", "archive": "Archiver", "restore": "Restaurer",
+      "modalEditTitle": "Modifier l’opportunité", "modalNewTitle": "Nouvelle opportunité",
+      "modalEditDesc": "Modifie les critères et détails de cette opportunité.",
+      "modalNewDesc": "Ajoute une opportunité au catalogue curé.",
+      "form": {
+        "title": "Titre", "titlePlaceholder": "Ex : Pitch Contest Paris 2026",
+        "type": "Type", "description": "Description", "descriptionPlaceholder": "Présentation de l’opportunité…",
+        "sector": "Secteur (optionnel)", "sectorPlaceholder": "Tous secteurs",
+        "deadline": "Date limite",
+        "minOverall": "Score min global (0–10)", "minMaturity": "Maturité min D11",
+        "active": "Active (visible aux porteurs éligibles)",
+        "cancel": "Annuler", "saving": "Enregistrement…", "save": "Enregistrer"
+      }
+    },
+    "grid": {
+      "title": "Grille Radar",
+      "subtitle": "Le référentiel d’évaluation, versionné. 12 dimensions → 4 piliers.",
+      "currentVersion": "Version courante : v2",
+      "publish": "Publier une nouvelle version",
+      "toastPublished": "Nouvelle version de grille préparée"
+    }
+  },
   "Bilan": {
     "pending": {
       "title": "On analyse ton projet…",

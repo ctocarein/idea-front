@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   Heart,
   Mic,
@@ -18,18 +19,18 @@ import { RadarChart, sampleScore, sampleScoreAfter } from "@/features/scoring";
  */
 interface Stat {
   icon: LucideIcon;
-  label: string;
+  key: string;
   value: string;
-  hint?: string;
+  hint?: boolean;
 }
 
 const STATS: Stat[] = [
-  { icon: Users, label: "Porteurs actifs", value: "124", hint: "30 derniers jours" },
-  { icon: Wand2, label: "Diagnostics réalisés", value: "312" },
-  { icon: Mic, label: "Pitchs joués", value: "890" },
-  { icon: Repeat, label: "Rétention 30j", value: "48 %" },
-  { icon: TrendingUp, label: "Progression Radar moy.", value: "+14", hint: "avant / après" },
-  { icon: Heart, label: "Intérêt Phase Pro", value: "37", hint: "signaux d'intention" },
+  { icon: Users, key: "activeFounders", value: "124", hint: true },
+  { icon: Wand2, key: "diagnostics", value: "312" },
+  { icon: Mic, key: "pitches", value: "890" },
+  { icon: Repeat, key: "retention", value: "48 %" },
+  { icon: TrendingUp, key: "radarProgress", value: "+14", hint: true },
+  { icon: Heart, key: "proInterest", value: "37", hint: true },
 ];
 
 const RETENTION = [
@@ -40,13 +41,14 @@ const RETENTION = [
 ];
 
 export function LearningDashboard() {
+  const t = useTranslations("Admin.overview");
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
         {STATS.map((s) => {
           const Icon = s.icon;
           return (
-            <Card key={s.label}>
+            <Card key={s.key}>
               <CardContent className="space-y-1 pt-6">
                 <span className="flex size-9 items-center justify-center rounded-full bg-coral/15 text-coral-strong">
                   <Icon className="size-5" />
@@ -54,9 +56,9 @@ export function LearningDashboard() {
                 <p className="tabular font-display text-2xl font-extrabold">
                   {s.value}
                 </p>
-                <p className="text-sm font-medium">{s.label}</p>
+                <p className="text-sm font-medium">{t(`stats.${s.key}`)}</p>
                 {s.hint ? (
-                  <p className="text-xs text-muted-foreground">{s.hint}</p>
+                  <p className="text-xs text-muted-foreground">{t(`stats.${s.key}Hint`)}</p>
                 ) : null}
               </CardContent>
             </Card>
@@ -68,11 +70,10 @@ export function LearningDashboard() {
         <Card>
           <CardContent className="space-y-3 pt-6">
             <h3 className="font-display text-base font-bold">
-              Transformation (Radar avant / après)
+              {t("transformationTitle")}
             </h3>
             <p className="text-sm text-muted-foreground">
-              Pointillés = entrée, plein = aujourd&apos;hui. La preuve que le
-              freemium rend les porteurs plus solides.
+              {t("transformationText")}
             </p>
             <div className="flex justify-center pt-2">
               <RadarChart
@@ -87,7 +88,7 @@ export function LearningDashboard() {
         <Card>
           <CardContent className="space-y-4 pt-6">
             <h3 className="font-display text-base font-bold">
-              Rétention par semaine
+              {t("retentionTitle")}
             </h3>
             <div className="flex items-end gap-4">
               {RETENTION.map((w) => (

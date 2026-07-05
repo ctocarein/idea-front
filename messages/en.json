@@ -220,6 +220,122 @@
       }
     }
   },
+  "Admin": {
+    "space": "Back-office",
+    "roles": { "admin": "Administrator", "analyst": "Analyst" },
+    "nav": { "overview": "Overview", "overviewShort": "Home", "projects": "Projects", "mentors": "Mentors", "opportunities": "Opportunities", "grid": "Grid", "audit": "Audit" },
+    "overview": {
+      "title": "Learning dashboard",
+      "subtitle": "The north-star metric: transformation, not revenue.",
+      "stats": {
+        "activeFounders": "Active founders", "activeFoundersHint": "last 30 days",
+        "diagnostics": "Diagnostics run",
+        "pitches": "Pitches played",
+        "retention": "30-day retention",
+        "radarProgress": "Avg. Radar progress", "radarProgressHint": "before / after",
+        "proInterest": "Pro Phase interest", "proInterestHint": "intent signals"
+      },
+      "transformationTitle": "Transformation (Radar before / after)",
+      "transformationText": "Dashed = entry, solid = today. Proof that the freemium makes founders stronger.",
+      "retentionTitle": "Retention by week"
+    },
+    "projects": {
+      "title": "Projects",
+      "subtitle": "Filter, sort and steer the project lifecycle.",
+      "fallbackTitle": "Project",
+      "cols": { "project": "Project", "sector": "Sector", "status": "Status", "score": "Score", "createdAt": "Created" },
+      "allSectors": "All sectors",
+      "allStatuses": "All statuses",
+      "search": "Search a project…",
+      "status": {
+        "new_diagnostic": "New", "in_review": "In review", "needs_work": "Needs work",
+        "qualified": "Qualified", "excellence": "Excellence", "rejected": "Off target"
+      },
+      "detail": {
+        "back": "Projects",
+        "digital": "Digital", "terrain": "Field",
+        "steering": "Steering",
+        "advanceStatus": "Advance the status",
+        "noTransition": "No transition available from this status.",
+        "noPermission": "Your role can't change the status.",
+        "assignedAnalyst": "Assigned analyst",
+        "assignPlaceholder": "Assign…",
+        "assignedTo": "Assigned to",
+        "documents": "Documents",
+        "history": "History",
+        "toastStatus": "Status: {label}",
+        "toastAssigned": "Assigned to {name}",
+        "eventNow": "now",
+        "eventDiagnostic": "Diagnostic generated",
+        "eventCreated": "Project created"
+      }
+    },
+    "audit": {
+      "title": "Audit logs",
+      "subtitle": "Every sensitive action is traced — power = traceability.",
+      "empty": "No action traced yet.",
+      "on": "on {entity}",
+      "actions": {
+        "project_review_status": "changed the status",
+        "project_assignee": "(re)assigned",
+        "mentor_application_approved": "approved the mentor application",
+        "mentor_application_rejected": "rejected the mentor application",
+        "mentor_activated": "activated the mentor",
+        "mentor_suspended": "suspended the mentor",
+        "scoring_grid_activated": "activated the grid",
+        "diagnostic_created": "started a diagnostic"
+      }
+    },
+    "mentors": {
+      "title": "Mentors",
+      "subtitle": "The quality gate: review applications, manage accounts.",
+      "applications": "Applications",
+      "noApplications": "No pending applications.",
+      "decline": "Decline",
+      "createAccount": "Create the account",
+      "activeMentors": "Active mentors",
+      "noActiveMentors": "No active mentors yet.",
+      "active": "Active",
+      "suspend": "Suspend",
+      "toastCreated": "Account created for {name}",
+      "toastDeclined": "Application declined",
+      "toastSuspended": "{name} suspended"
+    },
+    "opportunities": {
+      "title": "Opportunities",
+      "subtitle": "Catalogue of contests, hackathons, incubators and funding offered to founders.",
+      "kinds": { "concours": "Contest", "hackathon": "Hackathon", "incubateur": "Incubator", "mentorat": "Mentoring", "financement": "Funding" },
+      "activeCount": "{count, plural, one {# active} other {# active}}",
+      "archivedCount": ", {count} archived",
+      "new": "New opportunity",
+      "emptyCatalogue": "No opportunity in the catalogue.",
+      "sectionActive": "Active",
+      "sectionArchived": "Archived",
+      "cols": { "title": "Title", "type": "Type", "minScore": "Min score", "sector": "Sector", "deadline": "Deadline", "actions": "Actions" },
+      "minScoreVal": "≥ {score}/10",
+      "allSectorsShort": "All",
+      "edit": "Edit", "archive": "Archive", "restore": "Restore",
+      "modalEditTitle": "Edit opportunity", "modalNewTitle": "New opportunity",
+      "modalEditDesc": "Edit the criteria and details of this opportunity.",
+      "modalNewDesc": "Add an opportunity to the curated catalogue.",
+      "form": {
+        "title": "Title", "titlePlaceholder": "E.g. Pitch Contest Paris 2026",
+        "type": "Type", "description": "Description", "descriptionPlaceholder": "Opportunity overview…",
+        "sector": "Sector (optional)", "sectorPlaceholder": "All sectors",
+        "deadline": "Deadline",
+        "minOverall": "Min overall score (0–10)", "minMaturity": "Min D11 maturity",
+        "active": "Active (visible to eligible founders)",
+        "cancel": "Cancel", "saving": "Saving…", "save": "Save"
+      }
+    },
+    "grid": {
+      "title": "Radar grid",
+      "subtitle": "The versioned evaluation framework. 12 dimensions → 4 pillars.",
+      "currentVersion": "Current version: v2",
+      "publish": "Publish a new version",
+      "toastPublished": "New grid version prepared"
+    }
+  },
   "Bilan": {
     "pending": {
       "title": "Analyzing your project…",

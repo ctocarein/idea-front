@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { ApiError } from "@/shared/api/client";
 import { ProjectDetail } from "@/features/projects";
@@ -15,7 +16,8 @@ export async function generateMetadata({
     const project = await getAdminProject(id);
     return { title: project.name };
   } catch {
-    return { title: "Projet" };
+    const t = await getTranslations("Admin.projects");
+    return { title: t("fallbackTitle") };
   }
 }
 

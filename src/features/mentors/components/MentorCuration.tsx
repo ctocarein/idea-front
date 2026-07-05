@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 import { Badge, Button, Card, CardContent, toast } from "@/shared/ui";
 import {
@@ -22,6 +23,7 @@ export function MentorCuration({
   applications: MentorApplication[];
   mentors: MentorPublic[];
 }) {
+  const t = useTranslations("Admin.mentors");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [apps, setApps] = useState(applications);
@@ -34,7 +36,7 @@ export function MentorCuration({
       if (res.ok) {
         setApps((list) => list.filter((a) => a.id !== app.id));
         toast.success(
-          accept ? `Compte créé pour ${app.full_name}` : "Candidature refusée",
+          accept ? t("toastCreated", { name: app.full_name }) : t("toastDeclined"),
         );
         router.refresh();
       } else {
@@ -47,7 +49,7 @@ export function MentorCuration({
     startTransition(async () => {
       const res = await setMentorActive(mentor.user_id, false);
       if (res.ok) {
-        toast.success(`${mentor.full_name} suspendu`);
+        toast.success(t("toastSuspended", { name: mentor.full_name }));
         router.refresh();
       } else {
         toast.error(res.message);
@@ -59,9 +61,9 @@ export function MentorCuration({
     <div className="space-y-8">
       {/* Candidatures */}
       <section className="space-y-3">
-        <h2 className="font-display text-lg font-bold tracking-tight">Candidatures</h2>
+        <h2 className="font-display text-lg font-bold tracking-tight">{t("applications")}</h2>
         {apps.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Aucune candidature en attente.</p>
+          <p className="text-sm text-muted-foreground">{t("noApplications")}</p>
         ) : (
           apps.map((a) => (
             <Card key={a.id}>
@@ -82,10 +84,10 @@ export function MentorCuration({
                     disabled={pending}
                     onClick={() => decide(a, false)}
                   >
-                    Refuser
+                    {t("decline")}
                   </Button>
                   <Button size="sm" loading={pending} onClick={() => decide(a, true)}>
-                    Créer le compte
+                    {t("createAccount")}
                   </Button>
                 </div>
               </CardContent>
@@ -96,9 +98,9 @@ export function MentorCuration({
 
       {/* Mentors actifs */}
       <section className="space-y-3">
-        <h2 className="font-display text-lg font-bold tracking-tight">Mentors actifs</h2>
+        <h2 className="font-display text-lg font-bold tracking-tight">{t("activeMentors")}</h2>
         {mentors.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Aucun mentor actif pour l&apos;instant.</p>
+          <p className="text-sm text-muted-foreground">{t("noActiveMentors")}</p>
         ) : (
           mentors.map((m) => (
             <Card key={m.user_id}>
@@ -113,14 +115,14 @@ export function MentorCuration({
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Badge variant="success">Actif</Badge>
+                  <Badge variant="success">{t("active")}</Badge>
                   <Button
                     size="sm"
                     variant="outline"
                     disabled={pending}
                     onClick={() => suspend(m)}
                   >
-                    Suspendre
+                    {t("suspend")}
                   </Button>
                 </div>
               </CardContent>

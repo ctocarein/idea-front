@@ -1,16 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { Plus, Pencil, Archive, RotateCcw, AlertCircle } from "lucide-react";
 
-import { Modal } from "@/shared/ui/Modal";
-import { Field } from "@/shared/ui/Field";
-import { Input } from "@/shared/ui/Input";
-import { Textarea } from "@/shared/ui/Textarea";
-import { Select, SelectItem } from "@/shared/ui/Select";
-import { Badge } from "@/shared/ui/Badge";
-import { Button } from "@/shared/ui/Button";
-import { Card, CardContent } from "@/shared/ui/Card";
+import { Modal, Field, Input, Textarea, Select, SelectItem, Badge, Button, Card, CardContent } from "@/shared/ui";
 
 import type { OpportunityAdminOut } from "./adminApi";
 import {
@@ -20,15 +14,7 @@ import {
   type OpportunityFormData,
 } from "./adminActions";
 
-const KIND_LABELS: Record<string, string> = {
-  concours: "Concours",
-  hackathon: "Hackathon",
-  incubateur: "Incubateur",
-  mentorat: "Mentorat",
-  financement: "Financement",
-};
-
-const KIND_OPTIONS = Object.entries(KIND_LABELS).map(([value, label]) => ({ value, label }));
+const KIND_VALUES = ["concours", "hackathon", "incubateur", "mentorat", "financement"];
 
 const EMPTY_FORM: OpportunityFormData = {
   title: "",
@@ -54,11 +40,6 @@ function toFormData(opp: OpportunityAdminOut): OpportunityFormData {
   };
 }
 
-function formatDeadline(d: string | null): string {
-  if (!d) return "–";
-  return new Date(d).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
-}
-
 interface FormProps {
   initial: OpportunityFormData;
   onSave: (data: OpportunityFormData) => Promise<void>;
@@ -68,6 +49,7 @@ interface FormProps {
 }
 
 function OpportunityForm({ initial, onSave, onCancel, pending, error }: FormProps) {
+  const t = useTranslations("Admin.opportunities");
   const [form, setForm] = useState<OpportunityFormData>(initial);
 
   function set<K extends keyof OpportunityFormData>(key: K, value: OpportunityFormData[K]) {
@@ -88,43 +70,43 @@ function OpportunityForm({ initial, onSave, onCancel, pending, error }: FormProp
         </div>
       )}
 
-      <Field label="Titre" required>
+      <Field label={t("form.title")} required>
         <Input
           value={form.title}
           onChange={(e) => set("title", e.target.value)}
           required
-          placeholder="Ex : Pitch Contest Paris 2026"
+          placeholder={t("form.titlePlaceholder")}
         />
       </Field>
 
-      <Field label="Type">
+      <Field label={t("form.type")}>
         <Select value={form.kind} onValueChange={(v) => set("kind", v)}>
-          {KIND_OPTIONS.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value}>
-              {opt.label}
+          {KIND_VALUES.map((value) => (
+            <SelectItem key={value} value={value}>
+              {t(`kinds.${value}`)}
             </SelectItem>
           ))}
         </Select>
       </Field>
 
-      <Field label="Description">
+      <Field label={t("form.description")}>
         <Textarea
           value={form.description}
           onChange={(e) => set("description", e.target.value)}
           rows={3}
-          placeholder="Présentation de l'opportunité…"
+          placeholder={t("form.descriptionPlaceholder")}
         />
       </Field>
 
       <div className="grid grid-cols-2 gap-3">
-        <Field label="Secteur (optionnel)">
+        <Field label={t("form.sector")}>
           <Input
             value={form.sector}
             onChange={(e) => set("sector", e.target.value)}
-            placeholder="Tous secteurs"
+            placeholder={t("form.sectorPlaceholder")}
           />
         </Field>
-        <Field label="Date limite">
+        <Field label={t("form.deadline")}>
           <Input
             type="date"
             value={form.deadline ?? ""}
@@ -134,7 +116,7 @@ function OpportunityForm({ initial, onSave, onCancel, pending, error }: FormProp
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <Field label="Score min global (0–10)">
+        <Field label={t("form.minOverall")}>
           <Input
             type="number"
             min={0}
@@ -144,7 +126,7 @@ function OpportunityForm({ initial, onSave, onCancel, pending, error }: FormProp
             onChange={(e) => set("min_overall", parseFloat(e.target.value) || 0)}
           />
         </Field>
-        <Field label="Maturité min D11">
+        <Field label={t("form.minMaturity")}>
           <Input
             type="number"
             min={0}
@@ -167,15 +149,15 @@ function OpportunityForm({ initial, onSave, onCancel, pending, error }: FormProp
           onChange={(e) => set("is_active", e.target.checked)}
           className="rounded border-border accent-primary"
         />
-        Active (visible aux porteurs éligibles)
+        {t("form.active")}
       </label>
 
       <div className="flex justify-end gap-2 pt-2">
         <Button type="button" variant="ghost" onClick={onCancel} disabled={pending}>
-          Annuler
+          {t("form.cancel")}
         </Button>
         <Button type="submit" disabled={pending || !form.title}>
-          {pending ? "Enregistrement…" : "Enregistrer"}
+          {pending ? t("form.saving") : t("form.save")}
         </Button>
       </div>
     </form>
@@ -191,6 +173,10 @@ interface OppTableProps {
 }
 
 function OppTable({ rows, label, togglingId, onEdit, onToggle }: OppTableProps) {
+  const t = useTranslations("Admin.opportunities");
+  const locale = useLocale();
+  const formatDeadline = (d: string | null): string =>
+    d ? new Date(d).toLocaleDateString(locale, { day: "2-digit", month: "short", year: "numeric" }) : "–";
   if (rows.length === 0) return null;
   return (
     <div className="space-y-2">
@@ -201,12 +187,12 @@ function OppTable({ rows, label, togglingId, onEdit, onToggle }: OppTableProps) 
         <table className="w-full text-sm">
           <thead className="bg-secondary/50">
             <tr>
-              <th className="px-4 py-3 text-left font-medium">Titre</th>
-              <th className="px-4 py-3 text-left font-medium">Type</th>
-              <th className="px-4 py-3 text-left font-medium">Score min</th>
-              <th className="px-4 py-3 text-left font-medium">Secteur</th>
-              <th className="px-4 py-3 text-left font-medium">Deadline</th>
-              <th className="px-4 py-3 text-right font-medium">Actions</th>
+              <th className="px-4 py-3 text-left font-medium">{t("cols.title")}</th>
+              <th className="px-4 py-3 text-left font-medium">{t("cols.type")}</th>
+              <th className="px-4 py-3 text-left font-medium">{t("cols.minScore")}</th>
+              <th className="px-4 py-3 text-left font-medium">{t("cols.sector")}</th>
+              <th className="px-4 py-3 text-left font-medium">{t("cols.deadline")}</th>
+              <th className="px-4 py-3 text-right font-medium">{t("cols.actions")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -214,19 +200,19 @@ function OppTable({ rows, label, togglingId, onEdit, onToggle }: OppTableProps) 
               <tr key={opp.id} className="transition-colors hover:bg-secondary/20">
                 <td className="px-4 py-3 font-medium">{opp.title}</td>
                 <td className="px-4 py-3">
-                  <Badge variant="neutral">{KIND_LABELS[opp.kind] ?? opp.kind}</Badge>
+                  <Badge variant="neutral">{t.has(`kinds.${opp.kind}`) ? t(`kinds.${opp.kind}`) : opp.kind}</Badge>
                 </td>
                 <td className="px-4 py-3 tabular-nums text-muted-foreground">
-                  {opp.min_overall > 0 ? `≥ ${opp.min_overall}/10` : "–"}
+                  {opp.min_overall > 0 ? t("minScoreVal", { score: opp.min_overall }) : "–"}
                 </td>
-                <td className="px-4 py-3 text-muted-foreground">{opp.sector ?? "Tous"}</td>
+                <td className="px-4 py-3 text-muted-foreground">{opp.sector ?? t("allSectorsShort")}</td>
                 <td className="px-4 py-3 text-muted-foreground">{formatDeadline(opp.deadline)}</td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-1">
                     <button
                       onClick={() => onEdit(opp)}
                       className="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                      title="Modifier"
+                      title={t("edit")}
                     >
                       <Pencil className="size-3.5" />
                     </button>
@@ -234,7 +220,7 @@ function OppTable({ rows, label, togglingId, onEdit, onToggle }: OppTableProps) 
                       onClick={() => onToggle(opp)}
                       disabled={togglingId === opp.id}
                       className="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-50"
-                      title={opp.is_active ? "Archiver" : "Restaurer"}
+                      title={opp.is_active ? t("archive") : t("restore")}
                     >
                       {opp.is_active ? (
                         <Archive className="size-3.5" />
@@ -258,6 +244,7 @@ interface Props {
 }
 
 export function OpportunitiesAdminClient({ initialOpportunities }: Props) {
+  const t = useTranslations("Admin.opportunities");
   const [opportunities, setOpportunities] = useState(initialOpportunities);
   const [modalOpen, setModalOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<OpportunityAdminOut | null>(null);
@@ -315,33 +302,33 @@ export function OpportunitiesAdminClient({ initialOpportunities }: Props) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          {active.length} active{active.length > 1 ? "s" : ""}
-          {archived.length > 0 && `, ${archived.length} archivée${archived.length > 1 ? "s" : ""}`}
+          {t("activeCount", { count: active.length })}
+          {archived.length > 0 && t("archivedCount", { count: archived.length })}
         </p>
         <Button onClick={openCreate} size="sm">
           <Plus className="mr-1.5 size-4" />
-          Nouvelle opportunité
+          {t("new")}
         </Button>
       </div>
 
       {opportunities.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">
-            Aucune opportunité dans le catalogue.
+            {t("emptyCatalogue")}
           </CardContent>
         </Card>
       ) : (
         <>
           <OppTable
             rows={active}
-            label="Actives"
+            label={t("sectionActive")}
             togglingId={togglingId}
             onEdit={openEdit}
             onToggle={handleToggleActive}
           />
           <OppTable
             rows={archived}
-            label="Archivées"
+            label={t("sectionArchived")}
             togglingId={togglingId}
             onEdit={openEdit}
             onToggle={handleToggleActive}
@@ -354,12 +341,8 @@ export function OpportunitiesAdminClient({ initialOpportunities }: Props) {
         onOpenChange={(open) => {
           if (!open) setModalOpen(false);
         }}
-        title={editTarget ? "Modifier l'opportunité" : "Nouvelle opportunité"}
-        description={
-          editTarget
-            ? "Modifie les critères et détails de cette opportunité."
-            : "Ajoute une opportunité au catalogue curé."
-        }
+        title={editTarget ? t("modalEditTitle") : t("modalNewTitle")}
+        description={editTarget ? t("modalEditDesc") : t("modalNewDesc")}
         className="max-w-xl"
       >
         <OpportunityForm

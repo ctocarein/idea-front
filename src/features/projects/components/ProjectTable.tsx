@@ -2,16 +2,17 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 import { routes } from "@/shared/config/routes";
 import { Chip, DataTable, type Column } from "@/shared/ui";
 import { overallScore } from "@/features/scoring";
 import { ProjectStatusBadge } from "./ProjectStatusBadge";
-import { STATUS_LABEL } from "../lib/status-machine";
 import { ALL_STATUSES } from "../data/mock";
 import type { Project } from "../types/project.types";
 
 export function ProjectTable({ projects }: { projects: Project[] }) {
+  const t = useTranslations("Admin.projects");
   const router = useRouter();
   const [sector, setSector] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
@@ -34,7 +35,7 @@ export function ProjectTable({ projects }: { projects: Project[] }) {
   const columns: Column<Project>[] = [
     {
       key: "name",
-      header: "Projet",
+      header: t("cols.project"),
       sortable: true,
       sortValue: (p) => p.name,
       cell: (p) => (
@@ -46,20 +47,20 @@ export function ProjectTable({ projects }: { projects: Project[] }) {
     },
     {
       key: "sector",
-      header: "Secteur",
+      header: t("cols.sector"),
       sortable: true,
       sortValue: (p) => p.sector,
     },
     {
       key: "status",
-      header: "Statut",
+      header: t("cols.status"),
       sortable: true,
       sortValue: (p) => p.status,
       cell: (p) => <ProjectStatusBadge status={p.status} />,
     },
     {
       key: "score",
-      header: "Score",
+      header: t("cols.score"),
       sortable: true,
       sortValue: (p) => (p.score ? overallScore(p.score) : -1),
       cell: (p) => (
@@ -68,7 +69,7 @@ export function ProjectTable({ projects }: { projects: Project[] }) {
     },
     {
       key: "createdAt",
-      header: "Créé le",
+      header: t("cols.createdAt"),
       sortValue: (p) => p.createdAt,
       className: "hidden sm:table-cell",
     },
@@ -78,7 +79,7 @@ export function ProjectTable({ projects }: { projects: Project[] }) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
         <Chip selected={sector === null} onClick={() => setSector(null)}>
-          Tous secteurs
+          {t("allSectors")}
         </Chip>
         {sectors.map((s) => (
           <Chip
@@ -92,7 +93,7 @@ export function ProjectTable({ projects }: { projects: Project[] }) {
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <Chip selected={status === null} onClick={() => setStatus(null)}>
-          Tous statuts
+          {t("allStatuses")}
         </Chip>
         {ALL_STATUSES.map((s) => (
           <Chip
@@ -100,7 +101,7 @@ export function ProjectTable({ projects }: { projects: Project[] }) {
             selected={status === s}
             onClick={() => setStatus((cur) => (cur === s ? null : s))}
           >
-            {STATUS_LABEL[s]}
+            {t(`status.${s}`)}
           </Chip>
         ))}
       </div>
@@ -110,7 +111,7 @@ export function ProjectTable({ projects }: { projects: Project[] }) {
         data={filtered}
         getRowKey={(p) => p.id}
         searchable
-        searchPlaceholder="Rechercher un projet…"
+        searchPlaceholder={t("search")}
         onRowClick={(p) => router.push(routes.adminProject(p.id))}
       />
     </div>

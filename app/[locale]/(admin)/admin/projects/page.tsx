@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 import { ApiError } from "@/shared/api/client";
 import { ProjectTable } from "@/features/projects";
@@ -7,6 +8,7 @@ import { getAdminProjects } from "@/features/projects/api";
 export const metadata: Metadata = { title: "Projets" };
 
 export default async function AdminProjectsPage() {
+  const t = await getTranslations("Admin.projects");
   let projects: Awaited<ReturnType<typeof getAdminProjects>> = [];
   try {
     projects = await getAdminProjects();
@@ -17,9 +19,9 @@ export default async function AdminProjectsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight">Projets</h1>
+        <h1 className="font-display text-2xl font-bold tracking-tight">{t("title")}</h1>
         <p className="text-muted-foreground">
-          Filtre, trie et pilote le cycle de vie des projets.
+          {t("subtitle")}
         </p>
       </div>
       <ProjectTable projects={projects} />
