@@ -158,7 +158,7 @@
     "page": {
       "eyebrow": "Free · no pressure",
       "title": "Understand your project",
-      "subtitle": "In a few minutes, get your understanding scorecard — essence, viability, scalability. We start from where you are."
+      "subtitle": "In minutes, your understanding scorecard. We start from where you are."
     },
     "entry": {
       "manualTitle": "Tell us your idea",
@@ -171,9 +171,9 @@
       "nameLabel": "Does your project already have a name? (optional)",
       "namePlaceholder": "E.g. AgriConnect",
       "ideaLabel": "Tell us about your project",
-      "ideaDescription": "In 3 sentences: the problem, your solution, where you're at. No structure required.",
-      "tellIntro": "No jargon, no right answer. Tell your idea like you would to a friend — the AI tidies it up.",
-      "ideaPlaceholder": "My project helps small shopkeepers track their stock… The problem I solve is… Right now, I'm at…",
+      "ideaDescription": "The problem, your solution, where you're at.",
+      "tellIntro": "Like talking to a friend — no jargon.",
+      "ideaPlaceholder": "My project helps… The problem is… I'm at…",
       "voiceStart": "Dictate",
       "voiceStop": "Stop",
       "voiceListening": "Listening…",

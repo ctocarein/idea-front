@@ -158,7 +158,7 @@
     "page": {
       "eyebrow": "Gratuit · sans pression",
       "title": "Comprends ton projet",
-      "subtitle": "En quelques minutes, obtiens ton tableau de compréhension — essence, viabilité, scalabilité. On part d’où tu es."
+      "subtitle": "En quelques minutes, ton tableau de compréhension. On part d’où tu es."
     },
     "entry": {
       "manualTitle": "Raconte ton idée",
@@ -171,9 +171,9 @@
       "nameLabel": "Ton projet a déjà un nom ? (optionnel)",
       "namePlaceholder": "Ex. AgriConnect",
       "ideaLabel": "Raconte ton projet",
-      "ideaDescription": "En 3 phrases : le problème, ta solution, où tu en es. Pas de structure à respecter.",
-      "tellIntro": "Pas de jargon, pas de bonne réponse. Raconte ton idée comme à un ami — l’IA range tout.",
-      "ideaPlaceholder": "Mon projet aide les petits commerçants à suivre leur stock… Le problème que je résous, c’est… Là où j’en suis…",
+      "ideaDescription": "Le problème, ta solution, où tu en es.",
+      "tellIntro": "Comme à un ami, sans jargon.",
+      "ideaPlaceholder": "Mon projet aide… Le problème, c’est… J’en suis à…",
       "voiceStart": "Dicter",
       "voiceStop": "Arrêter",
       "voiceListening": "À l’écoute…",
