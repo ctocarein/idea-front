@@ -489,6 +489,79 @@
       "discover": "Discover"
     }
   },
+  "Mentor": {
+    "space": "Mentor space",
+    "role": "Mentor",
+    "nav": { "profile": "My profile", "requests": "Requests" },
+    "home": { "title": "My mentor profile", "subtitle": "Your profile in the marketplace — sectors, calendar, fees." },
+    "requestsPage": { "title": "Connection requests", "subtitle": "Accept or decline the founders who reach out to you." },
+    "discovery": {
+      "myRequestsTitle": "My requests",
+      "myRequestsSubtitle": "Real-time tracking of your connections.",
+      "findTitle": "Find your mentor",
+      "findSubtitle": "Browse and choose a mentor by sector. Connecting is free."
+    },
+    "status": {
+      "requested": "Pending",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "session_planned": "Session planned",
+      "done": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "marketplace": {
+      "allSectors": "All sectors",
+      "empty": "No mentors available right now. Check back soon — the community is growing.",
+      "requestSent": "Request sent",
+      "request": "Get support",
+      "errNoProject": "Run your diagnostic first to reach out to a mentor.",
+      "defaultMessage": "Hello, I'd love some support on my project.",
+      "toastSent": "Request sent ✦"
+    },
+    "profile": {
+      "myProfile": "My profile",
+      "save": "Save",
+      "toastSaved": "Profile saved",
+      "sectors": "Sectors",
+      "bio": "Bio",
+      "bioDemo": "15 years in mobile payments. I help founders toward their first raise.",
+      "fees": "Fees (not billed in MVP)",
+      "availability": "My availability"
+    },
+    "card": { "verified": "Verified", "feeOnRequest": "Fee on request", "feePerHour": "{fee} €/h", "request": "Request" },
+    "myRequests": {
+      "empty": "No requests sent",
+      "emptyDesc": "Browse the marketplace and contact a mentor.",
+      "sentOn": "Request sent on {date}",
+      "sessionOn": "Session scheduled for {date}",
+      "cancelling": "Cancelling…",
+      "cancel": "Cancel request",
+      "active": "In progress",
+      "history": "History"
+    },
+    "incoming": {
+      "empty": "No requests received",
+      "emptyDesc": "Founders who reach out to you will appear here.",
+      "sessionOn": "Session on {date}",
+      "decline": "Decline",
+      "accept": "Accept",
+      "planSession": "Plan a session",
+      "markDone": "Mark completed",
+      "pendingCount": "Pending ({count})",
+      "active": "In progress",
+      "history": "History",
+      "toastAccepted": "Request accepted!",
+      "toastDeclined": "Request declined.",
+      "toastPlanned": "Session planned!",
+      "toastCompleted": "Session marked as completed.",
+      "planModalTitle": "Plan a session",
+      "planModalDesc": "Session with {name}",
+      "planModalCancel": "Cancel",
+      "planModalConfirm": "Confirm",
+      "planning": "Planning…",
+      "dateLabel": "Session date and time"
+    }
+  },
   "Opportunities": {
     "title": "Opportunities",
     "subtitle": "Programs, contests and incubators — filtered by how solid your project is.",

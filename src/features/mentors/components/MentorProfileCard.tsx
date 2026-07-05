@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { ShieldCheck } from "lucide-react";
 
 import { Badge, Button } from "@/shared/ui";
@@ -14,6 +15,7 @@ export function MentorProfileCard({
   mentor: Mentor;
   onRequest?: (mentor: Mentor) => void;
 }) {
+  const t = useTranslations("Mentor.card");
   return (
     <div className="flex flex-col rounded-2xl border border-border bg-card p-5">
       <div className="flex items-center gap-3">
@@ -26,7 +28,7 @@ export function MentorProfileCard({
           </p>
           {mentor.verified ? (
             <Badge variant="verified">
-              <ShieldCheck /> Vérifié
+              <ShieldCheck /> {t("verified")}
             </Badge>
           ) : null}
         </div>
@@ -46,11 +48,11 @@ export function MentorProfileCard({
 
       <div className="mt-4 flex items-center justify-between">
         <span className="text-sm text-muted-foreground">
-          {mentor.feeEur ? `${mentor.feeEur} €/h` : "Tarif sur demande"}
+          {mentor.feeEur ? t("feePerHour", { fee: mentor.feeEur }) : t("feeOnRequest")}
         </span>
         {onRequest ? (
           <Button size="sm" onClick={() => onRequest(mentor)}>
-            Demander
+            {t("request")}
           </Button>
         ) : null}
       </div>

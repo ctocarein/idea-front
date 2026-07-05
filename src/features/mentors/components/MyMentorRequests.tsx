@@ -1,13 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { Clock, CheckCircle2, XCircle, Calendar, PartyPopper, X } from "lucide-react";
 
-import { Badge } from "@/shared/ui/Badge";
-import { Button } from "@/shared/ui/Button";
-import { Card, CardContent } from "@/shared/ui/Card";
-import { EmptyState } from "@/shared/ui";
-import { toast } from "@/shared/ui";
+import { Badge, Button, Card, CardContent, EmptyState, toast } from "@/shared/ui";
 
 import type { MentorRequestDetail } from "../api";
 import { cancelRequest } from "../actions";
@@ -16,34 +13,32 @@ type BadgeVariant = "neutral" | "primary" | "success" | "warning" | "danger" | "
 
 const STATUS_CONFIG: Record<
   string,
-  { label: string; variant: BadgeVariant; icon: React.ElementType }
+  { variant: BadgeVariant; icon: React.ElementType }
 > = {
-  requested:       { label: "En attente",       variant: "warning",  icon: Clock },
-  accepted:        { label: "Acceptée",          variant: "primary",  icon: CheckCircle2 },
-  declined:        { label: "Refusée",           variant: "danger",   icon: XCircle },
-  session_planned: { label: "Session planifiée", variant: "success",  icon: Calendar },
-  done:            { label: "Terminée",          variant: "neutral",  icon: PartyPopper },
-  cancelled:       { label: "Annulée",           variant: "outline",  icon: X },
+  requested:       { variant: "warning",  icon: Clock },
+  accepted:        { variant: "primary",  icon: CheckCircle2 },
+  declined:        { variant: "danger",   icon: XCircle },
+  session_planned: { variant: "success",  icon: Calendar },
+  done:            { variant: "neutral",  icon: PartyPopper },
+  cancelled:       { variant: "outline",  icon: X },
 };
 
 const CANCELLABLE = new Set(["requested", "accepted", "session_planned"]);
-
-function fmtDate(iso: string | null) {
-  if (!iso) return null;
-  return new Date(iso).toLocaleDateString("fr-FR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 interface Props {
   initialRequests: MentorRequestDetail[];
 }
 
 export function MyMentorRequests({ initialRequests }: Props) {
+  const t = useTranslations("Mentor.myRequests");
+  const tStatus = useTranslations("Mentor.status");
+  const locale = useLocale();
+  const fmtDate = (iso: string | null) =>
+    iso
+      ? new Date(iso).toLocaleDateString(locale, {
+          day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit",
+        })
+      : null;
   const [requests, setRequests] = useState(initialRequests);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
@@ -68,14 +63,15 @@ export function MyMentorRequests({ initialRequests }: Props) {
     return (
       <EmptyState
         icon={Clock}
-        title="Aucune demande envoyée"
-        description="Parcours la marketplace et contacte un mentor."
+        title={t("empty")}
+        description={t("emptyDesc")}
       />
     );
   }
 
   function RequestCard({ req }: { req: MentorRequestDetail }) {
-    const cfg = STATUS_CONFIG[req.status] ?? { label: req.status, variant: "neutral", icon: Clock };
+    const cfg = STATUS_CONFIG[req.status] ?? { variant: "neutral" as BadgeVariant, icon: Clock };
+    const statusLabel = tStatus.has(req.status) ? tStatus(req.status) : req.status;
     const Icon = cfg.icon;
     const canCancel = CANCELLABLE.has(req.status);
 
@@ -86,12 +82,12 @@ export function MyMentorRequests({ initialRequests }: Props) {
             <div>
               <p className="font-semibold">{req.mentor_name}</p>
               <p className="text-sm text-muted-foreground">
-                Demande envoyée le {fmtDate(req.created_at)}
+                {t("sentOn", { date: fmtDate(req.created_at) ?? "" })}
               </p>
             </div>
             <Badge variant={cfg.variant}>
               <Icon className="size-3" />
-              {cfg.label}
+              {statusLabel}
             </Badge>
           </div>
 
@@ -104,7 +100,7 @@ export function MyMentorRequests({ initialRequests }: Props) {
           {req.session_at && (
             <p className="flex items-center gap-1.5 text-sm font-medium text-success">
               <Calendar className="size-4" />
-              Session prévue le {fmtDate(req.session_at)}
+              {t("sessionOn", { date: fmtDate(req.session_at) ?? "" })}
             </p>
           )}
 
@@ -117,7 +113,7 @@ export function MyMentorRequests({ initialRequests }: Props) {
                 disabled={cancellingId === req.id}
                 onClick={() => handleCancel(req.id)}
               >
-                {cancellingId === req.id ? "Annulation…" : "Annuler la demande"}
+                {cancellingId === req.id ? t("cancelling") : t("cancel")}
               </Button>
             </div>
           )}
@@ -131,7 +127,7 @@ export function MyMentorRequests({ initialRequests }: Props) {
       {active.length > 0 && (
         <div className="space-y-3">
           <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-            En cours
+            {t("active")}
           </h3>
           {active.map((r) => <RequestCard key={r.id} req={r} />)}
         </div>
@@ -139,7 +135,7 @@ export function MyMentorRequests({ initialRequests }: Props) {
       {past.length > 0 && (
         <div className="space-y-3">
           <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-            Historique
+            {t("history")}
           </h3>
           {past.map((r) => <RequestCard key={r.id} req={r} />)}
         </div>

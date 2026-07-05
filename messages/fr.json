@@ -489,6 +489,79 @@
       "discover": "Découvrir"
     }
   },
+  "Mentor": {
+    "space": "Espace mentor",
+    "role": "Mentor",
+    "nav": { "profile": "Mon profil", "requests": "Demandes" },
+    "home": { "title": "Mon profil mentor", "subtitle": "Ton profil dans la marketplace — secteurs, agenda, honoraires." },
+    "requestsPage": { "title": "Demandes de mise en relation", "subtitle": "Accepte ou refuse les porteurs qui te sollicitent." },
+    "discovery": {
+      "myRequestsTitle": "Mes demandes",
+      "myRequestsSubtitle": "Suivi en temps réel de tes mises en relation.",
+      "findTitle": "Trouve ton mentor",
+      "findSubtitle": "Parcours et choisis un mentor par secteur. La mise en relation est gratuite."
+    },
+    "status": {
+      "requested": "En attente",
+      "accepted": "Acceptée",
+      "declined": "Refusée",
+      "session_planned": "Session planifiée",
+      "done": "Terminée",
+      "cancelled": "Annulée"
+    },
+    "marketplace": {
+      "allSectors": "Tous secteurs",
+      "empty": "Aucun mentor disponible pour le moment. Reviens bientôt — la communauté grandit.",
+      "requestSent": "Demande envoyée",
+      "request": "Être accompagné·e",
+      "errNoProject": "Lance d’abord ton diagnostic pour solliciter un mentor.",
+      "defaultMessage": "Bonjour, j’aimerais être accompagné·e sur mon projet.",
+      "toastSent": "Demande envoyée ✦"
+    },
+    "profile": {
+      "myProfile": "Mon profil",
+      "save": "Enregistrer",
+      "toastSaved": "Profil enregistré",
+      "sectors": "Secteurs",
+      "bio": "Bio",
+      "bioDemo": "15 ans en paiement mobile. J’accompagne les porteurs vers leur première levée.",
+      "fees": "Honoraires (non facturés au MVP)",
+      "availability": "Mes disponibilités"
+    },
+    "card": { "verified": "Vérifié", "feeOnRequest": "Tarif sur demande", "feePerHour": "{fee} €/h", "request": "Demander" },
+    "myRequests": {
+      "empty": "Aucune demande envoyée",
+      "emptyDesc": "Parcours la marketplace et contacte un mentor.",
+      "sentOn": "Demande envoyée le {date}",
+      "sessionOn": "Session prévue le {date}",
+      "cancelling": "Annulation…",
+      "cancel": "Annuler la demande",
+      "active": "En cours",
+      "history": "Historique"
+    },
+    "incoming": {
+      "empty": "Aucune demande reçue",
+      "emptyDesc": "Les porteurs qui te sollicitent apparaîtront ici.",
+      "sessionOn": "Session le {date}",
+      "decline": "Refuser",
+      "accept": "Accepter",
+      "planSession": "Planifier une session",
+      "markDone": "Marquer terminée",
+      "pendingCount": "En attente ({count})",
+      "active": "En cours",
+      "history": "Historique",
+      "toastAccepted": "Demande acceptée !",
+      "toastDeclined": "Demande refusée.",
+      "toastPlanned": "Session planifiée !",
+      "toastCompleted": "Session marquée comme terminée.",
+      "planModalTitle": "Planifier une session",
+      "planModalDesc": "Session avec {name}",
+      "planModalCancel": "Annuler",
+      "planModalConfirm": "Confirmer",
+      "planning": "Planification…",
+      "dateLabel": "Date et heure de la session"
+    }
+  },
   "Opportunities": {
     "title": "Opportunités",
     "subtitle": "Programmes, concours et incubateurs — filtrés selon la solidité de ton projet.",

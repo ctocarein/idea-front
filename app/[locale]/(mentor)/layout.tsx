@@ -1,15 +1,11 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { routes } from "@/shared/config/routes";
 import { getSession } from "@/shared/auth/server";
 import { SessionProvider, SPACE_ROLES } from "@/shared/auth";
 import { AppShell, type NavItem } from "@/shared/layout";
 import { signOut } from "@/features/auth";
-
-const NAV: NavItem[] = [
-  { href: routes.mentorHome, label: "Mon profil", icon: "profile" },
-  { href: `${routes.mentorHome}/requests`, label: "Demandes", icon: "requests" },
-];
 
 export default async function MentorLayout({
   children,
@@ -21,12 +17,18 @@ export default async function MentorLayout({
   if (!SPACE_ROLES["/mentor"].includes(session.role))
     redirect(routes.forbidden);
 
+  const t = await getTranslations("Mentor");
+  const nav: NavItem[] = [
+    { href: routes.mentorHome, label: t("nav.profile"), icon: "profile" },
+    { href: `${routes.mentorHome}/requests`, label: t("nav.requests"), icon: "requests" },
+  ];
+
   return (
     <SessionProvider session={session}>
       <AppShell
-        spaceLabel="Espace mentor"
-        nav={NAV}
-        user={{ name: session.name, roleLabel: "Mentor" }}
+        spaceLabel={t("space")}
+        nav={nav}
+        user={{ name: session.name, roleLabel: t("role") }}
         signOutAction={signOut}
       >
         {children}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { CheckCircle2, Heart } from "lucide-react";
 
 import { Button, Card, CardContent, Chip, toast } from "@/shared/ui";
@@ -18,6 +19,7 @@ export function MentorMarketplace({
   mentors: MentorPublic[];
   projectId: string | null;
 }) {
+  const t = useTranslations("Mentor.marketplace");
   const [sector, setSector] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [requested, setRequested] = useState<Set<string>>(new Set());
@@ -32,18 +34,18 @@ export function MentorMarketplace({
 
   function request(mentor: MentorPublic) {
     if (!projectId) {
-      toast.error("Lance d'abord ton diagnostic pour solliciter un mentor.");
+      toast.error(t("errNoProject"));
       return;
     }
     startTransition(async () => {
       const res = await requestMentor(
         mentor.user_id,
         projectId,
-        "Bonjour, j'aimerais être accompagné·e sur mon projet.",
+        t("defaultMessage"),
       );
       if (res.ok) {
         setRequested((s) => new Set(s).add(mentor.user_id));
-        toast.success("Demande envoyée ✦");
+        toast.success(t("toastSent"));
       } else {
         toast.error(res.message);
       }
@@ -54,7 +56,7 @@ export function MentorMarketplace({
     return (
       <Card>
         <CardContent className="py-10 text-center text-muted-foreground">
-          Aucun mentor disponible pour le moment. Reviens bientôt — la communauté grandit.
+          {t("empty")}
         </CardContent>
       </Card>
     );
@@ -65,7 +67,7 @@ export function MentorMarketplace({
       {sectors.length > 0 ? (
         <div className="flex flex-wrap gap-2">
           <Chip selected={sector === null} onClick={() => setSector(null)}>
-            Tous secteurs
+            {t("allSectors")}
           </Chip>
           {sectors.map((s) => (
             <Chip
@@ -101,12 +103,12 @@ export function MentorMarketplace({
                   {done ? (
                     <span className="inline-flex items-center gap-2 text-sm font-medium text-success">
                       <CheckCircle2 className="size-4" />
-                      Demande envoyée
+                      {t("requestSent")}
                     </span>
                   ) : (
                     <Button size="sm" loading={pending} onClick={() => request(m)}>
                       <Heart className="size-4" />
-                      Être accompagné·e
+                      {t("request")}
                     </Button>
                   )}
                 </div>
