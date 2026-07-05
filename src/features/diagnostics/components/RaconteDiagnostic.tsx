@@ -3,14 +3,69 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
-import { ArrowRight, Check, CircleDashed, Loader2, Sparkles, Wand2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  CircleDashed,
+  Lightbulb,
+  Loader2,
+  Mic,
+  Sparkles,
+  Wand2,
+} from "lucide-react";
 
 import { Button, Checkbox, Field, Input, Textarea, toast } from "@/shared/ui";
 import { routes } from "@/shared/config/routes";
 import { extractIdea, startManualDiagnostic, type IdeaExtract } from "../api/actions";
 import { savePendingDiagnostic } from "../lib/pending";
+import { useDictation } from "../lib/use-dictation";
 
 type Step = "tell" | "organize" | "fill";
+
+/** Monnaies proposées (le `sample` sert d'exemple de prix dans les exemples guidés). */
+const CURRENCIES = [
+  { code: "XOF", label: "FCFA (XOF)", sample: "3 000 FCFA" },
+  { code: "EUR", label: "Euro (€)", sample: "5 €" },
+  { code: "USD", label: "Dollar ($)", sample: "$6" },
+  { code: "GHS", label: "Cedi (GH₵)", sample: "GH₵40" },
+  { code: "NGN", label: "Naira (₦)", sample: "₦4 000" },
+  { code: "MAD", label: "Dirham (DH)", sample: "50 DH" },
+  { code: "CAD", label: "Dollar CA ($CA)", sample: "8 $CA" },
+];
+
+function appendSpeech(prev: string, chunk: string): string {
+  return prev.trim() ? `${prev.trimEnd()} ${chunk}` : chunk;
+}
+
+/** Bouton micro (dictée). Rendu uniquement quand la Web Speech API est supportée. */
+function MicButton({
+  listening,
+  onToggle,
+  startLabel,
+  listeningLabel,
+}: {
+  listening: boolean;
+  onToggle: () => void;
+  startLabel: string;
+  listeningLabel: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-pressed={listening}
+      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+        listening
+          ? "border-coral-strong/40 bg-coral/10 text-coral-strong"
+          : "text-muted-foreground hover:text-foreground hover:border-border-strong"
+      }`}
+    >
+      <Mic className={`size-3.5 ${listening ? "animate-pulse" : ""}`} />
+      {listening ? listeningLabel : startLabel}
+    </button>
+  );
+}
 
 /**
  * « Raconte, on structure » — l'inverse du formulaire. Le porteur raconte son idée ; le LLM
@@ -45,6 +100,18 @@ export function RaconteDiagnostic({
   const [gapIdx, setGapIdx] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [draft, setDraft] = useState("");
+  const [currency, setCurrency] = useState(locale === "en" ? "USD" : "XOF");
+
+  // Dictée vocale : la voix alimente le champ actif (récit en "tell", réponse en "fill").
+  const { supported: micSupported, listening, toggle: toggleMic } = useDictation(
+    locale,
+    (chunk) => {
+      if (step === "fill") setDraft((prev) => appendSpeech(prev, chunk));
+      else setIdea((prev) => appendSpeech(prev, chunk));
+    },
+  );
+
+  const sample = (CURRENCIES.find((c) => c.code === currency) ?? CURRENCIES[0]).sample;
 
   function organize() {
     if (idea.trim().length < 20) {
@@ -98,22 +165,51 @@ export function RaconteDiagnostic({
   function startFill() {
     if (!extract || extract.gaps.length === 0) return submit(answers);
     setGapIdx(0);
-    setDraft("");
+    setDraft(answers[extract.gaps[0].key] ?? "");
     setStep("fill");
   }
 
-  function validateGap() {
-    if (!extract) return;
+  /** Sauvegarde la réponse courante et renvoie l'état à jour (navigation ↔). */
+  function persistDraft(): Record<string, string> {
+    if (!extract) return answers;
     const gap = extract.gaps[gapIdx];
     const next = { ...answers, [gap.key]: draft.trim() };
     setAnswers(next);
+    return next;
+  }
+
+  function nextGap() {
+    if (!extract) return;
+    const updated = persistDraft();
     if (gapIdx + 1 < extract.gaps.length) {
-      setGapIdx(gapIdx + 1);
-      setDraft("");
+      const nextIdx = gapIdx + 1;
+      setGapIdx(nextIdx);
+      setDraft(updated[extract.gaps[nextIdx].key] ?? "");
     } else {
-      submit(next);
+      submit(updated);
     }
   }
+
+  function prevGap() {
+    if (!extract) return;
+    const updated = persistDraft();
+    if (gapIdx > 0) {
+      const prevIdx = gapIdx - 1;
+      setGapIdx(prevIdx);
+      setDraft(updated[extract.gaps[prevIdx].key] ?? "");
+    } else {
+      setStep("organize");
+    }
+  }
+
+  const mic = (
+    <MicButton
+      listening={listening}
+      onToggle={toggleMic}
+      startLabel={t("voiceStart")}
+      listeningLabel={t("voiceListening")}
+    />
+  );
 
   function chips(data: IdeaExtract) {
     const done = new Set(Object.keys(answers));
@@ -143,6 +239,7 @@ export function RaconteDiagnostic({
   if (step === "tell") {
     return (
       <div className="space-y-5">
+        <p className="text-sm text-muted-foreground">{t("tellIntro")}</p>
         <Field label={t("nameLabel")}>
           <Input
             placeholder={t("namePlaceholder")}
@@ -151,10 +248,7 @@ export function RaconteDiagnostic({
             maxLength={120}
           />
         </Field>
-        <Field
-          label={t("ideaLabel")}
-          description={t("ideaDescription")}
-        >
+        <Field label={t("ideaLabel")} description={t("ideaDescription")}>
           <Textarea
             rows={6}
             placeholder={t("ideaPlaceholder")}
@@ -162,6 +256,7 @@ export function RaconteDiagnostic({
             onChange={(e) => setIdea(e.target.value)}
           />
         </Field>
+        {micSupported && <div className="-mt-2 flex justify-end">{mic}</div>}
         <Checkbox
           checked={consent}
           onCheckedChange={(v) => setConsent(v === true)}
@@ -202,9 +297,28 @@ export function RaconteDiagnostic({
   // --- FILL ---
   if (step === "fill" && extract) {
     const gap = extract.gaps[gapIdx];
+    const example = t.has(`examples.${gap.key}`) ? t(`examples.${gap.key}`, { price: sample }) : null;
     return (
-      <div className="space-y-5">
+      <div className="space-y-4">
         {chips(extract)}
+
+        {/* Monnaie de référence — adapte les exemples chiffrés au contexte du porteur. */}
+        <div className="flex items-center justify-end gap-2 text-xs text-muted-foreground">
+          <label htmlFor="cur">{t("currencyLabel")}</label>
+          <select
+            id="cur"
+            value={currency}
+            onChange={(e) => setCurrency(e.target.value)}
+            className="rounded-lg border bg-background px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+          >
+            {CURRENCIES.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="rounded-2xl border border-border bg-card p-5">
           <div className="mb-2 flex items-center gap-2">
             <span className="rounded-full bg-warning/15 px-2 py-0.5 text-xs font-medium text-warning">
@@ -215,14 +329,41 @@ export function RaconteDiagnostic({
             </span>
           </div>
           <p className="mb-3 font-display text-lg font-bold">{gap.question}</p>
+
+          {/* Exemple guidé (novice) : compréhension immédiate + préremplissage en un clic. */}
+          {example ? (
+            <div className="mb-3 rounded-xl bg-secondary/50 p-3">
+              <p className="flex items-start gap-1.5 text-sm text-muted-foreground">
+                <Lightbulb className="mt-0.5 size-4 shrink-0 text-coral-strong" />
+                <span>
+                  <span className="font-medium text-ink">{t("exampleLead")} : </span>
+                  {example}
+                </span>
+              </p>
+              <button
+                type="button"
+                onClick={() => setDraft(example)}
+                className="mt-2 text-xs font-medium text-primary hover:underline"
+              >
+                {t("useExample")}
+              </button>
+            </div>
+          ) : null}
+
           <Textarea
             rows={3}
             placeholder={t("gapPlaceholder")}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
           />
-          <div className="mt-3 flex justify-end">
-            <Button onClick={validateGap} loading={pending} disabled={!draft.trim()}>
+          {micSupported && <div className="mt-2 flex justify-start">{mic}</div>}
+
+          <div className="mt-3 flex items-center justify-between">
+            <Button variant="ghost" size="sm" onClick={prevGap} disabled={pending}>
+              <ArrowLeft className="size-4" />
+              {t("back")}
+            </Button>
+            <Button onClick={nextGap} loading={pending} disabled={!draft.trim()}>
               {gapIdx + 1 < extract.gaps.length ? t("validate") : t("finish")}
               <Check className="size-5" />
             </Button>
