@@ -171,11 +171,9 @@
       "nameLabel": "Ton projet a déjà un nom ? (optionnel)",
       "namePlaceholder": "Ex. AgriConnect",
       "ideaLabel": "Raconte ton projet",
-      "ideaDescription": "Le problème, ta solution, où tu en es.",
       "tellIntro": "Comme à un ami, sans jargon.",
       "ideaPlaceholder": "Mon projet aide… Le problème, c’est… J’en suis à…",
       "voiceStart": "Dicter",
-      "voiceStop": "Arrêter",
       "voiceListening": "À l’écoute…",
       "consent": "J’accepte que mon idée soit analysée (RGPD).",
       "organizeCta": "On organise mon idée",
@@ -189,7 +187,7 @@
       "validate": "Valider",
       "finish": "Terminer",
       "preparing": "On prépare ton bilan…",
-      "currencyLabel": "Ta monnaie",
+      "currencyLabel": "Devise",
       "suggestionHint": "Pré-rempli d’après ton récit — ajuste."
     },
     "upload": {

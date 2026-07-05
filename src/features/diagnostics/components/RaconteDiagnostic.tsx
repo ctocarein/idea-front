@@ -37,7 +37,7 @@ function appendSpeech(prev: string, chunk: string): string {
   return prev.trim() ? `${prev.trimEnd()} ${chunk}` : chunk;
 }
 
-/** Bouton micro (dictée). Rendu uniquement quand la Web Speech API est supportée. */
+/** Bouton micro (dictée) — icône seule. Rendu uniquement si la Web Speech API est supportée. */
 function MicButton({
   listening,
   onToggle,
@@ -49,19 +49,21 @@ function MicButton({
   startLabel: string;
   listeningLabel: string;
 }) {
+  const label = listening ? listeningLabel : startLabel;
   return (
     <button
       type="button"
       onClick={onToggle}
       aria-pressed={listening}
-      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+      aria-label={label}
+      title={label}
+      className={`inline-flex size-8 items-center justify-center rounded-full border transition-colors ${
         listening
           ? "border-coral-strong/40 bg-coral/10 text-coral-strong"
           : "text-muted-foreground hover:text-foreground hover:border-border-strong"
       }`}
     >
-      <Mic className={`size-3.5 ${listening ? "animate-pulse" : ""}`} />
-      {listening ? listeningLabel : startLabel}
+      <Mic className={`size-4 ${listening ? "animate-pulse" : ""}`} />
     </button>
   );
 }
@@ -254,7 +256,7 @@ export function RaconteDiagnostic({
             maxLength={120}
           />
         </Field>
-        <Field label={t("ideaLabel")} description={t("ideaDescription")}>
+        <Field label={t("ideaLabel")}>
           <Textarea
             rows={6}
             placeholder={t("ideaPlaceholder")}
