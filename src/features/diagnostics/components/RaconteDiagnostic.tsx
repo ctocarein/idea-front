@@ -264,21 +264,23 @@ export function RaconteDiagnostic({
             onChange={(e) => setIdea(e.target.value)}
           />
         </Field>
-        {micSupported && <div className="-mt-2 flex justify-end">{mic}</div>}
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <label htmlFor="cur">{t("currencyLabel")}</label>
-          <select
-            id="cur"
-            value={currency}
-            onChange={(e) => setCurrency(e.target.value)}
-            className="rounded-lg border bg-background px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
-          >
-            {CURRENCIES.map((c) => (
-              <option key={c.code} value={c.code}>
-                {c.label}
-              </option>
-            ))}
-          </select>
+        <div className="-mt-2 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <label htmlFor="cur">{t("currencyLabel")}</label>
+            <select
+              id="cur"
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              className="rounded-lg border bg-background px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              {CURRENCIES.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          {micSupported && mic}
         </div>
         <Checkbox
           checked={consent}
