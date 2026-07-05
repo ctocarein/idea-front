@@ -2,13 +2,18 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
 import { getSession } from "@/shared/auth/server";
+import { routes } from "@/shared/config/routes";
+import { pageMetadata } from "@/shared/seo/metadata";
 import { DiagnosticEntry } from "@/features/diagnostics";
 
-export const metadata: Metadata = {
-  title: "Diagnostic",
-  description:
-    "Écris ton idée ou uploade ton projet — comprends tes forces et tes angles morts, gratuitement.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return pageMetadata({ locale, path: routes.diagnostic, seoKey: "diagnostic" });
+}
 
 export default async function DiagnosticPage() {
   // Diagnostic = public (aucune auth requise). On lit juste la session pour adapter le

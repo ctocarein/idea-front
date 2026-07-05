@@ -1,4 +1,39 @@
 {
+  "Seo": {
+    "default": {
+      "title": "Ideaxion",
+      "description": "Ideaxion aide les porteurs de projet à comprendre leur idée, la structurer et s’entraîner à pitcher — gratuitement — puis à se relier au capital le moment venu."
+    },
+    "home": {
+      "title": "Ideaxion — D’une idée floue à un projet finançable",
+      "description": "Teste ton idée gratuitement : obtiens ton tableau de compréhension sur 12 dimensions clés, apprends à structurer ton projet et entraîne-toi à pitcher. Deviens capable et confiant."
+    },
+    "startups": {
+      "title": "Pour les porteurs",
+      "description": "Comprends ton projet, apprends à le structurer et entraîne-toi à pitcher — tout le parcours porteur, gratuit. Tu décides toi-même d’aller plus loin."
+    },
+    "financiers": {
+      "title": "Pour les financeurs",
+      "description": "Recevez des projets qualifiés et structurés, évalués sur un référentiel commun — le Radar de Collision. Ne triez plus le bruit ; ne voyez que des dossiers prêts."
+    },
+    "diagnostic": {
+      "title": "Diagnostic de projet gratuit",
+      "description": "Raconte ton idée ou uploade ton projet — obtiens ton tableau de compréhension sur 12 dimensions clés en quelques minutes. Sans inscription, sans jugement, gratuit."
+    },
+    "blog": {
+      "title": "Blog",
+      "description": "Des ressources concrètes pour comprendre, structurer et défendre ton projet : business plan, pitch, modèle économique, levée de fonds."
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "Porteur, mentor ou financeur — écris à l’équipe Ideaxion, on te répond."
+    },
+    "legal": {
+      "mentions": { "title": "Mentions légales", "description": "Mentions légales et informations sur l’éditeur de la plateforme Ideaxion." },
+      "confidentialite": { "title": "Politique de confidentialité", "description": "Comment Ideaxion collecte, utilise et protège tes données personnelles (RGPD)." },
+      "cgv": { "title": "Conditions générales", "description": "Conditions générales d’utilisation de la plateforme Ideaxion." }
+    }
+  },
   "Nav": {
     "dashboard": "Tableau de bord",
     "dashboardShort": "Accueil",

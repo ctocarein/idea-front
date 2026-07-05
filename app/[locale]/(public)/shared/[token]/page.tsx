@@ -39,10 +39,12 @@ export async function generateMetadata({
   const { token } = await params;
   const fiche = await getFiche(token);
   const t = await getTranslations("Public.sharedProject");
-  if (!fiche) return { title: t("notFound") };
+  if (!fiche) return { title: t("notFound"), robots: { index: false } };
   return {
     title: `${fiche.project_title} · ${t("titleSuffix")}`,
     description: fiche.summary?.slice(0, 160),
+    // Lien de partage par token → jamais indexé (confidentialité porteur).
+    robots: { index: false, follow: false },
   };
 }
 

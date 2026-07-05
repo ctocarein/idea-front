@@ -7,6 +7,9 @@ import { SessionProvider, SPACE_ROLES } from "@/shared/auth";
 import { AppShell, type NavItem } from "@/shared/layout";
 import { signOut } from "@/features/auth";
 
+/** Espace privé (auth-gated) → jamais indexé. */
+export const metadata = { robots: { index: false, follow: false } };
+
 export default async function MentorLayout({
   children,
 }: {

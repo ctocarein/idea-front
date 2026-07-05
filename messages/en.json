@@ -1,4 +1,39 @@
 {
+  "Seo": {
+    "default": {
+      "title": "Ideaxion",
+      "description": "Ideaxion helps project founders understand their idea, structure it and practice pitching — free — then connect to capital when they're ready."
+    },
+    "home": {
+      "title": "Ideaxion — From a fuzzy idea to a fundable project",
+      "description": "Test your idea for free: get your understanding scorecard across 12 key dimensions, learn to structure your project and practice pitching. Become capable and confident."
+    },
+    "startups": {
+      "title": "For founders",
+      "description": "Understand your project, learn to structure it and practice pitching — the whole founder journey, free. Decide for yourself when to go further."
+    },
+    "financiers": {
+      "title": "For investors",
+      "description": "Receive qualified, structured projects assessed on a shared framework — the Collision Radar. Stop sifting through noise; see only ready deals."
+    },
+    "diagnostic": {
+      "title": "Free project diagnostic",
+      "description": "Tell your idea or upload your project — get your understanding scorecard across 12 key dimensions in minutes. No sign-up, no judgment, free."
+    },
+    "blog": {
+      "title": "Blog",
+      "description": "Concrete resources to understand, structure and defend your project: business plan, pitch, business model, fundraising."
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "Founder, mentor or investor — reach out to the Ideaxion team, we'll get back to you."
+    },
+    "legal": {
+      "mentions": { "title": "Legal notice", "description": "Legal notice and publisher information for the Ideaxion platform." },
+      "confidentialite": { "title": "Privacy policy", "description": "How Ideaxion collects, uses and protects your personal data (GDPR)." },
+      "cgv": { "title": "Terms & conditions", "description": "Terms and conditions of use of the Ideaxion platform." }
+    }
+  },
   "Nav": {
     "dashboard": "Dashboard",
     "dashboardShort": "Home",

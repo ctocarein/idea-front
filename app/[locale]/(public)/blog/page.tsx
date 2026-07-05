@@ -2,9 +2,18 @@ import type { Metadata } from "next";
 import { useTranslations } from "next-intl";
 import { Newspaper } from "lucide-react";
 
+import { routes } from "@/shared/config/routes";
+import { pageMetadata } from "@/shared/seo/metadata";
 import { EmptyState } from "@/shared/ui";
 
-export const metadata: Metadata = { title: "Blog" };
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return pageMetadata({ locale, path: routes.blog, seoKey: "blog" });
+}
 
 export default function BlogPage() {
   const t = useTranslations("Public.blog");

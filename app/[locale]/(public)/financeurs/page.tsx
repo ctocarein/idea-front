@@ -4,12 +4,17 @@ import { CheckCircle2, ShieldCheck } from "lucide-react";
 
 import { Link } from "@/i18n/navigation";
 import { routes } from "@/shared/config/routes";
+import { pageMetadata } from "@/shared/seo/metadata";
 import { Button } from "@/shared/ui";
 
-export const metadata: Metadata = {
-  title: "Pour les financeurs",
-  description: "Un flux de projets réellement préparés et qualifiés.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return pageMetadata({ locale, path: routes.financeurs, seoKey: "financiers" });
+}
 
 export default function FinanceursPage() {
   const t = useTranslations("Public.financiers");

@@ -1,21 +1,39 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { fontVariables } from "@/shared/styles/fonts";
 import { AppProviders } from "@/shared/providers/app-providers";
 import { routing } from "@/i18n/routing";
+import { OG_LOCALE, site } from "@/shared/config/site";
+import { ogImage } from "@/shared/seo/metadata";
 import "../globals.css";
 
-export const metadata: Metadata = {
-  title: {
-    default: "Ideaxion",
-    template: "%s · Ideaxion",
-  },
-  description:
-    "Comprends ton projet, apprends, entraîne-toi — et deviens capable et confiant.",
-};
+/** Metadata racine, localisée : metadataBase + gabarit de titre + défauts OG/Twitter/robots. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Seo" });
+  return {
+    metadataBase: new URL(site.url),
+    title: { default: t("default.title"), template: `%s · ${site.name}` },
+    description: t("default.description"),
+    applicationName: site.name,
+    openGraph: {
+      siteName: site.name,
+      locale: OG_LOCALE[locale],
+      alternateLocale: routing.locales.filter((l) => l !== locale).map((l) => OG_LOCALE[l]),
+      type: "website",
+      images: [{ url: ogImage(locale), width: 1200, height: 630, alt: site.name }],
+    },
+    twitter: { card: "summary_large_image", images: [ogImage(locale)] },
+    robots: { index: true, follow: true },
+  };
+}
 
 /** Pré-rend les deux locales (rendu statique). */
 export function generateStaticParams() {

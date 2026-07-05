@@ -4,12 +4,17 @@ import { ArrowRight, Compass, GraduationCap, Mic, Target } from "lucide-react";
 
 import { Link } from "@/i18n/navigation";
 import { routes } from "@/shared/config/routes";
+import { pageMetadata } from "@/shared/seo/metadata";
 import { Button } from "@/shared/ui";
 
-export const metadata: Metadata = {
-  title: "Pour les startups",
-  description: "Comment Ideaxion rend les porteurs capables et confiants.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return pageMetadata({ locale, path: routes.startups, seoKey: "startups" });
+}
 
 const JOURNEY = [
   { icon: Compass, key: "understand" },

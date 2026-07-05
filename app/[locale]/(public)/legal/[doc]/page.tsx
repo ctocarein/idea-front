@@ -1,14 +1,23 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
+import { routes } from "@/shared/config/routes";
+import { pageMetadata } from "@/shared/seo/metadata";
+
+const LEGAL_DOCS = ["mentions", "confidentialite", "cgv"];
+
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ doc: string }>;
+  params: Promise<{ locale: string; doc: string }>;
 }): Promise<Metadata> {
-  const { doc } = await params;
+  const { locale, doc } = await params;
+  if (LEGAL_DOCS.includes(doc)) {
+    return pageMetadata({ locale, path: routes.legal(doc), seoKey: `legal.${doc}` });
+  }
+  // Doc inconnu → titre générique, non indexé.
   const t = await getTranslations("Public.legal");
-  return { title: t.has(`docs.${doc}`) ? t(`docs.${doc}`) : t("fallbackTitle") };
+  return { title: t("fallbackTitle"), robots: { index: false } };
 }
 
 /* En Next 16, `params` est asynchrone. Contenu juridique réel au Sprint D6/OPS. */

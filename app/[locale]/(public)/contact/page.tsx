@@ -2,7 +2,17 @@ import type { Metadata } from "next";
 import { useTranslations } from "next-intl";
 import { Mail } from "lucide-react";
 
-export const metadata: Metadata = { title: "Contact" };
+import { routes } from "@/shared/config/routes";
+import { pageMetadata } from "@/shared/seo/metadata";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return pageMetadata({ locale, path: routes.contact, seoKey: "contact" });
+}
 
 export default function ContactPage() {
   const t = useTranslations("Public.contact");

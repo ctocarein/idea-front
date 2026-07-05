@@ -1,6 +1,8 @@
+import type { Metadata } from "next";
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { pageMetadata } from "@/shared/seo/metadata";
 import {
   ArrowRight,
   BadgeCheck,
@@ -45,6 +47,15 @@ const AUDIENCES = [
 ] as const;
 
 const FAQ = ["free", "ai", "maturity"] as const;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return pageMetadata({ locale, path: routes.home, seoKey: "home", absoluteTitle: true });
+}
 
 export default function Home() {
   const t = useTranslations("Home");
