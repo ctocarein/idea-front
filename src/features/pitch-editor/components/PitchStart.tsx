@@ -1,17 +1,17 @@
 "use client";
 
 import { useState, useRef, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Sparkles, ClipboardPaste, Upload, Loader2, ArrowRight, Pencil } from "lucide-react";
-import { Card, CardContent } from "@/shared/ui/Card";
-import { Button } from "@/shared/ui/Button";
-import { toast } from "@/shared/ui";
+import { useRouter } from "@/i18n/navigation";
+import { Button, Card, CardContent, toast } from "@/shared/ui";
 import type { PitchData } from "../actions";
 import { generateDeck } from "../actions";
 
 const EDIT_ROUTE = "/dashboard/pitch/edit";
 
 export function PitchStart({ initial }: { initial: PitchData }) {
+  const t = useTranslations("Pitch.start");
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [pending, start] = useTransition();
@@ -55,13 +55,13 @@ export function PitchStart({ initial }: { initial: PitchData }) {
       fd.append("file", file);
       const res = await fetch(`/api/pitch/${initial.id}/import`, { method: "POST", body: fd });
       if (!res.ok) {
-        const msg = res.status === 400 ? "Format non supporté (PDF, PPTX, TXT)." : "Import impossible.";
+        const msg = res.status === 400 ? t("errUnsupported") : t("errImport");
         toast.error(msg);
         return;
       }
       goEdit();
     } catch {
-      toast.error("Import impossible. Réessaie.");
+      toast.error(t("errImportRetry"));
     } finally {
       setBusy(null);
     }
@@ -74,10 +74,10 @@ export function PitchStart({ initial }: { initial: PitchData }) {
       {hasDeck && (
         <div className="flex items-center justify-between rounded-xl border border-primary/30 bg-primary/5 px-4 py-3">
           <p className="text-sm">
-            Tu as déjà un deck de <strong>{initial.slides.length} slides</strong>.
+            {t.rich("hasDeck", { count: initial.slides.length, b: (c) => <strong>{c}</strong> })}
           </p>
           <Button size="sm" onClick={goEdit}>
-            <Pencil className="mr-1.5 size-3.5" /> Continuer l&apos;édition
+            <Pencil className="mr-1.5 size-3.5" /> {t("continueEdit")}
           </Button>
         </div>
       )}
@@ -85,24 +85,24 @@ export function PitchStart({ initial }: { initial: PitchData }) {
       <div className="grid gap-4 sm:grid-cols-3">
         <Door
           icon={Sparkles}
-          title="Générer"
-          desc="À partir de ton diagnostic et de ton travail dans le Workshop."
+          title={t("generateTitle")}
+          desc={t("generateDesc")}
           loading={busy === "generate"}
           disabled={disabled}
           onClick={handleGenerate}
         />
         <Door
           icon={ClipboardPaste}
-          title="Coller un texte"
-          desc="Depuis tes notes, un brouillon, une description."
+          title={t("pasteTitle")}
+          desc={t("pasteDesc")}
           loading={busy === "paste"}
           disabled={disabled}
           onClick={handlePaste}
         />
         <Door
           icon={Upload}
-          title="Importer un fichier"
-          desc="PDF, PPTX ou TXT — on en fait un deck propre."
+          title={t("importTitle")}
+          desc={t("importDesc")}
           loading={busy === "import"}
           disabled={disabled}
           onClick={() => fileRef.current?.click()}
@@ -114,14 +114,14 @@ export function PitchStart({ initial }: { initial: PitchData }) {
           <textarea
             autoFocus
             className="w-full resize-none rounded-xl border bg-background px-4 py-3 text-sm min-h-[120px] scrollbar-soft focus:outline-none focus:ring-2 focus:ring-ring"
-            placeholder="Colle ici ton pitch, ta description, tes notes…"
+            placeholder={t("pastePlaceholder")}
             value={source}
             onChange={(e) => setSource(e.target.value)}
           />
           <div className="flex justify-end">
             <Button size="sm" onClick={handlePaste} disabled={disabled || !source.trim()}>
               {busy === "paste" ? <Loader2 className="mr-1.5 size-4 animate-spin" /> : <ArrowRight className="mr-1.5 size-4" />}
-              Générer depuis ce texte
+              {t("generateFromText")}
             </Button>
           </div>
         </div>

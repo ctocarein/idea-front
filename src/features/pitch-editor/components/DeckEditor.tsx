@@ -1,25 +1,24 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import {
   ArrowLeft, ChevronUp, ChevronDown, Trash2, Download, Play, Loader2, Sparkles,
 } from "lucide-react";
-import { Button } from "@/shared/ui/Button";
-import { toast } from "@/shared/ui";
+import { Link } from "@/i18n/navigation";
+import { routes } from "@/shared/config/routes";
+import { Button, toast } from "@/shared/ui";
 import type { PitchData } from "../actions";
 import { updateSlide, deleteSlide, reorderSlides, setTemplate, generateDeck } from "../actions";
 
 type Slide = Record<string, unknown>;
 
-const TEMPLATES = [
-  { id: "base", label: "Base" },
-  { id: "midnight", label: "Midnight" },
-  { id: "editorial", label: "Éditorial" },
-];
+const TEMPLATE_IDS = ["base", "midnight", "editorial"];
 const LAYOUTS = ["cover", "stat", "bullets", "chart", "image"];
 
 export function DeckEditor({ initial }: { initial: PitchData }) {
+  const t = useTranslations("Pitch.deck");
+  const tTpl = useTranslations("Pitch.templates");
   const [pitch, setPitch] = useState(initial);
   const [sel, setSel] = useState(0);
   const [rev, setRev] = useState(0);
@@ -76,7 +75,7 @@ export function DeckEditor({ initial }: { initial: PitchData }) {
       const res = await generateDeck(pitch.id);
       if (!res.ok) { toast.error(res.message); return; }
       apply(res.pitch);
-      toast.success(`Deck regénéré — ${res.pitch.slides.length} slides.`);
+      toast.success(t("toastRegenerated", { count: res.pitch.slides.length }));
     });
   }
 
@@ -85,7 +84,7 @@ export function DeckEditor({ initial }: { initial: PitchData }) {
     try {
       const res = await fetch(`/api/pitch/${pitch.id}/export?format=${format}`);
       if (!res.ok) {
-        toast.error(res.status === 503 ? `Export ${format.toUpperCase()} indisponible ici.` : "Export impossible.");
+        toast.error(res.status === 503 ? t("exportUnavailable", { format: format.toUpperCase() }) : t("exportFailed"));
         return;
       }
       const blob = await res.blob();
@@ -105,21 +104,21 @@ export function DeckEditor({ initial }: { initial: PitchData }) {
     <div className="space-y-4">
       {/* Barre du haut */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link href="/dashboard/pitch" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="size-4" /> Démarrer
+        <Link href={routes.pitchEditor} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="size-4" /> {t("back")}
         </Link>
         <div className="flex flex-wrap items-center gap-2">
-          {TEMPLATES.map((t) => (
-            <button key={t.id} type="button" onClick={() => chooseTemplate(t.id)} disabled={pending}
+          {TEMPLATE_IDS.map((id) => (
+            <button key={id} type="button" onClick={() => chooseTemplate(id)} disabled={pending}
               className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-                pitch.template_id === t.id ? "border-primary/40 bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
+                pitch.template_id === id ? "border-primary/40 bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
               }`}>
-              {t.label}
+              {tTpl(id)}
             </button>
           ))}
           <span className="mx-1 h-4 w-px bg-border" />
           <a href={`/api/pitch/${pitch.id}/deck?rev=${rev}`} target="_blank" rel="noopener noreferrer">
-            <Button size="sm" variant="outline"><Play className="mr-1.5 size-3.5" /> Présenter</Button>
+            <Button size="sm" variant="outline"><Play className="mr-1.5 size-3.5" /> {t("present")}</Button>
           </a>
           <Button size="sm" variant="outline" onClick={() => exportAs("pptx")} disabled={!!exporting}>
             {exporting === "pptx" ? <Loader2 className="size-3.5 animate-spin" /> : <Download className="size-3.5" />}<span className="ml-1.5">PPTX</span>
@@ -134,16 +133,16 @@ export function DeckEditor({ initial }: { initial: PitchData }) {
         {/* Liste des slides */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">{slides.length} slides</span>
+            <span className="text-xs font-medium text-muted-foreground">{t("slidesCount", { count: slides.length })}</span>
             <button type="button" onClick={regenerate} disabled={pending} className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
-              <Sparkles className="size-3" /> Regénérer
+              <Sparkles className="size-3" /> {t("regenerate")}
             </button>
           </div>
           {slides.map((s, i) => (
             <div key={i} className={`flex items-center gap-1 rounded-lg border px-2 py-1.5 text-sm ${i === sel ? "border-primary/40 bg-primary/5" : ""}`}>
               <button type="button" onClick={() => setSel(i)} className="flex-1 truncate text-left">
                 <span className="text-muted-foreground mr-1.5">{i + 1}</span>
-                {String(s.title || s.layout || "slide")}
+                {String(s.title || s.layout || t("slideFallback"))}
               </button>
               <button type="button" onClick={() => move(i, -1)} disabled={pending || i === 0} className="text-muted-foreground hover:text-foreground disabled:opacity-30"><ChevronUp className="size-3.5" /></button>
               <button type="button" onClick={() => move(i, 1)} disabled={pending || i === slides.length - 1} className="text-muted-foreground hover:text-foreground disabled:opacity-30"><ChevronDown className="size-3.5" /></button>
@@ -171,6 +170,7 @@ function SlideForm({
   slide: Slide;
   onSave: (index: number, fields: Record<string, unknown>) => void;
 }) {
+  const t = useTranslations("Pitch.deck.form");
   const layout = String(slide.layout || "bullets");
   const stat = (slide.stat as Record<string, unknown>) || {};
   const chart = (slide.chart as Record<string, unknown>) || {};
@@ -182,7 +182,7 @@ function SlideForm({
   return (
     <div className="space-y-4 rounded-xl border bg-card p-5">
       <div className="flex items-center gap-2">
-        <label className="text-xs font-medium text-muted-foreground">Layout</label>
+        <label className="text-xs font-medium text-muted-foreground">{t("layout")}</label>
         <select
           defaultValue={layout}
           onChange={(e) => field("layout", e.target.value)}
@@ -192,39 +192,39 @@ function SlideForm({
         </select>
       </div>
 
-      <Field label="Titre" defaultValue={String(slide.title || "")} onBlur={(v) => field("title", v)} />
-      <Field label="Sous-titre / légende" defaultValue={String(slide.subtitle || slide.caption || "")} onBlur={(v) => field("subtitle", v)} />
+      <Field label={t("title")} defaultValue={String(slide.title || "")} onBlur={(v) => field("title", v)} />
+      <Field label={t("subtitle")} defaultValue={String(slide.subtitle || slide.caption || "")} onBlur={(v) => field("subtitle", v)} />
 
       {(layout === "bullets") && (
-        <TextareaField label="Bullets (une par ligne, 3 max)" defaultValue={(slide.bullets as string[] || []).join("\n")}
+        <TextareaField label={t("bullets")} defaultValue={(slide.bullets as string[] || []).join("\n")}
           onBlur={(v) => field("bullets", v.split("\n").map((x) => x.trim()).filter(Boolean).slice(0, 3))} />
       )}
 
       {layout === "stat" && (
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Chiffre" defaultValue={String(stat.value || "")} onBlur={(v) => field("stat", { ...stat, value: v })} />
-          <Field label="Label" defaultValue={String(stat.label || "")} onBlur={(v) => field("stat", { ...stat, label: v })} />
+          <Field label={t("statValue")} defaultValue={String(stat.value || "")} onBlur={(v) => field("stat", { ...stat, value: v })} />
+          <Field label={t("statLabel")} defaultValue={String(stat.label || "")} onBlur={(v) => field("stat", { ...stat, label: v })} />
         </div>
       )}
 
       {layout === "chart" && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <label className="text-xs font-medium text-muted-foreground">Type</label>
+            <label className="text-xs font-medium text-muted-foreground">{t("chartType")}</label>
             <select defaultValue={String(chart.type || "bar")} onChange={(e) => field("chart", { ...chart, type: e.target.value })}
               className="rounded-md border bg-background px-2 py-1 text-sm">
-              {["bar", "line", "pie"].map((t) => <option key={t} value={t}>{t}</option>)}
+              {["bar", "line", "pie"].map((ct) => <option key={ct} value={ct}>{ct}</option>)}
             </select>
           </div>
-          <Field label="Labels (séparés par des virgules)" defaultValue={(chart.labels as string[] || []).join(", ")}
+          <Field label={t("chartLabels")} defaultValue={(chart.labels as string[] || []).join(", ")}
             onBlur={(v) => field("chart", { ...chart, labels: v.split(",").map((x) => x.trim()).filter(Boolean) })} />
-          <Field label="Valeurs (séparées par des virgules)" defaultValue={(chart.values as number[] || []).join(", ")}
+          <Field label={t("chartValues")} defaultValue={(chart.values as number[] || []).join(", ")}
             onBlur={(v) => field("chart", { ...chart, values: v.split(",").map((x) => Number(x.trim())).filter((n) => !isNaN(n)) })} />
         </div>
       )}
 
       {layout !== "stat" && layout !== "chart" && (
-        <Field label="Mot-clé image (anglais)" defaultValue={String(slide.image_keyword || "")} onBlur={(v) => field("image_keyword", v)} />
+        <Field label={t("imageKeyword")} defaultValue={String(slide.image_keyword || "")} onBlur={(v) => field("image_keyword", v)} />
       )}
     </div>
   );

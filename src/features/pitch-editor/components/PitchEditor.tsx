@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useRef, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { Sparkles, Check, Loader2, Download } from "lucide-react";
-import { Card, CardContent } from "@/shared/ui/Card";
-import { Button } from "@/shared/ui/Button";
-import { toast } from "@/shared/ui";
+import { Button, Card, CardContent, toast } from "@/shared/ui";
 import type { PitchData, PitchSection } from "../actions";
 import { updateSection, generateSection } from "../actions";
 
 export function PitchEditor({ initial }: { initial: PitchData }) {
+  const t = useTranslations("Pitch.editor");
   const [sections, setSections] = useState<PitchSection[]>(initial.sections);
   const [exporting, setExporting] = useState<string | null>(null);
   const filled = sections.filter((s) => s.content.trim().length > 0).length;
@@ -24,8 +24,8 @@ export function PitchEditor({ initial }: { initial: PitchData }) {
       if (!res.ok) {
         toast.error(
           res.status === 503
-            ? `Export ${format.toUpperCase()} indisponible sur cet environnement.`
-            : "Export impossible. Réessaie.",
+            ? t("exportUnavailable", { format: format.toUpperCase() })
+            : t("exportFailed"),
         );
         return;
       }
@@ -39,7 +39,7 @@ export function PitchEditor({ initial }: { initial: PitchData }) {
       a.remove();
       URL.revokeObjectURL(url);
     } catch {
-      toast.error("Export impossible. Réessaie.");
+      toast.error(t("exportFailed"));
     } finally {
       setExporting(null);
     }
@@ -50,7 +50,11 @@ export function PitchEditor({ initial }: { initial: PitchData }) {
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <p className="text-xs text-muted-foreground">
-            <span className="font-semibold text-foreground">{filled}</span> / {sections.length} sections
+            {t.rich("sections", {
+              filled,
+              total: sections.length,
+              b: (c) => <span className="font-semibold text-foreground">{c}</span>,
+            })}
           </p>
           <div className="h-1.5 w-24 rounded-full bg-muted overflow-hidden">
             <div
@@ -95,6 +99,7 @@ function SectionCard({
   section: PitchSection;
   onChange: (content: string) => void;
 }) {
+  const t = useTranslations("Pitch.editor");
   const [saving, startSave] = useTransition();
   const [generating, startGen] = useTransition();
   const [savedAt, setSavedAt] = useState<number | null>(null);
@@ -122,7 +127,7 @@ function SectionCard({
       }
       onChange(res.content);
       persist(res.content);
-      toast.success("Section rédigée par l'IA.");
+      toast.success(t("toastWritten"));
     });
   }
 
@@ -140,7 +145,7 @@ function SectionCard({
               <h3 className="font-display font-bold text-base">{section.title}</h3>
               {savedAt && !saving && (
                 <span className="inline-flex items-center gap-1 text-xs text-success">
-                  <Check className="size-3" /> Enregistré
+                  <Check className="size-3" /> {t("saved")}
                 </span>
               )}
               {saving && <Loader2 className="size-3.5 animate-spin text-muted-foreground" />}
@@ -149,16 +154,16 @@ function SectionCard({
           </div>
           <Button size="sm" variant="outline" onClick={handleGenerate} disabled={generating} className="shrink-0">
             {generating ? (
-              <><Loader2 className="mr-1.5 size-3.5 animate-spin" /> Rédaction…</>
+              <><Loader2 className="mr-1.5 size-3.5 animate-spin" /> {t("writing")}</>
             ) : (
-              <><Sparkles className="mr-1.5 size-3.5" /> {hasContent ? "Améliorer" : "Rédiger"}</>
+              <><Sparkles className="mr-1.5 size-3.5" /> {hasContent ? t("improve") : t("write")}</>
             )}
           </Button>
         </div>
 
         <textarea
           className="w-full resize-none rounded-xl border bg-background px-4 py-3 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-ring min-h-[96px] scrollbar-soft"
-          placeholder="Rédige cette section, ou laisse l'IA la proposer à partir de ton travail dans le Workshop…"
+          placeholder={t("placeholder")}
           value={section.content}
           onChange={(e) => onChange(e.target.value)}
           onBlur={(e) => persist(e.target.value)}

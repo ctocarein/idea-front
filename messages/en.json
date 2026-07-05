@@ -433,6 +433,73 @@
       "noneMatch": "No need matches this filter."
     }
   },
+  "Pitch": {
+    "back": "Studio",
+    "startTitle": "Prepare your presentation",
+    "startSubtitle": "A visual, pitch-ready deck. Choose where to start — the AI does the first draft, you keep control.",
+    "loadError": "Couldn't load your pitch. Check your connection and try again.",
+    "editTitle": "Your deck",
+    "editSubtitle": "Edit each slide, reorder, change the theme — then export or present.",
+    "editLoadError": "Couldn't load your deck. Try again.",
+    "templates": { "base": "Base", "midnight": "Midnight", "editorial": "Editorial" },
+    "start": {
+      "hasDeck": "You already have a deck of <b>{count} slides</b>.",
+      "continueEdit": "Continue editing",
+      "generateTitle": "Generate",
+      "generateDesc": "From your diagnostic and your Workshop work.",
+      "pasteTitle": "Paste text",
+      "pasteDesc": "From your notes, a draft, a description.",
+      "importTitle": "Import a file",
+      "importDesc": "PDF, PPTX or TXT — we turn it into a clean deck.",
+      "pastePlaceholder": "Paste your pitch, description, notes here…",
+      "generateFromText": "Generate from this text",
+      "errUnsupported": "Unsupported format (PDF, PPTX, TXT).",
+      "errImport": "Import failed.",
+      "errImportRetry": "Import failed. Try again."
+    },
+    "deck": {
+      "back": "Start",
+      "present": "Present",
+      "slidesCount": "{count} slides",
+      "regenerate": "Regenerate",
+      "toastRegenerated": "Deck regenerated — {count} slides.",
+      "exportUnavailable": "{format} export unavailable here.",
+      "exportFailed": "Export failed.",
+      "slideFallback": "slide",
+      "form": {
+        "layout": "Layout",
+        "title": "Title",
+        "subtitle": "Subtitle / caption",
+        "bullets": "Bullets (one per line, 3 max)",
+        "statValue": "Number",
+        "statLabel": "Label",
+        "chartType": "Type",
+        "chartLabels": "Labels (comma-separated)",
+        "chartValues": "Values (comma-separated)",
+        "imageKeyword": "Image keyword (English)"
+      }
+    },
+    "editor": {
+      "sections": "<b>{filled}</b> / {total} sections",
+      "toastWritten": "Section written by AI.",
+      "improve": "Improve",
+      "write": "Write",
+      "writing": "Writing…",
+      "saved": "Saved",
+      "exportUnavailable": "{format} export unavailable on this environment.",
+      "exportFailed": "Export failed. Try again.",
+      "placeholder": "Write this section, or let the AI propose it from your Workshop work…"
+    },
+    "panel": {
+      "generateDeck": "Generate my deck",
+      "regenerateDeck": "Regenerate the deck",
+      "generating": "Generating…",
+      "toastGenerated": "Deck generated — {count} slides.",
+      "fromText": "Start from a text (paste / import) instead of my sections",
+      "sourcePlaceholder": "Paste your pitch, description, or notes here — the AI will make a deck…",
+      "emptyHint": "Generate your deck: the AI turns your work into visual slides (numbers, charts, images)."
+    }
+  },
   "Public": {
     "startups": {
       "title": "We make you capable, then confident.",
