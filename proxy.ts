@@ -100,6 +100,9 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  // next-intl doit voir toutes les pages ; on exclut l'API (BFF), les assets et _next.
-  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
+  // next-intl doit voir toutes les pages ; on exclut l'API (BFF), les assets, _next,
+  // et les routes de métadonnées racine (icon/apple-icon sans point → sinon préfixées
+  // en locale par erreur). Les fichiers à extension (sitemap.xml, robots.txt,
+  // manifest.webmanifest, favicon.ico) sont déjà couverts par `.*\..*`.
+  matcher: ["/((?!api|_next|_vercel|icon|apple-icon|opengraph-image|.*\\..*).*)"],
 };

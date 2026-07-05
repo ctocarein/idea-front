@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -8,7 +8,17 @@ import { AppProviders } from "@/shared/providers/app-providers";
 import { routing } from "@/i18n/routing";
 import { OG_LOCALE, site } from "@/shared/config/site";
 import { ogImage } from "@/shared/seo/metadata";
+import { structuredData } from "@/shared/seo/structured-data";
 import "../globals.css";
+
+/** Couleur de thème (barre navigateur mobile) + schéma clair/sombre. */
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#1E1B3A" },
+  ],
+  colorScheme: "light dark",
+};
 
 /** Metadata racine, localisée : metadataBase + gabarit de titre + défauts OG/Twitter/robots. */
 export async function generateMetadata({
@@ -51,9 +61,17 @@ export default async function LocaleLayout({
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
+  const t = await getTranslations({ locale, namespace: "Seo" });
+  const jsonLd = structuredData(locale, t("default.description"));
+
   return (
     <html lang={locale} className={`${fontVariables} h-full`} suppressHydrationWarning>
       <body className="flex min-h-full flex-col font-sans">
+        {/* Données structurées JSON-LD (Organization + WebSite) — rich results. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-card focus:px-4 focus:py-2 focus:font-medium focus:shadow-[var(--shadow-card)] focus:ring-4 focus:ring-ring/25"
