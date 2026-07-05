@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { ArrowRight, Check, CircleDashed, Loader2, Sparkles, Wand2 } from "lucide-react";
 
 import { Button, Checkbox, Field, Input, Textarea, toast } from "@/shared/ui";
@@ -35,6 +35,7 @@ export function RaconteDiagnostic({
 }) {
   const router = useRouter();
   const t = useTranslations("Diagnostic.raconte");
+  const locale = useLocale();
   const [pending, startTransition] = useTransition();
   const [step, setStep] = useState<Step>(initialExtract ? "organize" : "tell");
   const [idea, setIdea] = useState(initialDescription);
@@ -55,7 +56,7 @@ export function RaconteDiagnostic({
       return;
     }
     startTransition(async () => {
-      const res = await extractIdea(idea.trim(), name.trim() || undefined);
+      const res = await extractIdea(idea.trim(), name.trim() || undefined, locale);
       if (!res.ok) {
         toast.error(res.message);
         return;

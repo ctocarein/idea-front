@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 import { Button, FileUpload, toast } from "@/shared/ui";
 import { type IdeaExtract, extractFileIdea } from "../api/actions";
@@ -24,6 +24,7 @@ export function UploadDiagnostic({
   onAnonSubmit?: (projectName: string) => void;
 }) {
   const t = useTranslations("Diagnostic.upload");
+  const locale = useLocale();
   const [file, setFile] = useState<File | null>(null);
   const [analyzing, startTransition] = useTransition();
 
@@ -40,6 +41,7 @@ export function UploadDiagnostic({
     const form = new FormData();
     form.append("file", file);
     form.append("project_name", projectName);
+    form.append("lang", locale);
 
     startTransition(async () => {
       const res = await extractFileIdea(form);

@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 import { Button, Checkbox, Field, Input, toast } from "@/shared/ui";
 import { routes } from "@/shared/config/routes";
@@ -15,6 +15,7 @@ import { registerFounder } from "../api/actions";
 /** Création de compte porteur. Ton encourageant (charte §1.6). */
 export function RegisterForm() {
   const t = useTranslations("Auth");
+  const locale = useLocale();
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const {
@@ -29,7 +30,7 @@ export function RegisterForm() {
 
   function onSubmit(data: RegisterInput) {
     startTransition(async () => {
-      const res = await registerFounder(data.name, data.email, data.password);
+      const res = await registerFounder(data.name, data.email, data.password, locale);
       if (!res.ok) {
         toast.error(res.message);
         return;

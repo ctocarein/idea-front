@@ -81,11 +81,12 @@ export async function registerFounder(
   name: string,
   email: string,
   password: string,
+  language: string = "fr",
 ): Promise<AuthResult> {
   try {
     const tokens = await apiFetch<TokenPair>("/api/v1/auth/register", {
       method: "POST",
-      json: { name, email, password, consent: true },
+      json: { name, email, password, consent: true, language },
     });
     await persistSession(tokens);
     return { ok: true, redirectTo: routes.onboarding };

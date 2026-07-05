@@ -74,11 +74,12 @@ export type ExtractResult =
 export async function extractIdea(
   idea: string,
   projectName?: string,
+  lang: string = "fr",
 ): Promise<ExtractResult> {
   try {
     const data = await apiFetch<IdeaExtract>("/api/v1/diagnostics/extract", {
       method: "POST",
-      json: { idea, projectName, consent: true },
+      json: { idea, projectName, consent: true, lang },
     });
     return { ok: true, data };
   } catch (error) {
