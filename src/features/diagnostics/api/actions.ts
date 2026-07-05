@@ -56,6 +56,8 @@ export interface ExtractedDimension {
   captured: boolean;
   evidence: string;
   question: string;
+  /** Brouillon proposé (trou) : « bonne hallucination » extrapolée du récit, à confirmer/ajuster. */
+  suggestion: string;
 }
 
 export interface IdeaExtract {
@@ -75,11 +77,12 @@ export async function extractIdea(
   idea: string,
   projectName?: string,
   lang: string = "fr",
+  currency: string = "XOF",
 ): Promise<ExtractResult> {
   try {
     const data = await apiFetch<IdeaExtract>("/api/v1/diagnostics/extract", {
       method: "POST",
-      json: { idea, projectName, consent: true, lang },
+      json: { idea, projectName, consent: true, lang, currency },
     });
     return { ok: true, data };
   } catch (error) {

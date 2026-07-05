@@ -8,7 +8,6 @@ import {
   ArrowRight,
   Check,
   CircleDashed,
-  Lightbulb,
   Loader2,
   Mic,
   Sparkles,
@@ -23,15 +22,15 @@ import { useDictation } from "../lib/use-dictation";
 
 type Step = "tell" | "organize" | "fill";
 
-/** Monnaies proposées (le `sample` sert d'exemple de prix dans les exemples guidés). */
+/** Monnaie de référence — transmise au back pour que les suggestions chiffrées l'utilisent. */
 const CURRENCIES = [
-  { code: "XOF", label: "FCFA (XOF)", sample: "3 000 FCFA" },
-  { code: "EUR", label: "Euro (€)", sample: "5 €" },
-  { code: "USD", label: "Dollar ($)", sample: "$6" },
-  { code: "GHS", label: "Cedi (GH₵)", sample: "GH₵40" },
-  { code: "NGN", label: "Naira (₦)", sample: "₦4 000" },
-  { code: "MAD", label: "Dirham (DH)", sample: "50 DH" },
-  { code: "CAD", label: "Dollar CA ($CA)", sample: "8 $CA" },
+  { code: "XOF", label: "FCFA (XOF)" },
+  { code: "EUR", label: "Euro (€)" },
+  { code: "USD", label: "Dollar ($)" },
+  { code: "GHS", label: "Cedi (GH₵)" },
+  { code: "NGN", label: "Naira (₦)" },
+  { code: "MAD", label: "Dirham (DH)" },
+  { code: "CAD", label: "Dollar CA ($CA)" },
 ];
 
 function appendSpeech(prev: string, chunk: string): string {
@@ -111,7 +110,12 @@ export function RaconteDiagnostic({
     },
   );
 
-  const sample = (CURRENCIES.find((c) => c.code === currency) ?? CURRENCIES[0]).sample;
+  /** Brouillon initial d'un trou : la réponse déjà saisie, sinon la suggestion IA (pré-remplie). */
+  function initialDraftFor(idx: number): string {
+    if (!extract) return "";
+    const gap = extract.gaps[idx];
+    return answers[gap.key] ?? gap.suggestion ?? "";
+  }
 
   function organize() {
     if (idea.trim().length < 20) {
@@ -123,7 +127,7 @@ export function RaconteDiagnostic({
       return;
     }
     startTransition(async () => {
-      const res = await extractIdea(idea.trim(), name.trim() || undefined, locale);
+      const res = await extractIdea(idea.trim(), name.trim() || undefined, locale, currency);
       if (!res.ok) {
         toast.error(res.message);
         return;
@@ -165,7 +169,7 @@ export function RaconteDiagnostic({
   function startFill() {
     if (!extract || extract.gaps.length === 0) return submit(answers);
     setGapIdx(0);
-    setDraft(answers[extract.gaps[0].key] ?? "");
+    setDraft(initialDraftFor(0));
     setStep("fill");
   }
 
@@ -183,8 +187,9 @@ export function RaconteDiagnostic({
     const updated = persistDraft();
     if (gapIdx + 1 < extract.gaps.length) {
       const nextIdx = gapIdx + 1;
+      const gap = extract.gaps[nextIdx];
       setGapIdx(nextIdx);
-      setDraft(updated[extract.gaps[nextIdx].key] ?? "");
+      setDraft(updated[gap.key] ?? gap.suggestion ?? "");
     } else {
       submit(updated);
     }
@@ -195,8 +200,9 @@ export function RaconteDiagnostic({
     const updated = persistDraft();
     if (gapIdx > 0) {
       const prevIdx = gapIdx - 1;
+      const gap = extract.gaps[prevIdx];
       setGapIdx(prevIdx);
-      setDraft(updated[extract.gaps[prevIdx].key] ?? "");
+      setDraft(updated[gap.key] ?? gap.suggestion ?? "");
     } else {
       setStep("organize");
     }
@@ -257,6 +263,21 @@ export function RaconteDiagnostic({
           />
         </Field>
         {micSupported && <div className="-mt-2 flex justify-end">{mic}</div>}
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <label htmlFor="cur">{t("currencyLabel")}</label>
+          <select
+            id="cur"
+            value={currency}
+            onChange={(e) => setCurrency(e.target.value)}
+            className="rounded-lg border bg-background px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+          >
+            {CURRENCIES.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+        </div>
         <Checkbox
           checked={consent}
           onCheckedChange={(v) => setConsent(v === true)}
@@ -297,27 +318,11 @@ export function RaconteDiagnostic({
   // --- FILL ---
   if (step === "fill" && extract) {
     const gap = extract.gaps[gapIdx];
-    const example = t.has(`examples.${gap.key}`) ? t(`examples.${gap.key}`, { price: sample }) : null;
+    // Pré-rempli d'après le récit : on le signale quand le brouillon = la suggestion IA.
+    const prefilled = !!gap.suggestion && draft.trim() === gap.suggestion.trim();
     return (
       <div className="space-y-4">
         {chips(extract)}
-
-        {/* Monnaie de référence — adapte les exemples chiffrés au contexte du porteur. */}
-        <div className="flex items-center justify-end gap-2 text-xs text-muted-foreground">
-          <label htmlFor="cur">{t("currencyLabel")}</label>
-          <select
-            id="cur"
-            value={currency}
-            onChange={(e) => setCurrency(e.target.value)}
-            className="rounded-lg border bg-background px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
-          >
-            {CURRENCIES.map((c) => (
-              <option key={c.code} value={c.code}>
-                {c.label}
-              </option>
-            ))}
-          </select>
-        </div>
 
         <div className="rounded-2xl border border-border bg-card p-5">
           <div className="mb-2 flex items-center gap-2">
@@ -330,33 +335,23 @@ export function RaconteDiagnostic({
           </div>
           <p className="mb-3 font-display text-lg font-bold">{gap.question}</p>
 
-          {/* Exemple guidé (novice) : compréhension immédiate + préremplissage en un clic. */}
-          {example ? (
-            <div className="mb-3 rounded-xl bg-secondary/50 p-3">
-              <p className="flex items-start gap-1.5 text-sm text-muted-foreground">
-                <Lightbulb className="mt-0.5 size-4 shrink-0 text-coral-strong" />
-                <span>
-                  <span className="font-medium text-ink">{t("exampleLead")} : </span>
-                  {example}
-                </span>
-              </p>
-              <button
-                type="button"
-                onClick={() => setDraft(example)}
-                className="mt-2 text-xs font-medium text-primary hover:underline"
-              >
-                {t("useExample")}
-              </button>
-            </div>
-          ) : null}
-
           <Textarea
             rows={3}
             placeholder={t("gapPlaceholder")}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
           />
-          {micSupported && <div className="mt-2 flex justify-start">{mic}</div>}
+          <div className="mt-2 flex items-center justify-between gap-2">
+            {prefilled ? (
+              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                <Sparkles className="size-3.5 text-coral-strong" />
+                {t("suggestionHint")}
+              </span>
+            ) : (
+              <span />
+            )}
+            {micSupported && mic}
+          </div>
 
           <div className="mt-3 flex items-center justify-between">
             <Button variant="ghost" size="sm" onClick={prevGap} disabled={pending}>

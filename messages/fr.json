@@ -189,23 +189,8 @@
       "validate": "Valider",
       "finish": "Terminer",
       "preparing": "On prépare ton bilan…",
-      "currencyLabel": "Monnaie",
-      "exampleLead": "💡 Exemple",
-      "useExample": "Utiliser cet exemple",
-      "examples": {
-        "d1": "Les petits commerçants perdent du temps à gérer leur stock à la main et sont souvent en rupture.",
-        "d2": "Une appli mobile simple qui suit le stock et alerte avant la rupture.",
-        "d3": "Gagner 2 h par jour et ne plus jamais être en rupture — sans savoir compter.",
-        "d4": "Des milliers de boutiques de quartier dans ma ville, qui gèrent tout sur papier.",
-        "d5": "Aujourd’hui ils utilisent un cahier ou Excel ; aucune solution locale simple n’existe.",
-        "d6": "Un abonnement à {price}/mois, ou une commission de 12 % par transaction.",
-        "d7": "10 boutiques testent déjà l’appli et 7 l’utilisent chaque jour.",
-        "d8": "Une fois une ville couverte, on réplique le même modèle dans les villes voisines.",
-        "d9": "Je commence par les marchés que je connais, en formant les commerçants un par un.",
-        "d10": "Je gère le terrain ; un ami développeur s’occupe de la technique.",
-        "d11": "J’ai une première version de l’appli et mes premiers utilisateurs.",
-        "d12": "Le risque principal : que les commerçants n’aient pas envie de changer leurs habitudes."
-      }
+      "currencyLabel": "Ta monnaie",
+      "suggestionHint": "Pré-rempli d’après ton récit — ajuste."
     },
     "upload": {
       "hint": "PDF ou DOCX, 20 Mo max — on en extrait ton projet.",

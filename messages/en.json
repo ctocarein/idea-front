@@ -189,23 +189,8 @@
       "validate": "Confirm",
       "finish": "Finish",
       "preparing": "Preparing your report…",
-      "currencyLabel": "Currency",
-      "exampleLead": "💡 Example",
-      "useExample": "Use this example",
-      "examples": {
-        "d1": "Small shopkeepers waste time tracking stock by hand and often run out of products.",
-        "d2": "A simple mobile app that tracks stock and warns before a shortage.",
-        "d3": "Save 2 hours a day and never run out again — no accounting skills needed.",
-        "d4": "Thousands of neighborhood shops in my city, all managing everything on paper.",
-        "d5": "Today they use a notebook or Excel; no simple local solution exists.",
-        "d6": "A {price}/month subscription, or a 12% commission per transaction.",
-        "d7": "10 shops are already testing the app and 7 use it every day.",
-        "d8": "Once one city is covered, we replicate the same model in nearby cities.",
-        "d9": "I start with the markets I know, training shopkeepers one by one.",
-        "d10": "I handle the field; a developer friend takes care of the tech.",
-        "d11": "I have a first version of the app and my first users.",
-        "d12": "The main risk: shopkeepers not wanting to change their habits."
-      }
+      "currencyLabel": "Your currency",
+      "suggestionHint": "Pre-filled from your story — tweak it."
     },
     "upload": {
       "hint": "PDF or DOCX, 20 MB max — we extract your project from it.",
