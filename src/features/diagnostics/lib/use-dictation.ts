@@ -20,13 +20,16 @@ interface SREvent {
   resultIndex: number;
   results: { length: number; [index: number]: SRResult };
 }
+interface SRErrorEvent {
+  error: string;
+}
 interface SpeechRecognitionLike {
   lang: string;
   continuous: boolean;
   interimResults: boolean;
   onresult: ((e: SREvent) => void) | null;
   onend: (() => void) | null;
-  onerror: (() => void) | null;
+  onerror: ((e: SRErrorEvent) => void) | null;
   start(): void;
   stop(): void;
 }
@@ -35,15 +38,21 @@ type SRWindow = Window & {
   webkitSpeechRecognition?: new () => SpeechRecognitionLike;
 };
 
-export function useDictation(locale: string, onText: (chunk: string) => void) {
+export function useDictation(
+  locale: string,
+  onText: (chunk: string) => void,
+  onError?: (code: string) => void,
+) {
   const [supported, setSupported] = useState(false);
   const [listening, setListening] = useState(false);
   const recRef = useRef<SpeechRecognitionLike | null>(null);
   const onTextRef = useRef(onText);
+  const onErrorRef = useRef(onError);
 
-  // Garde la dernière callback sans recréer l'instance de reconnaissance.
+  // Garde les dernières callbacks sans recréer l'instance de reconnaissance.
   useEffect(() => {
     onTextRef.current = onText;
+    onErrorRef.current = onError;
   });
 
   useEffect(() => {
@@ -66,7 +75,10 @@ export function useDictation(locale: string, onText: (chunk: string) => void) {
       if (finalChunk.trim()) onTextRef.current(finalChunk.trim());
     };
     rec.onend = () => setListening(false);
-    rec.onerror = () => setListening(false);
+    rec.onerror = (e) => {
+      setListening(false);
+      onErrorRef.current?.(e.error || "unknown");
+    };
     recRef.current = rec;
 
     return () => {

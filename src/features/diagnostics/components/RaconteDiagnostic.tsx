@@ -110,6 +110,17 @@ export function RaconteDiagnostic({
       if (step === "fill") setDraft((prev) => appendSpeech(prev, chunk));
       else setIdea((prev) => appendSpeech(prev, chunk));
     },
+    (code) => {
+      const key =
+        code === "not-allowed" || code === "service-not-allowed"
+          ? "voiceErrDenied"
+          : code === "audio-capture"
+            ? "voiceErrNoMic"
+            : code === "no-speech"
+              ? "voiceErrNoSpeech"
+              : "voiceErrGeneric";
+      toast.error(t(key));
+    },
   );
 
   /** Brouillon initial d'un trou : la réponse déjà saisie, sinon la suggestion IA (pré-remplie). */
