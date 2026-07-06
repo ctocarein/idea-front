@@ -199,11 +199,10 @@
     "teaser": {
       "title": "Ton bilan est prêt",
       "projectFallback": "Ton projet",
-      "subtitle": "<b>{projectName}</b> a été passé au crible sur <b>12 dimensions</b> — forces, angles morts et plan d’action.",
-      "locked": "Verrouillé",
-      "unlock": "Crée ton espace (gratuit) pour révéler : ton <b>Radar de Collision</b> sur 12 dimensions, tes <b>forces</b> et <b>angles morts</b> expliqués, un <b>plan d’action priorisé</b> et un <b>rapport téléchargeable</b>.",
-      "cta": "Créer mon espace pour voir mon bilan",
-      "note": "Ton diagnostic t’attend — il sera rattaché à ton espace dès l’inscription."
+      "subtitle": "<b>{projectName}</b> — analysé sur 12 dimensions.",
+      "reveal": "Ton dashboard complet t’attend.",
+      "cta": "Créer mon espace (gratuit)",
+      "note": "Rattaché à ton espace dès l’inscription."
     },
     "claim": {
       "toast": "Ton bilan t’attendait — on l’a rattaché à ton espace.",

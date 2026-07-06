@@ -199,11 +199,10 @@
     "teaser": {
       "title": "Your report is ready",
       "projectFallback": "Your project",
-      "subtitle": "<b>{projectName}</b> was assessed across <b>12 dimensions</b> — strengths, blind spots and an action plan.",
-      "locked": "Locked",
-      "unlock": "Create your space (free) to reveal: your <b>Collision Radar</b> across 12 dimensions, your <b>strengths</b> and <b>blind spots</b> explained, a <b>prioritized action plan</b> and a <b>downloadable report</b>.",
-      "cta": "Create my space to see my report",
-      "note": "Your diagnostic is waiting — it'll be attached to your space as soon as you sign up."
+      "subtitle": "<b>{projectName}</b> — assessed across 12 dimensions.",
+      "reveal": "Your full dashboard is waiting.",
+      "cta": "Create my space (free)",
+      "note": "Attached to your space when you sign up."
     },
     "claim": {
       "toast": "Your report was waiting — we've attached it to your space.",
