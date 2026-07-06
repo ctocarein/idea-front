@@ -188,11 +188,11 @@
       "seeReportCta": "Voir mon bilan",
       "gapPlaceholder": "En une phrase…",
       "back": "Précédent",
-      "validate": "Valider",
-      "finish": "Terminer",
+      "fits": "Ça me convient",
+      "adjust": "J’ajuste",
       "preparing": "On prépare ton bilan…",
       "currencyLabel": "Devise",
-      "suggestionHint": "Pré-rempli d’après ton récit — ajuste."
+      "suggestionHint": "Proposé pour t’aider — vérifie, ça peut se tromper."
     },
     "upload": {
       "hint": "PDF ou DOCX, 20 Mo max — on en extrait ton projet.",

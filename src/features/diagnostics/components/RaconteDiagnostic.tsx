@@ -374,7 +374,7 @@ export function RaconteDiagnostic({
               {t("back")}
             </Button>
             <Button onClick={nextGap} loading={pending} disabled={!draft.trim()}>
-              {gapIdx + 1 < extract.gaps.length ? t("validate") : t("finish")}
+              {prefilled ? t("fits") : t("adjust")}
               <Check className="size-5" />
             </Button>
           </div>
