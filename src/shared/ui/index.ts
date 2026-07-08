@@ -31,6 +31,7 @@ export { Spinner } from "./Spinner";
 export { Skeleton } from "./Skeleton";
 export { EmptyState, type EmptyStateProps } from "./EmptyState";
 export { ThemeToggle } from "./ThemeToggle";
+export { Logo } from "./Logo";
 export { toast } from "./toast";
 
 // Composés

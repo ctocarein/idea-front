@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl";
 
 import { routes } from "@/shared/config/routes";
 import { Link } from "@/i18n/navigation";
-import { Button, ThemeToggle } from "@/shared/ui";
+import { Button, Logo, ThemeToggle } from "@/shared/ui";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 
 /** En-tête du site public. Mobile-first : nav condensée sous `sm`. */
@@ -17,8 +17,8 @@ export function PublicHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-paper/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
-        <Link href={routes.home} className="font-display text-lg font-extrabold text-ink">
-          Ideaxion
+        <Link href={routes.home} aria-label="Ideaxion — accueil">
+          <Logo className="h-7" />
         </Link>
 
         <nav className="hidden items-center gap-6 sm:flex">

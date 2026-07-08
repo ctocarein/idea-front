@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 
 import { routes } from "@/shared/config/routes";
 import { Link } from "@/i18n/navigation";
-import { Card, CardContent, ThemeToggle } from "@/shared/ui";
+import { Card, CardContent, Logo, ThemeToggle } from "@/shared/ui";
 import { LoginForm } from "@/features/auth";
 
 export const metadata: Metadata = { title: "Connexion" };
@@ -81,11 +81,8 @@ export default function LoginPage() {
 
         {/* Logo */}
         <div className="relative z-10">
-          <Link
-            href={routes.home}
-            className="font-display text-xl font-extrabold text-white"
-          >
-            Ideaxion
+          <Link href={routes.home} aria-label="Ideaxion — accueil">
+            <Logo tone="light" className="h-8" />
           </Link>
         </div>
 
@@ -136,11 +133,8 @@ export default function LoginPage() {
       <div className="flex flex-1 flex-col bg-paper bg-grid">
         {/* Mobile : logo + toggle */}
         <header className="flex h-16 items-center justify-between px-5 lg:hidden">
-          <Link
-            href={routes.home}
-            className="font-display text-lg font-extrabold text-ink"
-          >
-            Ideaxion
+          <Link href={routes.home} aria-label="Ideaxion — accueil">
+            <Logo className="h-7" />
           </Link>
           <ThemeToggle />
         </header>
