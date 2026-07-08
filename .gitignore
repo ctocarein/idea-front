@@ -33,9 +33,18 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files : les modèles *.example sont versionnés, les vrais .env jamais.
 .env*
+!.env.example
 !.env.staging.example
+!.env.production.example
+# exception temporaire : on versionne le .env.staging (pas de secret) le temps du staging.
+!.env.staging
+
+# outillage IA / docs internes : non versionnés
+docs/
+AGENTS.md
+CLAUDE.md
 
 # vercel
 .vercel
