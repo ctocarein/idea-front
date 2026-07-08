@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Calque_1" data-name="Calque 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2207.46 1240.93">
+  <g>
+    <polygon points="1437.47 389.94 1327.62 317.11 1239.91 375.93 1435.34 507.36 1437.47 389.94" style="fill: #ef4d22;"/>
+    <polygon points="1048.63 503.6 1433.03 245.79 1433.18 130.63 1046.64 386.17 1048.63 503.6" style="fill: #ef4d22;"/>
+  </g>
+  <g>
+    <polygon points="1196.99 226.09 1048.78 127.83 1048.78 243 1110.19 284.3 1196.99 226.09" style="fill: #fff;"/>
+    <polygon points="1046.64 386.33 1048.63 503.75 1239.01 376.07 1151.34 317.11 1046.64 386.33" style="fill: #fff;"/>
+  </g>
+  <text transform="translate(0 429.2) scale(1.12 1)" style="fill: #fff; font-family: Bahnschrift-Bold, Bahnschrift; font-size: 502px; font-variation-settings: &apos;wght&apos; 700, &apos;wdth&apos; 100; font-weight: 700;"><tspan x="0" y="0">idea</tspan></text>
+  <text transform="translate(1448.93 437.93) scale(1.12 1)" style="fill: #ef4d22; font-family: Bahnschrift-Bold, Bahnschrift; font-size: 502px; font-variation-settings: &apos;wght&apos; 700, &apos;wdth&apos; 100; font-weight: 700;"><tspan x="0" y="0">ion</tspan></text>
+  <g>
+    <polygon points="1229.9 1123.51 1120.05 1050.68 1032.34 1109.5 1227.77 1240.93 1229.9 1123.51" style="fill: #ef4d22;"/>
+    <polygon points="841.06 1237.17 1225.46 979.36 1225.61 864.2 839.08 1119.75 841.06 1237.17" style="fill: #ef4d22;"/>
+  </g>
+  <g>
+    <polygon points="989.42 959.66 841.22 861.41 841.22 976.57 902.63 1017.87 989.42 959.66" style="fill: #fff;"/>
+    <polygon points="839.08 1119.9 841.06 1237.32 1031.44 1109.64 943.77 1050.68 839.08 1119.9" style="fill: #fff;"/>
+  </g>
+</svg>
