@@ -385,6 +385,10 @@
       "text": "On lit ton idée et on construit ta boussole sur les 12 dimensions. Quelques instants.",
       "slow": "Ça prend un peu plus de temps — rafraîchir"
     },
+    "finalizing": {
+      "title": "Ton score est prêt.",
+      "text": "On peaufine l’analyse détaillée et le PDF — ça arrive dans un instant."
+    },
     "view": {
       "redThreadLead": "Ton fil rouge — commence ici",
       "redThreadText": "C’est ton point de rupture n°1 — le renforcer débloque le reste de ton radar.",

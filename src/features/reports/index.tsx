@@ -4,6 +4,7 @@ import { Badge, Button, Card, CardContent } from "@/shared/ui";
 
 export { BilanView } from "./components/BilanView";
 export { BilanPending } from "./components/BilanPending";
+export { BilanFinalizing } from "./components/BilanFinalizing";
 
 /**
  * Feature reports — le bilan in-app (PAS d'email, BESOINS_PORTEUR cas 8).

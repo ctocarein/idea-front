@@ -8,7 +8,7 @@ import { routes } from "@/shared/config/routes";
 import { ApiError } from "@/shared/api/client";
 import { Button, Card, CardContent } from "@/shared/ui";
 import { getReportDetail } from "@/features/reports/api";
-import { BilanPending, BilanView } from "@/features/reports";
+import { BilanPending, BilanView, BilanFinalizing } from "@/features/reports";
 
 export const metadata: Metadata = { title: "Mon bilan" };
 
@@ -29,7 +29,17 @@ export default async function BilanPage({
     throw error;
   }
 
+  // Découplage Radar / rapport : dès que le score est là (radar_score présent), on affiche
+  // le bilan — même si le rapport détaillé + PDF (Phase 2) finalisent encore en arrière-plan.
   if (report.status === "ready") return <BilanView report={report} />;
+  if (report.radar_score) {
+    return (
+      <div className="space-y-6">
+        <BilanFinalizing reportId={reportId} />
+        <BilanView report={report} />
+      </div>
+    );
+  }
   if (report.status === "failed") {
     const t = await getTranslations("Bilan.failed");
     return (

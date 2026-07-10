@@ -385,6 +385,10 @@
       "text": "We're reading your idea and building your compass across the 12 dimensions. Just a moment.",
       "slow": "Taking a little longer — refresh"
     },
+    "finalizing": {
+      "title": "Your score is ready.",
+      "text": "We're polishing the detailed analysis and the PDF — it'll be here in a moment."
+    },
     "view": {
       "redThreadLead": "Your red thread — start here",
       "redThreadText": "It's your #1 breaking point — strengthening it unlocks the rest of your radar.",
