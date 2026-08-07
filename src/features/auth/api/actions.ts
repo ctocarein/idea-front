@@ -6,8 +6,8 @@ import { redirect } from "next/navigation";
 import { ACCESS_COOKIE, ApiError, REFRESH_COOKIE, apiFetch } from "@/shared/api/client";
 import type { components } from "@/shared/api/schema";
 import { homePathFor } from "@/shared/auth/rbac";
+import { SESSION_MAX_AGE, cookieBase, persistSession } from "@/shared/auth/persist";
 import { SESSION_COOKIE, encodeSession } from "@/shared/auth/session";
-import { env } from "@/shared/config/env";
 import { routes } from "@/shared/config/routes";
 import type { Role } from "@/shared/config/site";
 
@@ -29,30 +29,6 @@ const DEMO_EMAIL: Record<Role, string> = {
   analyst: "analyst@ideaxion.dev",
   admin: "admin@ideaxion.dev",
 };
-
-function cookieBase() {
-  return { httpOnly: true, secure: env.isProd, sameSite: "lax" as const, path: "/" };
-}
-
-/** Pose les cookies (tokens + miroir de session UX) à partir d'un TokenPair. */
-async function persistSession(tokens: TokenPair): Promise<Role> {
-  const me = await apiFetch<MeOut>("/api/v1/auth/me", { token: tokens.access_token });
-  const store = await cookies();
-  const base = cookieBase();
-  store.set(ACCESS_COOKIE, tokens.access_token, { ...base, maxAge: 60 * 15 });
-  store.set(REFRESH_COOKIE, tokens.refresh_token, { ...base, maxAge: 60 * 60 * 24 * 30 });
-  store.set(
-    SESSION_COOKIE,
-    encodeSession({
-      role: me.user.role as Role,
-      name: me.user.full_name,
-      email: me.user.email,
-      onboarding_completed: me.user.onboarding_completed ?? false,
-    }),
-    { ...base, maxAge: 60 * 60 * 24 * 30 },
-  );
-  return me.user.role as Role;
-}
 
 function messageFor(error: unknown): string {
   if (error instanceof ApiError) {
@@ -119,7 +95,7 @@ export async function completeOnboarding(data: OnboardingData): Promise<AuthResu
         email: me.user.email,
         onboarding_completed: true,
       }),
-      { ...cookieBase(), maxAge: 60 * 60 * 24 * 30 },
+      { ...cookieBase(), maxAge: SESSION_MAX_AGE },
     );
     return { ok: true, redirectTo: routes.dashboard };
   } catch (error) {

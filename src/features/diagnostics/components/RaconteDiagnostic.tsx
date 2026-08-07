@@ -1,26 +1,15 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  CircleDashed,
-  Loader2,
-  Mic,
-  Sparkles,
-  Wand2,
-} from "lucide-react";
+import { Loader2, Mic, Wand2 } from "lucide-react";
 
 import { Button, Checkbox, Field, Input, Textarea, toast } from "@/shared/ui";
 import { routes } from "@/shared/config/routes";
-import { extractIdea, startManualDiagnostic, type IdeaExtract } from "../api/actions";
+import { extractIdea, type IdeaExtract } from "../api/actions";
 import { savePendingDiagnostic } from "../lib/pending";
 import { useDictation } from "../lib/use-dictation";
-
-type Step = "tell" | "organize" | "fill";
 
 /** Monnaie de référence — transmise au back pour que les suggestions chiffrées l'utilisent. */
 const CURRENCIES = [
@@ -70,11 +59,18 @@ function MicButton({
 
 /**
  * « Raconte, on structure » — l'inverse du formulaire. Le porteur raconte son idée ; le LLM
- * l'organise (12 dimensions captées/manquantes) ; on ne demande QUE les trous. Anonyme → teaser ;
- * connecté → vrai diagnostic. On n'invente rien : ce qui manque devient une question ciblée.
+ * l'organise en 12 dimensions **rédigées**.
  *
- * `initialExtract` + `initialDescription` : passés par UploadDiagnostic pour sauter l'étape
- * "tell" et démarrer directement en mode organize (le texte du fichier a déjà été extrait).
+ * Puis, quel que soit le porteur, le récit organisé est stashé et on passe **la porte** :
+ *  - anonyme → teaser (création de compte) : le wizard de relecture mérite un compte ;
+ *  - connecté → il a déjà un compte → droit au wizard, sur `/dashboard/ajuster`.
+ *
+ * Le wizard de relecture ne vit plus ici : il est servi UNIQUEMENT par `/dashboard/ajuster`
+ * (AdjustProjectClient), derrière la porte de compte. Il n'y a donc plus de raccourci
+ * « connecté → wizard inline » ni d'écran d'aperçu intermédiaire.
+ *
+ * `initialExtract` + `initialDescription` : passés par UploadDiagnostic quand le texte a déjà
+ * été extrait d'un fichier → on stashe et on passe la porte directement (pas de saisie).
  */
 export function RaconteDiagnostic({
   isAuthed = false,
@@ -83,8 +79,8 @@ export function RaconteDiagnostic({
   initialDescription = "",
 }: {
   isAuthed?: boolean;
-  onAnonSubmit?: (projectName: string) => void;
-  /** Pré-extraction depuis un fichier uploadé — démarre en mode organize. */
+  onAnonSubmit?: (projectName: string, extract: IdeaExtract | null) => void;
+  /** Pré-extraction depuis un fichier uploadé — passe la porte directement. */
   initialExtract?: IdeaExtract;
   /** Texte extrait du fichier (utilisé comme `description` dans le payload de scoring). */
   initialDescription?: string;
@@ -93,23 +89,15 @@ export function RaconteDiagnostic({
   const t = useTranslations("Diagnostic.raconte");
   const locale = useLocale();
   const [pending, startTransition] = useTransition();
-  const [step, setStep] = useState<Step>(initialExtract ? "organize" : "tell");
   const [idea, setIdea] = useState(initialDescription);
   const [name, setName] = useState(initialExtract?.project_name ?? "");
   const [consent, setConsent] = useState(!!initialExtract); // déjà consenti via upload
-  const [extract, setExtract] = useState<IdeaExtract | null>(initialExtract ?? null);
-  const [gapIdx, setGapIdx] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [draft, setDraft] = useState("");
   const [currency, setCurrency] = useState(locale === "en" ? "USD" : "XOF");
 
-  // Dictée vocale : la voix alimente le champ actif (récit en "tell", réponse en "fill").
+  // Dictée vocale : la voix alimente le récit (seul champ libre du parcours désormais).
   const { supported: micSupported, listening, toggle: toggleMic } = useDictation(
     locale,
-    (chunk) => {
-      if (step === "fill") setDraft((prev) => appendSpeech(prev, chunk));
-      else setIdea((prev) => appendSpeech(prev, chunk));
-    },
+    (chunk) => setIdea((prev) => appendSpeech(prev, chunk)),
     (code) => {
       const key =
         code === "not-allowed" || code === "service-not-allowed"
@@ -123,11 +111,22 @@ export function RaconteDiagnostic({
     },
   );
 
-  /** Brouillon initial d'un trou : la réponse déjà saisie, sinon la suggestion IA (pré-remplie). */
-  function initialDraftFor(idx: number): string {
-    if (!extract) return "";
-    const gap = extract.gaps[idx];
-    return answers[gap.key] ?? gap.suggestion ?? "";
+  function buildPayload() {
+    return {
+      projectName: (name.trim() || initialExtract?.project_name || "Mon projet").slice(0, 120),
+      sector: "autre",
+      description: idea.trim(),
+      consent: true,
+      answers: {}, // les réponses arrivent au wizard, sur /dashboard/ajuster
+    };
+  }
+
+  /** Récit organisé → on stashe et on passe la porte (compte requis avant le wizard). */
+  function proceed(extract: IdeaExtract) {
+    const payload = buildPayload();
+    savePendingDiagnostic(payload, extract);
+    if (isAuthed) router.push(routes.ajuster);
+    else onAnonSubmit?.(payload.projectName, extract);
   }
 
   function organize() {
@@ -145,248 +144,79 @@ export function RaconteDiagnostic({
         toast.error(res.message);
         return;
       }
-      setExtract(res.data);
-      setStep("organize");
+      proceed(res.data);
     });
   }
 
-  function submit(finalAnswers: Record<string, string>) {
-    const projectName = (name.trim() || extract?.project_name || "Mon projet").slice(0, 120);
-    const payload = {
-      projectName,
-      sector: "autre",
-      description: idea.trim(),
-      consent: true,
-      answers: finalAnswers,
-    };
-    // Anonyme : on ne révèle pas le bilan → stash + teaser. Connecté : vrai diagnostic LLM.
-    if (!isAuthed) {
-      savePendingDiagnostic(payload);
-      onAnonSubmit?.(projectName);
-      return;
-    }
-    startTransition(async () => {
-      const res = await startManualDiagnostic(payload);
-      if (res.ok) {
-        router.push(routes.bilan(res.reportId));
-      } else if (!res.ok && res.unauthorized) {
-        // Token expiré sur page publique : on traite comme anonyme (stash + teaser)
-        savePendingDiagnostic(payload);
-        onAnonSubmit?.(projectName);
-      } else {
-        toast.error(res.message);
-      }
-    });
-  }
+  // Upload : le fichier a déjà été extrait → on stashe et on passe la porte au montage.
+  useEffect(() => {
+    if (initialExtract) proceed(initialExtract);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  function startFill() {
-    if (!extract || extract.gaps.length === 0) return submit(answers);
-    setGapIdx(0);
-    setDraft(initialDraftFor(0));
-    setStep("fill");
-  }
-
-  /** Sauvegarde la réponse courante et renvoie l'état à jour (navigation ↔). */
-  function persistDraft(): Record<string, string> {
-    if (!extract) return answers;
-    const gap = extract.gaps[gapIdx];
-    const next = { ...answers, [gap.key]: draft.trim() };
-    setAnswers(next);
-    return next;
-  }
-
-  function nextGap() {
-    if (!extract) return;
-    const updated = persistDraft();
-    if (gapIdx + 1 < extract.gaps.length) {
-      const nextIdx = gapIdx + 1;
-      const gap = extract.gaps[nextIdx];
-      setGapIdx(nextIdx);
-      setDraft(updated[gap.key] ?? gap.suggestion ?? "");
-    } else {
-      submit(updated);
-    }
-  }
-
-  function prevGap() {
-    if (!extract) return;
-    const updated = persistDraft();
-    if (gapIdx > 0) {
-      const prevIdx = gapIdx - 1;
-      const gap = extract.gaps[prevIdx];
-      setGapIdx(prevIdx);
-      setDraft(updated[gap.key] ?? gap.suggestion ?? "");
-    } else {
-      setStep("organize");
-    }
-  }
-
-  const mic = (
-    <MicButton
-      listening={listening}
-      onToggle={toggleMic}
-      startLabel={t("voiceStart")}
-      listeningLabel={t("voiceListening")}
-    />
-  );
-
-  function chips(data: IdeaExtract) {
-    const done = new Set(Object.keys(answers));
+  // Upload : rien à saisir, on montre juste la transition (le useEffect enchaîne).
+  if (initialExtract) {
     return (
-      <div className="flex flex-wrap gap-2">
-        {data.dimensions.map((d) => {
-          const captured = d.captured || done.has(d.key);
-          return (
-            <span
-              key={d.key}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs ${
-                captured
-                  ? "border-success/40 bg-success/10 text-success"
-                  : "border-warning/40 bg-warning/10 text-warning"
-              }`}
-            >
-              {captured ? <Check className="size-3.5" /> : <CircleDashed className="size-3.5" />}
-              {d.label}
-            </span>
-          );
-        })}
-      </div>
-    );
-  }
-
-  // --- TELL ---
-  if (step === "tell") {
-    return (
-      <div className="space-y-5">
-        <p className="text-sm text-muted-foreground">{t("tellIntro")}</p>
-        <Field label={t("nameLabel")}>
-          <Input
-            placeholder={t("namePlaceholder")}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            maxLength={120}
-          />
-        </Field>
-        <Field label={t("ideaLabel")}>
-          <Textarea
-            rows={6}
-            placeholder={t("ideaPlaceholder")}
-            value={idea}
-            onChange={(e) => setIdea(e.target.value)}
-          />
-        </Field>
-        <div className="-mt-2 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <label htmlFor="cur">{t("currencyLabel")}</label>
-            <select
-              id="cur"
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
-              className="rounded-lg border bg-background px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
-            >
-              {CURRENCIES.map((c) => (
-                <option key={c.code} value={c.code}>
-                  {c.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          {micSupported && mic}
-        </div>
-        <Checkbox
-          checked={consent}
-          onCheckedChange={(v) => setConsent(v === true)}
-          label={t("consent")}
-        />
-        <Button onClick={organize} loading={pending} className="w-full">
-          <Wand2 className="size-5" />
-          {t("organizeCta")}
-        </Button>
-      </div>
-    );
-  }
-
-  // --- ORGANIZE ---
-  if (step === "organize" && extract) {
-    return (
-      <div className="space-y-5">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Sparkles className="size-4 text-coral-strong" />
-          {t.rich("captured", {
-            captured: extract.captured_count,
-            total: extract.total,
-            gaps: extract.gaps.length,
-            b: (chunks) => <span className="font-medium text-ink">{chunks}</span>,
-          })}
-        </div>
-        {chips(extract)}
-        <Button onClick={startFill} loading={pending} className="w-full">
-          {extract.gaps.length > 0
-            ? t("completeCta", { gaps: extract.gaps.length })
-            : t("seeReportCta")}
-          <ArrowRight className="size-5" />
-        </Button>
-      </div>
-    );
-  }
-
-  // --- FILL ---
-  if (step === "fill" && extract) {
-    const gap = extract.gaps[gapIdx];
-    // Pré-rempli d'après le récit : on le signale quand le brouillon = la suggestion IA.
-    const prefilled = !!gap.suggestion && draft.trim() === gap.suggestion.trim();
-    return (
-      <div className="space-y-4">
-        {chips(extract)}
-
-        <div className="rounded-2xl border border-border bg-card p-5">
-          <div className="mb-2 flex items-center gap-2">
-            <span className="rounded-full bg-warning/15 px-2 py-0.5 text-xs font-medium text-warning">
-              {gap.label}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {gapIdx + 1} / {extract.gaps.length}
-            </span>
-          </div>
-          <p className="mb-3 font-display text-lg font-bold">{gap.question}</p>
-
-          <Textarea
-            rows={3}
-            placeholder={t("gapPlaceholder")}
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-          />
-          <div className="mt-2 flex items-center justify-between gap-2">
-            {prefilled ? (
-              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                <Sparkles className="size-3.5 text-coral-strong" />
-                {t("suggestionHint")}
-              </span>
-            ) : (
-              <span />
-            )}
-            {micSupported && mic}
-          </div>
-
-          <div className="mt-3 flex items-center justify-between">
-            <Button variant="ghost" size="sm" onClick={prevGap} disabled={pending}>
-              <ArrowLeft className="size-4" />
-              {t("back")}
-            </Button>
-            <Button onClick={nextGap} loading={pending} disabled={!draft.trim()}>
-              {prefilled ? t("fits") : t("adjust")}
-              <Check className="size-5" />
-            </Button>
-          </div>
-        </div>
+      <div className="flex items-center justify-center gap-2 py-8 text-muted-foreground">
+        <Loader2 className="size-5 animate-spin" />
+        {t("preparing")}
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-center gap-2 py-8 text-muted-foreground">
-      <Loader2 className="size-5 animate-spin" />
-      {t("preparing")}
+    <div className="space-y-5">
+      <p className="text-sm text-muted-foreground">{t("tellIntro")}</p>
+      <Field label={t("nameLabel")}>
+        <Input
+          placeholder={t("namePlaceholder")}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          maxLength={120}
+        />
+      </Field>
+      <Field label={t("ideaLabel")}>
+        <Textarea
+          rows={6}
+          placeholder={t("ideaPlaceholder")}
+          value={idea}
+          onChange={(e) => setIdea(e.target.value)}
+        />
+      </Field>
+      <div className="-mt-2 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <label htmlFor="cur">{t("currencyLabel")}</label>
+          <select
+            id="cur"
+            value={currency}
+            onChange={(e) => setCurrency(e.target.value)}
+            className="rounded-lg border bg-background px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+          >
+            {CURRENCIES.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        {micSupported && (
+          <MicButton
+            listening={listening}
+            onToggle={toggleMic}
+            startLabel={t("voiceStart")}
+            listeningLabel={t("voiceListening")}
+          />
+        )}
+      </div>
+      <Checkbox
+        checked={consent}
+        onCheckedChange={(v) => setConsent(v === true)}
+        label={t("consent")}
+      />
+      <Button onClick={organize} loading={pending} className="w-full">
+        <Wand2 className="size-5" />
+        {t("organizeCta")}
+      </Button>
     </div>
   );
 }

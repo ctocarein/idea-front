@@ -27,6 +27,8 @@ export default async function AdminLayout({
     { href: routes.adminOpportunities, label: t("nav.opportunities"), icon: "opportunities" },
     { href: routes.adminScoringGrid, label: t("nav.grid"), icon: "grid" },
     { href: routes.adminAuditLogs, label: t("nav.audit"), icon: "audit" },
+    { href: routes.adminJobs, label: t("nav.jobs"), icon: "jobs" },
+    { href: routes.adminLearningDashboard, label: t("nav.analytics"), shortLabel: t("nav.analyticsShort"), icon: "analytics" },
   ];
 
   return (

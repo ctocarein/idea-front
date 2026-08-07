@@ -15,6 +15,7 @@ import {
   overallScore,
   type AxisKey,
 } from "@/features/scoring";
+import { ExplainableRadar, type ProjectEvaluation } from "@/features/evaluation";
 import { type ReportDetail, toRadarScore } from "../api";
 import { BilanPdfButton } from "./BilanPdfButton";
 
@@ -29,7 +30,13 @@ const VERDICT_BADGE: Record<string, "success" | "warning" | "neutral"> = {
  * Bilan de diagnostic (vue porteur). Le tableau de compréhension d'abord (pédagogique),
  * le Radar en appui, puis verdict / forces / risques / recommandations. Ton non culpabilisant.
  */
-export function BilanView({ report }: { report: ReportDetail }) {
+export function BilanView({
+  report,
+  evaluation,
+}: {
+  report: ReportDetail;
+  evaluation?: ProjectEvaluation | null;
+}) {
   const t = useTranslations("Bilan.view");
   const tRadar = useTranslations("Radar");
   const radar = report.radar_score ? toRadarScore(report.radar_score) : null;
@@ -150,6 +157,9 @@ export function BilanView({ report }: { report: ReportDetail }) {
             </h2>
             <ComprehensionTable score={radar} />
           </section>
+
+          {/* Radar explicable — le détail par dimension (confiance, preuve, justification). */}
+          {evaluation ? <ExplainableRadar evaluation={evaluation} /> : null}
         </>
       ) : null}
 

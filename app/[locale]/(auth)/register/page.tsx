@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { routes } from "@/shared/config/routes";
 import { Link } from "@/i18n/navigation";
 import { Card, CardContent, ThemeToggle } from "@/shared/ui";
-import { RegisterForm } from "@/features/auth";
+import { OAuthButtons, RegisterForm } from "@/features/auth";
 
 export const metadata: Metadata = { title: "Créer mon espace" };
 
@@ -38,6 +38,7 @@ export default function RegisterPage() {
 
           <Card>
             <CardContent className="space-y-5 pt-6">
+              <OAuthButtons />
               <RegisterForm />
               <p className="text-center text-sm text-muted-foreground">
                 {t("haveAccount")}{" "}

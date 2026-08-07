@@ -21,7 +21,8 @@ export function UploadDiagnostic({
   isAuthed?: boolean;
   /** Extraction réussie → DiagnosticEntry affiche RaconteDiagnostic en mode organize. */
   onExtracted: (extract: IdeaExtract, description: string) => void;
-  onAnonSubmit?: (projectName: string) => void;
+  /** Anonyme : pas d'extraction LLM, donc pas de dimensions à montrer → `null`. */
+  onAnonSubmit?: (projectName: string, extract: IdeaExtract | null) => void;
 }) {
   const t = useTranslations("Diagnostic.upload");
   const locale = useLocale();
@@ -34,7 +35,7 @@ export function UploadDiagnostic({
     const projectName = file.name.replace(/\.[^.]+$/, "");
 
     if (!isAuthed) {
-      onAnonSubmit?.(projectName);
+      onAnonSubmit?.(projectName, null);
       return;
     }
 

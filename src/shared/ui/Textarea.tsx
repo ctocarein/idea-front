@@ -10,7 +10,7 @@ export function Textarea({
   "aria-invalid": ariaInvalid,
   "aria-describedby": ariaDescribedBy,
   ...props
-}: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
+}: React.ComponentPropsWithRef<"textarea">) {
   const field = useFieldContext();
 
   return (

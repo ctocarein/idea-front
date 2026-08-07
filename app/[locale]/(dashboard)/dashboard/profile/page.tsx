@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { apiFetch } from "@/shared/api/client";
 import { routes } from "@/shared/config/routes";
 import { SectionTabs } from "@/shared/layout";
-import { ProfileEditClient } from "@/features/iam";
+import { ProfileEditClient, AccountDangerZone } from "@/features/iam";
 
 export const metadata: Metadata = { title: "Mon profil" };
 
@@ -54,6 +54,7 @@ export default async function ProfilePage() {
         <SectionTabs tabs={PROFILE_TABS} />
       </div>
       <ProfileEditClient profile={me.user} />
+      <AccountDangerZone />
     </div>
   );
 }

@@ -152,6 +152,21 @@
       "proStatuses": { "student": "Student", "employee": "Employee", "entrepreneur": "Entrepreneur", "freelance": "Freelance / Self-employed", "career_change": "Career change", "unemployed": "Unemployed" },
       "stages": { "idea": "Idea — I'm looking to validate", "validation": "Validating — I have early feedback", "mvp": "MVP — I have a product", "traction": "Traction — I have customers", "scale": "Scale — I'm looking to grow" },
       "availabilities": { "lt5": "Less than 5h / week", "h5_10": "5 to 10h / week", "h10_20": "10 to 20h / week", "gt20": "More than 20h / week" }
+    },
+    "oauth": {
+      "or": "or",
+      "continueWith": "Continue with {provider}",
+      "providers": {
+        "google": "Google",
+        "linkedin": "LinkedIn"
+      },
+      "errors": {
+        "oauth_denied": "Sign-in cancelled. You can try again.",
+        "oauth_conflict": "An account already exists with this email. Sign in with your password.",
+        "oauth_failed": "Sign-in failed. Please try again in a moment.",
+        "oauth_missing_code": "Incomplete provider response. Please try again.",
+        "oauth_provider": "This provider is not available right now."
+      }
     }
   },
   "Diagnostic": {
@@ -206,11 +221,23 @@
       "subtitle": "<b>{projectName}</b> — assessed across 12 dimensions.",
       "reveal": "Your full dashboard is waiting.",
       "cta": "Create my space (free)",
-      "note": "Attached to your space when you sign up."
+      "note": "Attached to your space when you sign up.",
+      "provisional": "Provisional preview",
+      "haveAccount": "I already have an account",
+      "titleGeneric": "Your report is waiting",
+      "titleWritten": "Here's what the AI understood",
+      "scoreHint": "Create your space to reveal your full score.",
+      "more": "+{count} more",
+      "subtitleWritten": "The AI structured <b>{total}</b> dimensions of <b>{projectName}</b>. Create your space to reveal your full score.",
+      "ctaPitch": "Unlock your <b>full report</b> and your personalized action plan."
     },
     "claim": {
       "toast": "Your report was waiting — we've attached it to your space.",
-      "loading": "Attaching your diagnostic to your space…"
+      "loading": "Attaching your diagnostic to your space…",
+      "title": "“{projectName}” is waiting for you",
+      "text": "The AI drafted {total} dimensions from your story. Review them and run your report.",
+      "textNoExtract": "Pick up your diagnostic where you left off.",
+      "cta": "Resume"
     },
     "result": {
       "title": "Here's your understanding scorecard",
@@ -222,6 +249,32 @@
       "downloadPdf": "Download the PDF",
       "authedNote": "Your report is attached to your space — find it and download the PDF from your dashboard.",
       "anonNote": "Create your space (free) to keep this report, download it as a PDF and start your journey."
+    },
+    "adjust": {
+      "loading": "Loading your story…",
+      "emptyTitle": "Nothing to review yet",
+      "emptyText": "Start by telling us about your project — the AI will draft the 12 dimensions to review here.",
+      "emptyCta": "Start the diagnostic",
+      "title": "Review your project",
+      "subtitle": "We've put your idea in order. Confirm or adjust as you like."
+    },
+    "wizard": {
+      "recapTitle": "Before running the analysis",
+      "recapSubtitle": "{decided} of {total} dimensions decided.",
+      "recapConfirmed": "{count, plural, one {# confirmed} other {# confirmed}}",
+      "recapSkipped": "{count, plural, one {# set aside} other {# set aside}}",
+      "recapSkippedHint": "To revisit later in the Workshop: {labels}.",
+      "back": "Back",
+      "submit": "Run my analysis",
+      "exit": "Resume later",
+      "youSaid": "What you said",
+      "iDeduced": "What I inferred",
+      "placeholder": "Refine or correct the wording…",
+      "provisionalHint": "Until you decide, this dimension stays provisional.",
+      "asIs": "That's right",
+      "validateMine": "Confirm my version",
+      "adjust": "I'll adjust",
+      "notYet": "Not yet"
     }
   },
   "Dashboard": {
@@ -266,7 +319,10 @@
   "Admin": {
     "space": "Back-office",
     "roles": { "admin": "Administrator", "analyst": "Analyst" },
-    "nav": { "overview": "Overview", "overviewShort": "Home", "projects": "Projects", "mentors": "Mentors", "opportunities": "Opportunities", "grid": "Grid", "audit": "Audit" },
+    "nav": { "overview": "Overview", "overviewShort": "Home", "projects": "Projects", "mentors": "Mentors", "opportunities": "Opportunities", "grid": "Grid", "audit": "Audit",
+      "jobs": "Jobs",
+      "analytics": "Learning",
+      "analyticsShort": "Learn." },
     "overview": {
       "title": "Learning dashboard",
       "subtitle": "The north-star metric: transformation, not revenue.",
@@ -377,6 +433,27 @@
       "currentVersion": "Current version: v2",
       "publish": "Publish a new version",
       "toastPublished": "New grid version prepared"
+    },
+    "jobs": {
+      "title": "Jobs supervision",
+      "subtitle": "Worker async task queue — statuses, failures, retry.",
+      "empty": "No jobs yet.",
+      "retry": "Retry",
+      "retryDone": "Job requeued.",
+      "retryError": "Could not retry. Please try again.",
+      "attempts": "attempt {count}/{max}"
+    },
+    "analytics": {
+      "title": "Learning dashboard",
+      "subtitle": "The freemium transformation funnel — from report to B2B interest.",
+      "empty": "No learning data yet.",
+      "funnelTitle": "Transformation funnel",
+      "bilanViewed": "Report viewed",
+      "actionStarted": "Action started",
+      "opportunityInterest": "Opportunity interest",
+      "actorsCount": "{count} founders",
+      "eventsTitle": "Events ({total})",
+      "noEvents": "No events recorded."
     }
   },
   "Bilan": {
@@ -408,6 +485,22 @@
       "title": "The analysis didn't complete",
       "text": "A technical issue interrupted your report generation. You can restart a diagnostic — we'll pick up from your answers.",
       "cta": "Restart a diagnostic"
+    },
+    "evaluation": {
+      "title": "Dimension-by-dimension detail",
+      "subtitle": "Behind the score: what the AI understood, how confident it is, and what's still missing.",
+      "confidence": "Confidence {pct}%",
+      "questionsTitle": "Questions to refine",
+      "evidence": {
+        "unknown": "To explore",
+        "inferred": "Inferred",
+        "declared": "Declared",
+        "supported": "Supported",
+        "verified": "Verified",
+        "stale": "Needs refresh"
+      },
+      "contradictionTitle": "Contradiction to clarify",
+      "contradictionVs": "in tension with"
     }
   },
   "Readiness": {
@@ -834,7 +927,22 @@
     "saved": "Saved",
     "saving": "Saving…",
     "save": "Save changes",
-    "toastSaved": "Profile updated!"
+    "toastSaved": "Profile updated!",
+    "account": {
+      "title": "Data & account",
+      "exportTitle": "Export my data",
+      "exportDescription": "Download all your personal data as JSON (GDPR portability).",
+      "exportButton": "Export (JSON)",
+      "deleteTitle": "Delete my account",
+      "deleteDescription": "Permanently erase your account, projects, diagnostics and documents.",
+      "deleteButton": "Delete my account",
+      "deleteConfirmTitle": "Permanently delete your account?",
+      "deleteConfirmDescription": "Everything will be erased: projects, diagnostics, reports, documents. This cannot be undone.",
+      "deleteConfirmCancel": "Cancel",
+      "deleteConfirmConfirm": "Yes, delete",
+      "deleteError": "Could not delete. Please try again.",
+      "deleting": "Deleting…"
+    }
   },
   "Shares": {
     "title": "My profile",

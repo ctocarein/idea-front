@@ -152,6 +152,21 @@
       "proStatuses": { "student": "Étudiant(e)", "employee": "Salarié(e)", "entrepreneur": "Entrepreneur(e)", "freelance": "Freelance / Indépendant(e)", "career_change": "En reconversion", "unemployed": "Sans emploi" },
       "stages": { "idea": "Idée — je cherche à valider", "validation": "En validation — j'ai des premiers retours", "mvp": "MVP — j'ai un produit", "traction": "Traction — j'ai des clients", "scale": "Scale — je cherche à croître" },
       "availabilities": { "lt5": "Moins de 5h / semaine", "h5_10": "5 à 10h / semaine", "h10_20": "10 à 20h / semaine", "gt20": "Plus de 20h / semaine" }
+    },
+    "oauth": {
+      "or": "ou",
+      "continueWith": "Continuer avec {provider}",
+      "providers": {
+        "google": "Google",
+        "linkedin": "LinkedIn"
+      },
+      "errors": {
+        "oauth_denied": "Connexion annulée. Tu peux réessayer.",
+        "oauth_conflict": "Un compte existe déjà avec cet email. Connecte-toi avec ton mot de passe.",
+        "oauth_failed": "La connexion a échoué. Réessaie dans un instant.",
+        "oauth_missing_code": "Réponse du fournisseur incomplète. Réessaie.",
+        "oauth_provider": "Ce fournisseur n'est pas disponible pour le moment."
+      }
     }
   },
   "Diagnostic": {
@@ -206,11 +221,23 @@
       "subtitle": "<b>{projectName}</b> — analysé sur 12 dimensions.",
       "reveal": "Ton dashboard complet t’attend.",
       "cta": "Créer mon espace (gratuit)",
-      "note": "Rattaché à ton espace dès l’inscription."
+      "note": "Rattaché à ton espace dès l’inscription.",
+      "provisional": "Aperçu provisoire",
+      "haveAccount": "J'ai déjà un compte",
+      "titleGeneric": "Ton bilan t'attend",
+      "titleWritten": "Voici ce que l'IA a compris",
+      "scoreHint": "Crée ton espace pour révéler ton score complet.",
+      "more": "+{count} autres",
+      "subtitleWritten": "L'IA a structuré <b>{total}</b> dimensions de <b>{projectName}</b>. Crée ton espace pour révéler ton score complet.",
+      "ctaPitch": "Débloque ton <b>bilan complet</b> et ton plan d'action personnalisé."
     },
     "claim": {
       "toast": "Ton bilan t’attendait — on l’a rattaché à ton espace.",
-      "loading": "On rattache ton diagnostic à ton espace…"
+      "loading": "On rattache ton diagnostic à ton espace…",
+      "title": "« {projectName} » t'attend",
+      "text": "L'IA a préparé {total} dimensions à partir de ton récit. Relis-les et lance ton bilan.",
+      "textNoExtract": "Reprends ton diagnostic là où tu l'avais laissé.",
+      "cta": "Reprendre"
     },
     "result": {
       "title": "Voici ton tableau de compréhension",
@@ -222,6 +249,32 @@
       "downloadPdf": "Télécharger le PDF",
       "authedNote": "Ton bilan est rattaché à ton espace — retrouve-le et télécharge le PDF depuis ton tableau de bord.",
       "anonNote": "Crée ton espace (gratuit) pour conserver ce bilan, le télécharger en PDF et démarrer ton parcours."
+    },
+    "adjust": {
+      "loading": "Chargement de ton récit…",
+      "emptyTitle": "Rien à relire pour l'instant",
+      "emptyText": "Commence par raconter ton projet — l'IA en tirera les 12 dimensions à valider ici.",
+      "emptyCta": "Commencer le diagnostic",
+      "title": "Relis ton projet",
+      "subtitle": "On a mis ton idée au clair. À toi de valider ou d'ajuster."
+    },
+    "wizard": {
+      "recapTitle": "Avant de lancer l'analyse",
+      "recapSubtitle": "{decided} dimension(s) sur {total} tranchées.",
+      "recapConfirmed": "{count, plural, one {# validée} other {# validées}}",
+      "recapSkipped": "{count, plural, one {# laissée de côté} other {# laissées de côté}}",
+      "recapSkippedHint": "À reprendre plus tard dans le Workshop : {labels}.",
+      "back": "Retour",
+      "submit": "Lancer mon analyse",
+      "exit": "Reprendre plus tard",
+      "youSaid": "Ce que tu as dit",
+      "iDeduced": "Ce que j'en déduis",
+      "placeholder": "Précise ou corrige la formulation…",
+      "provisionalHint": "Tant que tu ne tranches pas, cette dimension reste provisoire.",
+      "asIs": "C'est juste",
+      "validateMine": "Valider ma version",
+      "adjust": "J'ajuste",
+      "notYet": "Pas encore"
     }
   },
   "Dashboard": {
@@ -266,7 +319,10 @@
   "Admin": {
     "space": "Back-office",
     "roles": { "admin": "Administrateur", "analyst": "Analyste" },
-    "nav": { "overview": "Vue d’ensemble", "overviewShort": "Aperçu", "projects": "Projets", "mentors": "Mentors", "opportunities": "Opportunités", "grid": "Grille", "audit": "Audit" },
+    "nav": { "overview": "Vue d’ensemble", "overviewShort": "Aperçu", "projects": "Projets", "mentors": "Mentors", "opportunities": "Opportunités", "grid": "Grille", "audit": "Audit",
+      "jobs": "Jobs",
+      "analytics": "Apprentissage",
+      "analyticsShort": "Appr." },
     "overview": {
       "title": "Tableau d’apprentissage",
       "subtitle": "La métrique nord : la transformation, pas le revenu.",
@@ -377,6 +433,27 @@
       "currentVersion": "Version courante : v2",
       "publish": "Publier une nouvelle version",
       "toastPublished": "Nouvelle version de grille préparée"
+    },
+    "jobs": {
+      "title": "Supervision des jobs",
+      "subtitle": "File de tâches asynchrones du worker — statuts, échecs, relance.",
+      "empty": "Aucun job pour le moment.",
+      "retry": "Relancer",
+      "retryDone": "Job relancé.",
+      "retryError": "Relance impossible. Réessaie.",
+      "attempts": "tentative {count}/{max}"
+    },
+    "analytics": {
+      "title": "Tableau de bord d'apprentissage",
+      "subtitle": "Le funnel de transformation du freemium — du bilan à l'intérêt B2B.",
+      "empty": "Pas encore de données d'apprentissage.",
+      "funnelTitle": "Funnel de transformation",
+      "bilanViewed": "Bilan consulté",
+      "actionStarted": "Action lancée",
+      "opportunityInterest": "Intérêt opportunité",
+      "actorsCount": "{count} porteurs",
+      "eventsTitle": "Événements ({total})",
+      "noEvents": "Aucun événement enregistré."
     }
   },
   "Bilan": {
@@ -408,6 +485,22 @@
       "title": "L’analyse n’a pas abouti",
       "text": "Un souci technique a interrompu la génération de ton bilan. Tu peux relancer un diagnostic — on repart de tes réponses.",
       "cta": "Relancer un diagnostic"
+    },
+    "evaluation": {
+      "title": "Le détail par dimension",
+      "subtitle": "Derrière le score : ce que l'IA a compris, sa confiance, et ce qui reste à préciser.",
+      "confidence": "Confiance {pct}%",
+      "questionsTitle": "Questions pour affiner",
+      "evidence": {
+        "unknown": "À explorer",
+        "inferred": "Déduit",
+        "declared": "Déclaré",
+        "supported": "Étayé",
+        "verified": "Vérifié",
+        "stale": "À réactualiser"
+      },
+      "contradictionTitle": "Contradiction à éclaircir",
+      "contradictionVs": "en tension avec"
     }
   },
   "Readiness": {
@@ -834,7 +927,22 @@
     "saved": "Sauvegardé",
     "saving": "Enregistrement…",
     "save": "Enregistrer les modifications",
-    "toastSaved": "Profil mis à jour !"
+    "toastSaved": "Profil mis à jour !",
+    "account": {
+      "title": "Données & compte",
+      "exportTitle": "Exporter mes données",
+      "exportDescription": "Télécharge toutes tes données personnelles au format JSON (portabilité RGPD).",
+      "exportButton": "Exporter (JSON)",
+      "deleteTitle": "Supprimer mon compte",
+      "deleteDescription": "Efface définitivement ton compte, tes projets, diagnostics et documents.",
+      "deleteButton": "Supprimer mon compte",
+      "deleteConfirmTitle": "Supprimer définitivement ton compte ?",
+      "deleteConfirmDescription": "Tout sera effacé : projets, diagnostics, bilans, documents. Cette action est irréversible.",
+      "deleteConfirmCancel": "Annuler",
+      "deleteConfirmConfirm": "Oui, supprimer",
+      "deleteError": "Suppression impossible. Réessaie dans un instant.",
+      "deleting": "Suppression…"
+    }
   },
   "Shares": {
     "title": "Mon profil",

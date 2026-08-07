@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
+  Activity,
   ClipboardList,
   Compass,
   FolderKanban,
@@ -15,6 +16,7 @@ import {
   Mic,
   Palette,
   ScrollText,
+  Server,
   Share2,
   SlidersHorizontal,
   Target,
@@ -45,6 +47,8 @@ export const NAV_ICONS = {
   projects: FolderKanban,
   grid: SlidersHorizontal,
   audit: ScrollText,
+  jobs: Server,
+  analytics: Activity,
   profile: UserCircle,
   requests: Inbox,
   share: Share2,

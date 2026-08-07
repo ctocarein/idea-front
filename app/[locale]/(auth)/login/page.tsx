@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { routes } from "@/shared/config/routes";
 import { Link } from "@/i18n/navigation";
 import { Card, CardContent, Logo, ThemeToggle } from "@/shared/ui";
-import { LoginForm } from "@/features/auth";
+import { LoginForm, OAuthButtons } from "@/features/auth";
 
 export const metadata: Metadata = { title: "Connexion" };
 
@@ -155,6 +155,7 @@ export default function LoginPage() {
 
             <Card>
               <CardContent className="space-y-5 pt-6">
+                <OAuthButtons />
                 <LoginForm />
                 <p className="text-center text-sm text-muted-foreground">
                   {t("login.noAccount")}{" "}

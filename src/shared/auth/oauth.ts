@@ -1,0 +1,36 @@
+/**
+ * Connexion par fournisseur d'identité (Google, LinkedIn).
+ *
+ * C'est le **back qui mène la danse** : il détient les secrets OAuth, parle au fournisseur,
+ * crée ou relie le compte, puis nous renvoie un code à usage unique. Le front n'échange ce
+ * code que côté serveur → aucun jeton ne transite jamais par l'URL ni par le navigateur.
+ *
+ * Module PUR (aucun import next/react), à l'image de `session.ts` : utilisable dans les Route
+ * Handlers du BFF comme dans les composants client.
+ */
+
+export const OAUTH_PROVIDERS = ["google", "linkedin"] as const;
+
+export type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
+
+export function isOAuthProvider(value: string): value is OAuthProvider {
+  return (OAUTH_PROVIDERS as readonly string[]).includes(value);
+}
+
+/** Cookie court portant la destination post-connexion (le back n'a pas à la connaître). */
+export const OAUTH_NEXT_COOKIE = "idx_oauth_next";
+
+/** Durée de vie du cookie de destination : le temps d'un aller-retour chez le fournisseur. */
+export const OAUTH_NEXT_MAX_AGE = 60 * 10;
+
+/**
+ * N'accepte qu'un chemin interne. Bloque les URL absolues et les `//host` — sans quoi un
+ * `?next=` forgé transformerait notre écran de connexion en tremplin de phishing.
+ */
+export function safeNext(value: string | null | undefined): string | null {
+  if (!value) return null;
+  if (!value.startsWith("/")) return null;
+  if (value.startsWith("//")) return null;
+  if (value.includes("\\")) return null;
+  return value;
+}

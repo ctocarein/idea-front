@@ -15,14 +15,17 @@ type Mode = "manual" | "upload";
 /** État intermédiaire : l'extraction de fichier a réussi, on enchaîne sur organize. */
 type Extracted = { extract: IdeaExtract; description: string };
 
+/** Fin du parcours anonyme : le teaser montre le projet écrit (si on a pu l'extraire). */
+type AnonDone = { projectName: string; extract: IdeaExtract | null };
+
 export function DiagnosticEntry({ isAuthed = false }: { isAuthed?: boolean }) {
   const t = useTranslations("Diagnostic.entry");
   const [mode, setMode] = useState<Mode | null>(null);
   const [extracted, setExtracted] = useState<Extracted | null>(null);
-  const [submitted, setSubmitted] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState<AnonDone | null>(null);
 
-  function handleAnonSubmit(projectName: string) {
-    setSubmitted(projectName);
+  function handleAnonSubmit(projectName: string, extract: IdeaExtract | null) {
+    setSubmitted({ projectName, extract });
   }
 
   function handleExtracted(extract: IdeaExtract, description: string) {
@@ -34,9 +37,11 @@ export function DiagnosticEntry({ isAuthed = false }: { isAuthed?: boolean }) {
     setMode(null);
   }
 
-  // Anonyme : diagnostic rempli → teaser verrouillé.
+  // Anonyme : récit organisé → teaser « ton projet est déjà écrit ».
   if (submitted !== null) {
-    return <DiagnosticTeaser projectName={submitted} />;
+    return (
+      <DiagnosticTeaser projectName={submitted.projectName} extract={submitted.extract} />
+    );
   }
 
   if (mode === null) {

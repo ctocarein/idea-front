@@ -21,6 +21,8 @@ export const routes = {
 
   // Espace porteur (dashboard)
   dashboard: "/dashboard",
+  /** Relecture des 12 dimensions — rend au porteur le projet que l'IA a rédigé. */
+  ajuster: "/dashboard/ajuster",
   academy: "/dashboard/academy",
   academyTopic: (topic: string) => `/dashboard/academy?topic=${encodeURIComponent(topic)}`,
   besoins: "/dashboard/besoins",
@@ -47,6 +49,8 @@ export const routes = {
   adminOpportunities: "/admin/opportunities",
   adminScoringGrid: "/admin/scoring-grid",
   adminAuditLogs: "/admin/audit-logs",
+  adminJobs: "/admin/jobs",
+  adminLearningDashboard: "/admin/learning-dashboard",
 } as const;
 
 /** Catalogue interne du design system (hors production). */
