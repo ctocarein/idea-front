@@ -311,6 +311,13 @@
         "structure": { "label": "Structure", "text": "Strengthen your weak axes in the Workshop, guided." },
         "dress": { "label": "Dress up", "text": "Logo, pitch and deck in the Studio." }
       }
+    },
+    "applications": {
+      "consent": {
+        "text": "By submitting, you share your file and your score with {org}. They will only see applications to this call.",
+        "checkbox": "I agree to share my file"
+      },
+      "submit": "Submit my application"
     }
   },
   "Admin": {

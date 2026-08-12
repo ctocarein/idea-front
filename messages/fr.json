@@ -311,6 +311,13 @@
         "structure": { "label": "Structurer", "text": "Renforce tes axes faibles au Workshop, guidé." },
         "dress": { "label": "Habiller", "text": "Logo, pitch et deck au Studio." }
       }
+    },
+    "applications": {
+      "consent": {
+        "text": "En soumettant, tu partages ton dossier et ton score avec {org}. Ils ne verront que les candidatures de cet appel.",
+        "checkbox": "J'accepte de partager mon dossier"
+      },
+      "submit": "Soumettre ma candidature"
     }
   },
   "Admin": {
