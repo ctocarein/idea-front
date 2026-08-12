@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { AlertCircle } from "lucide-react";
 
 import { Button } from "@/shared/ui";
-import { OAUTH_PROVIDERS, safeNext, type OAuthProvider } from "@/shared/auth/oauth";
+import { ENABLED_OAUTH_PROVIDERS, safeNext, type OAuthProvider } from "@/shared/auth/oauth";
 
 /** Marque Google — quatre couleurs officielles, jamais recolorée. */
 function GoogleMark() {
@@ -73,29 +73,33 @@ function OAuthButtonsInner() {
         </div>
       )}
 
-      <div className="space-y-2.5">
-        {OAUTH_PROVIDERS.map((provider) => {
-          const Mark = MARKS[provider];
-          const href = next
-            ? `/api/auth/oauth/${provider}?next=${encodeURIComponent(next)}`
-            : `/api/auth/oauth/${provider}`;
-          return (
-            <Button key={provider} asChild variant="outline" className="w-full">
-              {/* Navigation serveur volontaire (<a> et non <Link>) : la route BFF sort du routeur. */}
-              <a href={href}>
-                <Mark />
-                {t("continueWith", { provider: t(`providers.${provider}`) })}
-              </a>
-            </Button>
-          );
-        })}
-      </div>
+      {ENABLED_OAUTH_PROVIDERS.length > 0 && (
+        <>
+          <div className="space-y-2.5">
+            {ENABLED_OAUTH_PROVIDERS.map((provider) => {
+              const Mark = MARKS[provider];
+              const href = next
+                ? `/api/auth/oauth/${provider}?next=${encodeURIComponent(next)}`
+                : `/api/auth/oauth/${provider}`;
+              return (
+                <Button key={provider} asChild variant="outline" className="w-full">
+                  {/* Navigation serveur volontaire (<a> et non <Link>) : la route BFF sort du routeur. */}
+                  <a href={href}>
+                    <Mark />
+                    {t("continueWith", { provider: t(`providers.${provider}`) })}
+                  </a>
+                </Button>
+              );
+            })}
+          </div>
 
-      <div className="flex items-center gap-3">
-        <span className="h-px flex-1 bg-border" />
-        <span className="text-xs uppercase tracking-wider text-muted-foreground">{t("or")}</span>
-        <span className="h-px flex-1 bg-border" />
-      </div>
+          <div className="flex items-center gap-3">
+            <span className="h-px flex-1 bg-border" />
+            <span className="text-xs uppercase tracking-wider text-muted-foreground">{t("or")}</span>
+            <span className="h-px flex-1 bg-border" />
+          </div>
+        </>
+      )}
     </div>
   );
 }
