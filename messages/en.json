@@ -12,6 +12,10 @@
       "title": "For founders",
       "description": "Understand your project, learn to structure it and practice pitching — the whole founder journey, free. Decide for yourself when to go further."
     },
+    "institutions": {
+      "title": "For contests & incubators",
+      "description": "Assess your applications on a shared grid — the Collision Radar. Structured files, an explainable score, a shortlist twice as fast."
+    },
     "financiers": {
       "title": "For investors",
       "description": "Receive qualified, structured projects assessed on a shared framework — the Collision Radar. Stop sifting through noise; see only ready deals."
@@ -52,6 +56,7 @@
   },
   "PublicHeader": {
     "startups": "Startups",
+    "institutions": "Contests",
     "financiers": "Investors",
     "diagnostic": "Diagnostic",
     "login": "Log in",
@@ -72,14 +77,14 @@
     "ctaSecondary": "How it works",
     "reassurance": "No sign-up · 3 minutes · your scorecard across the 12 key dimensions.",
     "stats": {
-      "free": "of the founder journey, free",
+      "free": "of the founder journey, included",
       "dimensions": "dimensions to understand your project",
       "reps": "pitch simulator run-throughs"
     },
     "trust": {
       "private": { "title": "Your idea stays private", "text": "Encrypted, never sold. You control what you share, and with whom." },
       "author": { "title": "You stay the author", "text": "The AI explains and questions — you do the writing. Your project is yours." },
-      "noCommit": { "title": "Zero commitment", "text": "Free, no credit card. Start now, leave whenever you want (GDPR)." }
+      "noCommit": { "title": "Zero commitment", "text": "No credit card. Start now, leave whenever you want (GDPR)." }
     },
     "painTitle": "The first pain isn't the lack of money.",
     "painText": "It's helplessness: understanding how it works, structuring your project, building a pitch, losing the fear. We build the engine that gets you there.",
@@ -91,17 +96,11 @@
     "audiencesTitle": "Who is it for?",
     "audiences": {
       "founders": { "title": "Founders", "text": "Understand, learn, practice — and decide for yourself when to go further.", "cta": "Explore the journey" },
-      "mentors": { "title": "Mentors", "text": "Get picked by the founders you can truly help move forward.", "cta": "Join" },
+      "institutions": { "title": "Contests & incubators", "text": "A shared grid to sort your applications.", "cta": "Discover" },
       "financiers": { "title": "Investors", "text": "Only see projects that are genuinely prepared and qualified.", "cta": "Learn more" }
     },
-    "faqTitle": "Frequently asked questions",
-    "faq": {
-      "free": { "q": "Why is it free?", "a": "We build value first. The whole founder journey — diagnostic, academy, simulator — is free. Mentoring and certification come later, once proven." },
-      "ai": { "q": "Does the AI do the work for me?", "a": "No. It explains and questions you; you do the writing. You stay the author of your project — that's how you own it." },
-      "maturity": { "q": "What if my idea isn't mature?", "a": "That's the ideal starting point. We start from where you are, no judgment." }
-    },
     "finalTitle": "Your project deserves to be understood before being judged.",
-    "finalCta": "Start, for free",
+    "finalCta": "Start",
     "finalReassurance": "No sign-up · no credit card · your idea stays private."
   },
   "Auth": {
@@ -773,6 +772,15 @@
       "value2": "A shared, legible evaluation (the Collision Radar).",
       "value3": "The time you'd spend triaging, saved.",
       "note": "At the start, matchmaking is personal: we introduce the best projects ourselves. Write to us to join the circle.",
+      "cta": "Contact us"
+    },
+    "institutions": {
+      "title": "One shared grid.",
+      "subtitle": "Contests, incubators, NGOs, schools: structured files, a legible score.",
+      "value1": "Structured files, not raw ideas.",
+      "value2": "An explainable score, not just a number.",
+      "value3": "A shortlist twice as fast.",
+      "note": "We support a few programs, directly. Tell us about your call — reply within 48h.",
       "cta": "Contact us"
     },
     "blog": {

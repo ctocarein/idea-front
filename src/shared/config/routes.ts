@@ -6,6 +6,8 @@ export const routes = {
   // Public
   home: "/",
   startups: "/startups",
+  /** Face institutionnelle publique (concours, incubateurs, ONG, écoles). */
+  institutions: "/institutions",
   financeurs: "/financeurs",
   diagnostic: "/diagnostic",
   blog: "/blog",

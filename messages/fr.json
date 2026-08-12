@@ -12,6 +12,10 @@
       "title": "Pour les porteurs",
       "description": "Comprends ton projet, apprends à le structurer et entraîne-toi à pitcher — tout le parcours porteur, gratuit. Tu décides toi-même d’aller plus loin."
     },
+    "institutions": {
+      "title": "Pour les concours & incubateurs",
+      "description": "Évaluez vos candidatures sur une grille commune — le Radar de Collision. Des dossiers structurés, un score explicable, une présélection deux fois plus rapide."
+    },
     "financiers": {
       "title": "Pour les financeurs",
       "description": "Recevez des projets qualifiés et structurés, évalués sur un référentiel commun — le Radar de Collision. Ne triez plus le bruit ; ne voyez que des dossiers prêts."
@@ -52,6 +56,7 @@
   },
   "PublicHeader": {
     "startups": "Startups",
+    "institutions": "Concours",
     "financiers": "Financeurs",
     "diagnostic": "Diagnostic",
     "login": "Connexion",
@@ -72,14 +77,14 @@
     "ctaSecondary": "Comment ça marche",
     "reassurance": "Sans inscription · 3 minutes · ton bilan sur les 12 dimensions clés.",
     "stats": {
-      "free": "du parcours porteur, gratuit",
+      "free": "du parcours porteur, offert",
       "dimensions": "dimensions pour comprendre ton projet",
       "reps": "répétitions au simulateur"
     },
     "trust": {
       "private": { "title": "Ton idée reste privée", "text": "Chiffrée, jamais revendue. Tu contrôles ce que tu partages, et avec qui." },
       "author": { "title": "Tu restes l'auteur", "text": "L'IA t'explique et te questionne — c'est toi qui écris. Ton projet t'appartient." },
-      "noCommit": { "title": "Zéro engagement", "text": "Gratuit, sans carte bancaire. Tu commences, tu repars quand tu veux (RGPD)." }
+      "noCommit": { "title": "Zéro engagement", "text": "Sans carte bancaire. Tu commences, tu repars quand tu veux (RGPD)." }
     },
     "painTitle": "La première douleur n'est pas le manque d'argent.",
     "painText": "C'est l'impuissance : comprendre comment ça marche, structurer son projet, monter un pitch, perdre la peur. On construit le moteur qui t'y amène.",
@@ -91,17 +96,11 @@
     "audiencesTitle": "Pour qui ?",
     "audiences": {
       "founders": { "title": "Porteurs", "text": "Comprends, apprends, entraîne-toi — et décide toi-même d'aller plus loin.", "cta": "Découvrir le parcours" },
-      "mentors": { "title": "Mentors", "text": "Sois choisi par les porteurs que tu peux vraiment faire progresser.", "cta": "Rejoindre" },
+      "institutions": { "title": "Concours & incubateurs", "text": "Une grille commune pour trier vos candidatures.", "cta": "Découvrir" },
       "financiers": { "title": "Financeurs", "text": "Ne voyez que des dossiers réellement préparés et qualifiés.", "cta": "En savoir plus" }
     },
-    "faqTitle": "Questions fréquentes",
-    "faq": {
-      "free": { "q": "Pourquoi c'est gratuit ?", "a": "On construit d'abord la valeur. Tout le parcours porteur — diagnostic, academy, simulateur — est gratuit. L'accompagnement et la certification viendront ensuite, prouvés." },
-      "ai": { "q": "L'IA fait-elle le travail à ma place ?", "a": "Non. Elle t'explique et te questionne ; c'est toi qui écris. Tu restes l'auteur de ton projet — c'est comme ça que tu t'en empares." },
-      "maturity": { "q": "Et si mon idée n'est pas mûre ?", "a": "C'est le point de départ idéal. On part d'où tu es, sans jugement." }
-    },
     "finalTitle": "Ton projet mérite d'être compris avant d'être jugé.",
-    "finalCta": "Commencer, gratuitement",
+    "finalCta": "Commencer",
     "finalReassurance": "Sans inscription · sans carte bancaire · ton idée reste privée."
   },
   "Auth": {
@@ -773,6 +772,15 @@
       "value2": "Une évaluation commune et lisible (le Radar de Collision).",
       "value3": "Le temps que tu passerais à trier, économisé.",
       "note": "Au démarrage, la mise en relation est personnelle : nous vous présentons nous-mêmes les meilleurs projets. Écris-nous pour rejoindre le cercle.",
+      "cta": "Nous contacter"
+    },
+    "institutions": {
+      "title": "Une grille commune.",
+      "subtitle": "Concours, incubateurs, ONG, écoles : des dossiers structurés, un score lisible.",
+      "value1": "Des dossiers structurés, pas des idées brutes.",
+      "value2": "Un score explicable, pas seulement un chiffre.",
+      "value3": "Une présélection deux fois plus rapide.",
+      "note": "Nous accompagnons quelques programmes, en direct. Décrivez-nous votre appel — réponse sous 48 h.",
       "cta": "Nous contacter"
     },
     "blog": {

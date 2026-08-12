@@ -10,6 +10,7 @@ export function PublicHeader() {
   const t = useTranslations("PublicHeader");
   const links = [
     { href: routes.startups, label: t("startups") },
+    { href: routes.institutions, label: t("institutions") },
     { href: routes.financeurs, label: t("financiers") },
     { href: routes.diagnostic, label: t("diagnostic") },
   ];
