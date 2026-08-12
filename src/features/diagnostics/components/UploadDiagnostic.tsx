@@ -8,21 +8,17 @@ import { type IdeaExtract, extractFileIdea } from "../api/actions";
 
 /**
  * Flow B — upload PDF/DOCX → extraction de texte côté backend → même pipeline « Raconte ».
- * Le résultat (`IdeaExtract` + `description`) est remonté via `onExtracted` pour que
- * `DiagnosticEntry` bascule vers `RaconteDiagnostic` en mode organize (le "tell" est skippé).
  *
- * Anonyme : on ne fait pas l'extraction LLM (coûteuse) → stash du nom de fichier + teaser.
+ * Fonctionnalité **connectée uniquement** : l'extraction est serveur (et coûteuse), on ne la
+ * fait pas en anonyme. DiagnosticEntry ne rend ce composant que pour un porteur authentifié.
+ * Le résultat (`IdeaExtract` + `description`) remonte via `onExtracted` pour que DiagnosticEntry
+ * bascule sur `RaconteDiagnostic` en mode organize (le « tell » est skippé).
  */
 export function UploadDiagnostic({
-  isAuthed = false,
   onExtracted,
-  onAnonSubmit,
 }: {
-  isAuthed?: boolean;
   /** Extraction réussie → DiagnosticEntry affiche RaconteDiagnostic en mode organize. */
   onExtracted: (extract: IdeaExtract, description: string) => void;
-  /** Anonyme : pas d'extraction LLM, donc pas de dimensions à montrer → `null`. */
-  onAnonSubmit?: (projectName: string, extract: IdeaExtract | null) => void;
 }) {
   const t = useTranslations("Diagnostic.upload");
   const locale = useLocale();
@@ -32,16 +28,9 @@ export function UploadDiagnostic({
   function analyze() {
     if (!file) return;
 
-    const projectName = file.name.replace(/\.[^.]+$/, "");
-
-    if (!isAuthed) {
-      onAnonSubmit?.(projectName, null);
-      return;
-    }
-
     const form = new FormData();
     form.append("file", file);
-    form.append("project_name", projectName);
+    form.append("project_name", file.name.replace(/\.[^.]+$/, ""));
     form.append("lang", locale);
 
     startTransition(async () => {

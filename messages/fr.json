@@ -170,6 +170,10 @@
     }
   },
   "Diagnostic": {
+    "newIdea": {
+      "title": "Nouvelle idée",
+      "subtitle": "Raconte ton idée — on l'organise, tu relis, puis on lance ton bilan."
+    },
     "page": {
       "eyebrow": "Gratuit · sans pression",
       "title": "Comprends ton projet",
@@ -216,20 +220,15 @@
       "note": "Le texte de ton document sera analysé par le LLM — même pipeline que « Raconte ton idée »."
     },
     "teaser": {
-      "title": "Ton bilan est prêt",
       "projectFallback": "Ton projet",
-      "subtitle": "<b>{projectName}</b> — analysé sur 12 dimensions.",
-      "reveal": "Ton dashboard complet t’attend.",
+      "subtitle": "<b>{projectName}</b> — prête à être analysée sur 12 dimensions.",
+      "reveal": "Ton analyse t’attend de l’autre côté.",
       "cta": "Créer mon espace (gratuit)",
       "note": "Rattaché à ton espace dès l’inscription.",
       "provisional": "Aperçu provisoire",
       "haveAccount": "J'ai déjà un compte",
-      "titleGeneric": "Ton bilan t'attend",
-      "titleWritten": "Voici ce que l'IA a compris",
-      "scoreHint": "Crée ton espace pour révéler ton score complet.",
-      "more": "+{count} autres",
-      "subtitleWritten": "L'IA a structuré <b>{total}</b> dimensions de <b>{projectName}</b>. Crée ton espace pour révéler ton score complet.",
-      "ctaPitch": "Débloque ton <b>bilan complet</b> et ton plan d'action personnalisé."
+      "titleGeneric": "On tient ton idée",
+      "ctaPitch": "Crée ton espace : l'IA organise ton idée, tu la relis, ton <b>bilan</b> se construit."
     },
     "claim": {
       "toast": "Ton bilan t’attendait — on l’a rattaché à ton espace.",
@@ -254,7 +253,7 @@
       "loading": "Chargement de ton récit…",
       "emptyTitle": "Rien à relire pour l'instant",
       "emptyText": "Commence par raconter ton projet — l'IA en tirera les 12 dimensions à valider ici.",
-      "emptyCta": "Commencer le diagnostic",
+      "emptyCta": "Retour au tableau de bord",
       "title": "Relis ton projet",
       "subtitle": "On a mis ton idée au clair. À toi de valider ou d'ajuster."
     },
@@ -279,7 +278,6 @@
   },
   "Dashboard": {
     "greeting": "Bonjour, {name} 👋",
-    "subtitle": "Voici où en est ton projet aujourd'hui.",
     "badgeDone": "Diagnostic fait",
     "badgePending": "Analyse en cours",
     "newProject": "Nouveau projet",
@@ -287,32 +285,32 @@
     "readiness": "Suis-je prêt ?",
     "comprehensionTitle": "Ton tableau de compréhension",
     "preparingTitle": "Ton bilan se prépare",
-    "preparingText": "L'analyse de ton projet est en cours. Tu peux suivre son avancement.",
+    "preparingText": "Analyse en cours — suis l'avancement.",
     "seeProgress": "Voir l'avancement",
-    "profileNudge": "Complète ton profil (2 min) — pour un accompagnement plus juste.",
+    "profileNudge": "Complète ton profil (2 min) — pour mieux t'accompagner.",
     "profileNudgeCta": "Compléter →",
     "nextTitle": "Et maintenant ?",
     "next": {
       "workshopTitle": "Renforce ton projet",
-      "workshopText": "Travaille tes axes faibles au Workshop et fais remonter ton score.",
+      "workshopText": "Bosse tes axes faibles, fais monter ton score.",
       "studioTitle": "Prépare ta présentation",
-      "studioText": "Logo, pitch, deck — donne un visage à ton projet au Studio.",
+      "studioText": "Logo, pitch, deck au Studio.",
       "opportunitiesTitle": "Trouve des opportunités",
-      "opportunitiesText": "Programmes et concours adaptés à ta maturité."
+      "opportunitiesText": "Programmes et concours pour ta maturité."
     },
     "empty": {
-      "subtitle": "Bienvenue dans ton espace. On part d'où tu es.",
+      "subtitle": "On part d'où tu es.",
       "compassPlaceholder": "Ta boussole apparaîtra ici",
       "ctaTitle": "Lance ton premier diagnostic",
-      "ctaText": "En quelques minutes, obtiens ton tableau de compréhension — essence, viabilité, scalabilité. Gratuit, sans jugement.",
+      "ctaText": "En quelques minutes : ton tableau de compréhension. Gratuit, sans jugement.",
       "ctaButton": "Commencer mon diagnostic",
       "journeyTitle": "Ton parcours",
       "toStart": "À commencer",
       "upcoming": "À venir",
       "steps": {
-        "understand": { "label": "Comprendre", "text": "Un diagnostic produit ta boussole : forces et angles morts." },
-        "structure": { "label": "Structurer", "text": "Renforce tes axes faibles au Workshop et construis ton projet, guidé." },
-        "dress": { "label": "Habiller", "text": "Crée ton logo, ton pitch et ton deck au Studio." }
+        "understand": { "label": "Comprendre", "text": "Ta boussole : forces et angles morts." },
+        "structure": { "label": "Structurer", "text": "Renforce tes axes faibles au Workshop, guidé." },
+        "dress": { "label": "Habiller", "text": "Logo, pitch et deck au Studio." }
       }
     }
   },

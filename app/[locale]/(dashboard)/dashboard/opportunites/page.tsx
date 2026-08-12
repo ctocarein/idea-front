@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { ArrowRight } from "lucide-react";
 
-import { Link } from "@/i18n/navigation";
-import { routes } from "@/shared/config/routes";
 import { ApiError } from "@/shared/api/client";
-import { Button, Card, CardContent } from "@/shared/ui";
+import { Card, CardContent } from "@/shared/ui";
 import { getMyProjectId } from "@/features/reports/api";
 import { getOpportunities, OpportunityCard, type Opportunity } from "@/features/opportunities";
+import { NewDiagnosticModal } from "@/features/diagnostics";
 
 export const metadata: Metadata = { title: "Opportunités" };
 
@@ -37,12 +36,10 @@ export default async function OpportunitesPage() {
                 {t("emptyDiagText")}
               </p>
             </div>
-            <Button asChild>
-              <Link href={routes.diagnostic}>
-                {t("emptyDiagCta")}
-                <ArrowRight className="size-4" />
-              </Link>
-            </Button>
+            <NewDiagnosticModal>
+              {t("emptyDiagCta")}
+              <ArrowRight className="size-4" />
+            </NewDiagnosticModal>
           </CardContent>
         </Card>
       )}

@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { Loader2, Mic, Wand2 } from "lucide-react";
 
 import { Button, Checkbox, Field, Input, Textarea, toast } from "@/shared/ui";
 import { routes } from "@/shared/config/routes";
-import { extractIdea, type IdeaExtract } from "../api/actions";
+import { type IdeaExtract } from "../api/actions";
 import { savePendingDiagnostic } from "../lib/pending";
 import { useDictation } from "../lib/use-dictation";
 
@@ -58,19 +58,18 @@ function MicButton({
 }
 
 /**
- * « Raconte, on structure » — l'inverse du formulaire. Le porteur raconte son idée ; le LLM
- * l'organise en 12 dimensions **rédigées**.
+ * « Raconte, on structure » — l'inverse du formulaire. Le porteur raconte son idée ; on la
+ * **stashe brute** et on passe **la porte**. L'organisation en 12 dimensions par le LLM ne se
+ * fait plus ici : elle a été déplacée **après l'inscription**, à l'entrée du wizard
+ * `/dashboard/ajuster` (AdjustProjectClient), pour ne dépenser aucun appel LLM en anonyme.
  *
- * Puis, quel que soit le porteur, le récit organisé est stashé et on passe **la porte** :
- *  - anonyme → teaser (création de compte) : le wizard de relecture mérite un compte ;
- *  - connecté → il a déjà un compte → droit au wizard, sur `/dashboard/ajuster`.
+ *  - anonyme → teaser (création de compte) : aperçu flouté générique, `extract` toujours `null` ;
+ *  - connecté → il a déjà un compte → droit au wizard, qui organisera à son ouverture.
  *
- * Le wizard de relecture ne vit plus ici : il est servi UNIQUEMENT par `/dashboard/ajuster`
- * (AdjustProjectClient), derrière la porte de compte. Il n'y a donc plus de raccourci
- * « connecté → wizard inline » ni d'écran d'aperçu intermédiaire.
+ * On stashe la devise et la langue choisies : l'extraction (désormais post-inscription) les rejoue.
  *
- * `initialExtract` + `initialDescription` : passés par UploadDiagnostic quand le texte a déjà
- * été extrait d'un fichier → on stashe et on passe la porte directement (pas de saisie).
+ * `initialExtract` + `initialDescription` : passés par UploadDiagnostic (connecté) quand le texte
+ * a déjà été extrait d'un fichier → on stashe AVEC l'extract et on passe la porte (pas de re-LLM).
  */
 export function RaconteDiagnostic({
   isAuthed = false,
@@ -79,7 +78,7 @@ export function RaconteDiagnostic({
   initialDescription = "",
 }: {
   isAuthed?: boolean;
-  onAnonSubmit?: (projectName: string, extract: IdeaExtract | null) => void;
+  onAnonSubmit?: (projectName: string) => void;
   /** Pré-extraction depuis un fichier uploadé — passe la porte directement. */
   initialExtract?: IdeaExtract;
   /** Texte extrait du fichier (utilisé comme `description` dans le payload de scoring). */
@@ -88,10 +87,11 @@ export function RaconteDiagnostic({
   const router = useRouter();
   const t = useTranslations("Diagnostic.raconte");
   const locale = useLocale();
-  const [pending, startTransition] = useTransition();
   const [idea, setIdea] = useState(initialDescription);
   const [name, setName] = useState(initialExtract?.project_name ?? "");
-  const [consent, setConsent] = useState(!!initialExtract); // déjà consenti via upload
+  // Consentement pré-coché si déjà consenti via upload, ou si le porteur est connecté (il a
+  // accepté le RGPD à la création de compte — inutile de le redemander pour chaque idée).
+  const [consent, setConsent] = useState(!!initialExtract || isAuthed);
   const [currency, setCurrency] = useState(locale === "en" ? "USD" : "XOF");
 
   // Dictée vocale : la voix alimente le récit (seul champ libre du parcours désormais).
@@ -121,12 +121,16 @@ export function RaconteDiagnostic({
     };
   }
 
-  /** Récit organisé → on stashe et on passe la porte (compte requis avant le wizard). */
-  function proceed(extract: IdeaExtract) {
+  /**
+   * On stashe le récit et on passe la porte (compte requis avant le wizard).
+   * `extract` reste `null` dans le cas normal (récit tapé) : l'IA organisera après l'inscription.
+   * Il n'est renseigné que sur le chemin upload connecté, où le texte a déjà été extrait.
+   */
+  function proceed(extract: IdeaExtract | null = null) {
     const payload = buildPayload();
-    savePendingDiagnostic(payload, extract);
+    savePendingDiagnostic(payload, extract, { currency, lang: locale });
     if (isAuthed) router.push(routes.ajuster);
-    else onAnonSubmit?.(payload.projectName, extract);
+    else onAnonSubmit?.(payload.projectName);
   }
 
   function organize() {
@@ -138,17 +142,12 @@ export function RaconteDiagnostic({
       toast.error(t("errConsent"));
       return;
     }
-    startTransition(async () => {
-      const res = await extractIdea(idea.trim(), name.trim() || undefined, locale, currency);
-      if (!res.ok) {
-        toast.error(res.message);
-        return;
-      }
-      proceed(res.data);
-    });
+    // Plus d'extraction ici : on stashe le récit brut et on passe la porte. Le LLM organise
+    // à l'entrée du wizard, une fois le porteur inscrit (zéro appel LLM en anonyme).
+    proceed();
   }
 
-  // Upload : le fichier a déjà été extrait → on stashe et on passe la porte au montage.
+  // Upload connecté : le fichier a déjà été extrait → on stashe AVEC l'extract et on passe la porte.
   useEffect(() => {
     if (initialExtract) proceed(initialExtract);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -213,7 +212,7 @@ export function RaconteDiagnostic({
         onCheckedChange={(v) => setConsent(v === true)}
         label={t("consent")}
       />
-      <Button onClick={organize} loading={pending} className="w-full">
+      <Button onClick={organize} className="w-full">
         <Wand2 className="size-5" />
         {t("organizeCta")}
       </Button>

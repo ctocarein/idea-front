@@ -170,6 +170,10 @@
     }
   },
   "Diagnostic": {
+    "newIdea": {
+      "title": "New idea",
+      "subtitle": "Tell us your idea — we structure it, you review, then we run your report."
+    },
     "page": {
       "eyebrow": "Free · no pressure",
       "title": "Understand your project",
@@ -216,20 +220,15 @@
       "note": "Your document's text will be analyzed by the AI — same pipeline as \"Tell us your idea\"."
     },
     "teaser": {
-      "title": "Your report is ready",
       "projectFallback": "Your project",
-      "subtitle": "<b>{projectName}</b> — assessed across 12 dimensions.",
-      "reveal": "Your full dashboard is waiting.",
+      "subtitle": "<b>{projectName}</b> — ready to be assessed across 12 dimensions.",
+      "reveal": "Your analysis is waiting on the other side.",
       "cta": "Create my space (free)",
       "note": "Attached to your space when you sign up.",
       "provisional": "Provisional preview",
       "haveAccount": "I already have an account",
-      "titleGeneric": "Your report is waiting",
-      "titleWritten": "Here's what the AI understood",
-      "scoreHint": "Create your space to reveal your full score.",
-      "more": "+{count} more",
-      "subtitleWritten": "The AI structured <b>{total}</b> dimensions of <b>{projectName}</b>. Create your space to reveal your full score.",
-      "ctaPitch": "Unlock your <b>full report</b> and your personalized action plan."
+      "titleGeneric": "We've got your idea",
+      "ctaPitch": "Create your space: the AI organizes your idea, you review it, your <b>report</b> takes shape."
     },
     "claim": {
       "toast": "Your report was waiting — we've attached it to your space.",
@@ -254,7 +253,7 @@
       "loading": "Loading your story…",
       "emptyTitle": "Nothing to review yet",
       "emptyText": "Start by telling us about your project — the AI will draft the 12 dimensions to review here.",
-      "emptyCta": "Start the diagnostic",
+      "emptyCta": "Back to dashboard",
       "title": "Review your project",
       "subtitle": "We've put your idea in order. Confirm or adjust as you like."
     },
@@ -279,7 +278,6 @@
   },
   "Dashboard": {
     "greeting": "Hi {name} 👋",
-    "subtitle": "Here's where your project stands today.",
     "badgeDone": "Diagnostic done",
     "badgePending": "Analysis in progress",
     "newProject": "New project",
@@ -287,32 +285,32 @@
     "readiness": "Am I ready?",
     "comprehensionTitle": "Your understanding scorecard",
     "preparingTitle": "Your report is being prepared",
-    "preparingText": "Your project analysis is running. You can follow its progress.",
+    "preparingText": "Analysis running — follow the progress.",
     "seeProgress": "See progress",
-    "profileNudge": "Complete your profile (2 min) — for more tailored support.",
+    "profileNudge": "Complete your profile (2 min) — for better support.",
     "profileNudgeCta": "Complete →",
     "nextTitle": "What's next?",
     "next": {
       "workshopTitle": "Strengthen your project",
-      "workshopText": "Work on your weak axes in the Workshop and raise your score.",
+      "workshopText": "Work your weak axes, raise your score.",
       "studioTitle": "Prepare your presentation",
-      "studioText": "Logo, pitch, deck — give your project a face in the Studio.",
+      "studioText": "Logo, pitch, deck in the Studio.",
       "opportunitiesTitle": "Find opportunities",
-      "opportunitiesText": "Programs and contests matched to your maturity."
+      "opportunitiesText": "Programs and contests for your maturity."
     },
     "empty": {
-      "subtitle": "Welcome to your space. We start from where you are.",
+      "subtitle": "We start from where you are.",
       "compassPlaceholder": "Your compass will appear here",
       "ctaTitle": "Run your first diagnostic",
-      "ctaText": "In a few minutes, get your understanding scorecard — essence, viability, scalability. Free, no judgment.",
+      "ctaText": "In minutes: your understanding scorecard. Free, no judgment.",
       "ctaButton": "Start my diagnostic",
       "journeyTitle": "Your journey",
       "toStart": "To start",
       "upcoming": "Coming up",
       "steps": {
-        "understand": { "label": "Understand", "text": "A diagnostic produces your compass: strengths and blind spots." },
-        "structure": { "label": "Structure", "text": "Strengthen your weak axes in the Workshop and build your project, guided." },
-        "dress": { "label": "Dress up", "text": "Create your logo, pitch and deck in the Studio." }
+        "understand": { "label": "Understand", "text": "Your compass: strengths and blind spots." },
+        "structure": { "label": "Structure", "text": "Strengthen your weak axes in the Workshop, guided." },
+        "dress": { "label": "Dress up", "text": "Logo, pitch and deck in the Studio." }
       }
     }
   },

@@ -1,15 +1,20 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Loader2 } from "lucide-react";
 
 import { Link } from "@/i18n/navigation";
 import { routes } from "@/shared/config/routes";
 import { Button, toast } from "@/shared/ui";
-import { startManualDiagnostic, type IdeaExtract, type ManualDiagnosticPayload } from "../api/actions";
-import { clearPendingDiagnostic, loadPendingDiagnostic } from "../lib/pending";
+import {
+  extractIdea,
+  startManualDiagnostic,
+  type IdeaExtract,
+  type ManualDiagnosticPayload,
+} from "../api/actions";
+import { clearPendingDiagnostic, loadPendingDiagnostic, savePendingDiagnostic } from "../lib/pending";
 import { DimensionWizard, type WizardResult } from "./DimensionWizard";
 
 type State =
@@ -19,7 +24,11 @@ type State =
 
 /**
  * Écran 03 du flow porteur, côté espace privé : le porteur relit les 12 dimensions que l'IA a
- * rédigées à partir de son récit anonyme, puis lance son bilan.
+ * rédigées à partir de son récit, puis lance son bilan.
+ *
+ * C'est ICI que l'IA organise, désormais — après l'inscription. Le récit est stashé brut en
+ * anonyme (aucun appel LLM avant le compte) ; à l'ouverture du wizard on lance l'extraction si
+ * elle n'a pas encore tourné, puis on la réécrit dans le stash (un refresh ne relance pas le LLM).
  *
  * Le récit vit en localStorage jusqu'ici (cf. `pending.ts`) : le rendu est donc client-only et
  * commence par un état de chargement — on ne sait qu'après montage s'il y a quelque chose à relire.
@@ -27,32 +36,71 @@ type State =
 export function AdjustProjectClient() {
   const router = useRouter();
   const t = useTranslations("Diagnostic.adjust");
+  const locale = useLocale();
   const [state, setState] = useState<State>({ status: "loading" });
   const [submitting, startTransition] = useTransition();
+  // Garde : l'organisation LLM est un one-shot, jamais rejoué (StrictMode / re-render).
+  const started = useRef(false);
 
   useEffect(() => {
-    const pending = loadPendingDiagnostic();
+    if (started.current) return;
+    started.current = true;
 
-    // Récit stashé mais sans dimensions (stash d'avant le wizard, ou upload anonyme) : rien à
-    // relire → on le rejoue tel quel plutôt que de laisser le porteur devant une porte close.
-    if (pending && !pending.extract?.dimensions.length) {
-      void (async () => {
+    const pending = loadPendingDiagnostic();
+    if (!pending) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setState({ status: "empty" });
+      return;
+    }
+
+    // Déjà des dimensions (upload connecté pré-extrait, ou refresh après organisation) : droit
+    // au wizard, aucun appel LLM.
+    if (pending.extract?.dimensions.length) {
+      setState({ status: "ready", payload: pending.payload, extract: pending.extract });
+      return;
+    }
+
+    // Cas normal désormais : récit brut → l'IA organise ICI (session connectée), puis on relit.
+    void (async () => {
+      const desc = pending.payload.description?.trim();
+
+      // Rien à organiser (ex. upload anonyme sans texte) : on ne bloque pas → bilan tel quel.
+      if (!desc) {
         const res = await startManualDiagnostic(pending.payload);
         clearPendingDiagnostic();
         if (res.ok) router.replace(routes.bilan(res.reportId));
         else setState({ status: "empty" });
-      })();
-      return;
-    }
+        return;
+      }
 
-    const next: State = pending?.extract
-      ? { status: "ready", payload: pending.payload, extract: pending.extract }
-      : { status: "empty" };
-    // Lecture one-shot du localStorage au montage : synchro depuis un système externe, pas une
-    // cascade d'état (le récit n'existe que côté navigateur jusqu'ici).
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setState(next);
-  }, [router]);
+      const res = await extractIdea(
+        desc,
+        pending.payload.projectName,
+        pending.lang ?? locale,
+        pending.currency,
+      );
+
+      if (!res.ok) {
+        // Extraction impossible : on ne laisse pas le porteur bloqué → repli sur le bilan direct.
+        const fallback = await startManualDiagnostic(pending.payload);
+        clearPendingDiagnostic();
+        if (fallback.ok) {
+          router.replace(routes.bilan(fallback.reportId));
+        } else {
+          toast.error(res.message);
+          setState({ status: "empty" });
+        }
+        return;
+      }
+
+      // On réécrit l'extract dans le stash : un refresh du wizard ne relancera pas le LLM.
+      savePendingDiagnostic(pending.payload, res.data, {
+        currency: pending.currency,
+        lang: pending.lang ?? locale,
+      });
+      setState({ status: "ready", payload: pending.payload, extract: res.data });
+    })();
+  }, [router, locale]);
 
   function submit(result: WizardResult) {
     if (state.status !== "ready") return;
@@ -83,7 +131,7 @@ export function AdjustProjectClient() {
         <h2 className="font-display text-lg font-bold">{t("emptyTitle")}</h2>
         <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">{t("emptyText")}</p>
         <Button asChild className="mt-5" variant="outline">
-          <Link href={routes.diagnostic}>{t("emptyCta")}</Link>
+          <Link href={routes.dashboard}>{t("emptyCta")}</Link>
         </Button>
       </div>
     );

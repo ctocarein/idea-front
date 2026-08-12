@@ -3,13 +3,12 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { RefreshCw } from "lucide-react";
 
-import { Link } from "@/i18n/navigation";
-import { routes } from "@/shared/config/routes";
 import { ApiError } from "@/shared/api/client";
-import { Button, Card, CardContent } from "@/shared/ui";
+import { Card, CardContent } from "@/shared/ui";
 import { getReportDetail } from "@/features/reports/api";
 import { BilanPending, BilanView, BilanFinalizing } from "@/features/reports";
 import { getProjectEvaluation, type ProjectEvaluation } from "@/features/evaluation";
+import { NewDiagnosticModal } from "@/features/diagnostics";
 
 export const metadata: Metadata = { title: "Mon bilan" };
 
@@ -57,12 +56,10 @@ export default async function BilanPage({
           <p className="mx-auto max-w-md text-muted-foreground">
             {t("text")}
           </p>
-          <Button asChild>
-            <Link href={routes.diagnostic}>
-              <RefreshCw className="size-4" />
-              {t("cta")}
-            </Link>
-          </Button>
+          <NewDiagnosticModal>
+            <RefreshCw className="size-4" />
+            {t("cta")}
+          </NewDiagnosticModal>
         </CardContent>
       </Card>
     );

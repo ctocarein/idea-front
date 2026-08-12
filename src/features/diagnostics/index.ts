@@ -2,6 +2,7 @@
 export { DiagnosticEntry } from "./components/DiagnosticEntry";
 export { DiagnosticResult } from "./components/DiagnosticResult";
 export { ClaimPendingDiagnostic } from "./components/ClaimPendingDiagnostic";
+export { NewDiagnosticModal } from "./components/NewDiagnosticModal";
 export { AdjustProjectClient } from "./components/AdjustProjectClient";
 export {
   DimensionWizard,

@@ -16,8 +16,17 @@ const KEY = "idx_pending_diagnostic";
 /** Ce qu'on garde entre le récit anonyme et le premier écran post-inscription. */
 export interface PendingDiagnostic {
   payload: ManualDiagnosticPayload;
-  /** Les 12 dimensions telles que l'IA les a rédigées — matière du wizard de relecture. */
+  /**
+   * Les 12 dimensions rédigées par l'IA — matière du wizard de relecture.
+   * `null` désormais dans le cas normal : l'extraction ne tourne plus en anonyme, mais
+   * seulement après l'inscription (à l'entrée du wizard `/dashboard/ajuster`). On la
+   * réécrit ici une fois calculée pour qu'un refresh ne relance pas le LLM.
+   */
   extract: IdeaExtract | null;
+  /** Devise choisie au récit — rejouée par l'extraction post-inscription (suggestions chiffrées). */
+  currency?: string;
+  /** Langue du récit — idem, pour que l'extraction produise les dimensions dans la bonne langue. */
+  lang?: string;
 }
 
 /** Ancien format (payload nu) — encore possible dans un navigateur qui n'a pas rechargé. */
@@ -30,9 +39,13 @@ function isLegacy(raw: StoredShape): raw is ManualDiagnosticPayload {
 export function savePendingDiagnostic(
   payload: ManualDiagnosticPayload,
   extract: IdeaExtract | null = null,
+  meta: { currency?: string; lang?: string } = {},
 ): void {
   try {
-    localStorage.setItem(KEY, JSON.stringify({ payload, extract } satisfies PendingDiagnostic));
+    localStorage.setItem(
+      KEY,
+      JSON.stringify({ payload, extract, ...meta } satisfies PendingDiagnostic),
+    );
   } catch {
     // localStorage indisponible (mode privé strict) → on ignore, le gate reste fonctionnel.
   }
