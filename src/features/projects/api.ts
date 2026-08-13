@@ -35,9 +35,16 @@ export async function getAdminProjects(): Promise<Project[]> {
   return rows.map(toProject);
 }
 
-export async function getAdminProject(projectId: string): Promise<Project> {
-  const row = await apiFetch<ProjectAdminOut>(`/api/v1/admin/projects/${projectId}`);
-  return toProject(row);
+/** La fiche porte en plus le dernier bilan : c'est lui que l'analyste assigné reprend. */
+export interface AdminProjectDetail extends Project {
+  latestReportId: string | null;
+}
+
+export async function getAdminProject(projectId: string): Promise<AdminProjectDetail> {
+  const row = await apiFetch<components["schemas"]["ProjectAdminDetailOut"]>(
+    `/api/v1/admin/projects/${projectId}`,
+  );
+  return { ...toProject(row), latestReportId: row.latest_report_id ?? null };
 }
 
 /* ---------------------------------------------------------------------------

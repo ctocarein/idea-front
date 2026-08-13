@@ -433,142 +433,6 @@ export interface paths {
         patch: operations["edit_report_content_api_v1_reports__report_id__report_patch"];
         trace?: never;
     };
-    "/api/v1/academy/lessons": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List Lessons */
-        get: operations["list_lessons_api_v1_academy_lessons_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/academy/progress": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Progress */
-        get: operations["get_progress_api_v1_academy_progress_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/academy/lessons/{slug}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Lesson */
-        get: operations["get_lesson_api_v1_academy_lessons__slug__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/academy/lessons/{slug}/complete": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Complete Lesson */
-        post: operations["complete_lesson_api_v1_academy_lessons__slug__complete_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/academy/build/start": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Start Guided */
-        post: operations["start_guided_api_v1_academy_build_start_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/academy/build/{session_id}/turn": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Guided Turn */
-        post: operations["guided_turn_api_v1_academy_build__session_id__turn_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/academy/build/{session_id}/draft": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Save Draft */
-        patch: operations["save_draft_api_v1_academy_build__session_id__draft_patch"];
-        trace?: never;
-    };
-    "/api/v1/academy/build/{session_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Guided */
-        get: operations["get_guided_api_v1_academy_build__session_id__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/academy/my-weaknesses": {
         parameters: {
             query?: never;
@@ -2211,15 +2075,6 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** AcademyProgressOut */
-        AcademyProgressOut: {
-            /** Total Lessons */
-            total_lessons: number;
-            /** Completed Count */
-            completed_count: number;
-            /** Completed Lesson Ids */
-            completed_lesson_ids: string[];
-        };
         /** AcceptInvitationIn */
         AcceptInvitationIn: {
             /** Token */
@@ -2678,39 +2533,6 @@ export interface components {
              */
             created_at: string;
         };
-        /** GuidedDraftIn */
-        GuidedDraftIn: {
-            /** Draft */
-            draft: string;
-        };
-        /** GuidedSessionOut */
-        GuidedSessionOut: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /** Section */
-            section: string;
-            /** Draft */
-            draft: string;
-            /** Turns */
-            turns: {
-                [key: string]: unknown;
-            }[];
-        };
-        /** GuidedStartIn */
-        GuidedStartIn: {
-            /** Section */
-            section: string;
-            /** Project Id */
-            project_id?: string | null;
-        };
-        /** GuidedTurnIn */
-        GuidedTurnIn: {
-            /** Message */
-            message: string;
-        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -2824,44 +2646,6 @@ export interface components {
             };
             /** Funnel */
             funnel: components["schemas"]["FunnelStageOut"][];
-        };
-        /** LessonDetailOut */
-        LessonDetailOut: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /** Slug */
-            slug: string;
-            /** Title */
-            title: string;
-            /** Topic */
-            topic: string;
-            /** Summary */
-            summary: string;
-            /** Position */
-            position: number;
-            /** Body */
-            body: string;
-        };
-        /** LessonOut */
-        LessonOut: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /** Slug */
-            slug: string;
-            /** Title */
-            title: string;
-            /** Topic */
-            topic: string;
-            /** Summary */
-            summary: string;
-            /** Position */
-            position: number;
         };
         /** LoginIn */
         LoginIn: {
@@ -3581,6 +3365,53 @@ export interface components {
             /** Funding */
             funding?: number | null;
         };
+        /**
+         * ProjectAdminDetailOut
+         * @description Fiche projet côté back-office : la liste, plus le dernier bilan du projet.
+         *
+         *     Sans `latest_report_id`, l'analyste assigné n'a AUCUN chemin vers
+         *     `PATCH /reports/{id}/scores|report` : la garde de ces routes le désigne
+         *     explicitement (`guard_assigned_or_admin`), mais `GET /reports` est owner-scoped —
+         *     il ne pouvait donc pas découvrir l'identifiant du bilan qu'il est censé reprendre.
+         *
+         *     Volontairement absent de la liste : le résoudre pour chaque ligne coûterait une
+         *     requête par projet, pour une information dont seule la fiche a besoin.
+         */
+        ProjectAdminDetailOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Owner Id
+             * Format: uuid
+             */
+            owner_id: string;
+            /** Title */
+            title: string;
+            /** Sector */
+            sector: string;
+            /** Archetype */
+            archetype: string;
+            /** Stage */
+            stage: string;
+            /** Diagnostic Status */
+            diagnostic_status: string;
+            /** Review Status */
+            review_status: string;
+            /** Assignee Id */
+            assignee_id: string | null;
+            /** Is Public */
+            is_public: boolean;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Latest Report Id */
+            latest_report_id?: string | null;
+        };
         /** ProjectAdminOut */
         ProjectAdminOut: {
             /**
@@ -4070,6 +3901,51 @@ export interface components {
             created_at: string;
         };
         /**
+         * SharedFicheOut
+         * @description Vue publique d'une fiche partagée — aucune donnée personnelle du porteur.
+         */
+        SharedFicheOut: {
+            /** Need Type */
+            need_type: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description: string;
+            /** Details */
+            details: {
+                [key: string]: unknown;
+            };
+            /** Project Title */
+            project_title?: string | null;
+        };
+        /**
+         * SharedProjectOut
+         * @description Synthèse publique d'un projet partagé — lecture jury/incubateur.
+         *
+         *     Nommé `SharedFicheOut` jusqu'ici, en collision avec la fiche de besoin d'`academy` :
+         *     deux objets sans rapport sous un même nom, que l'OpenAPI désambiguïsait en
+         *     `app__sharing__schemas__SharedFicheOut` jusque dans les types du front.
+         */
+        SharedProjectOut: {
+            /** Project Title */
+            project_title: string;
+            /** Sector */
+            sector: string;
+            /** Maturity */
+            maturity: string | null;
+            /** Overall 100 */
+            overall_100: number;
+            /** Summary */
+            summary: string;
+            /** Strengths */
+            strengths: string[];
+            /**
+             * Scored By
+             * @default Ideaxion
+             */
+            scored_by: string;
+        };
+        /**
          * SlideKind
          * @enum {string}
          */
@@ -4420,44 +4296,6 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
-        };
-        /**
-         * SharedFicheOut
-         * @description Vue publique d'une fiche partagée — aucune donnée personnelle du porteur.
-         */
-        app__academy__schemas__SharedFicheOut: {
-            /** Need Type */
-            need_type: string;
-            /** Title */
-            title: string;
-            /** Description */
-            description: string;
-            /** Details */
-            details: {
-                [key: string]: unknown;
-            };
-            /** Project Title */
-            project_title?: string | null;
-        };
-        /** SharedFicheOut */
-        app__sharing__schemas__SharedFicheOut: {
-            /** Project Title */
-            project_title: string;
-            /** Sector */
-            sector: string;
-            /** Maturity */
-            maturity: string | null;
-            /** Overall 100 */
-            overall_100: number;
-            /** Summary */
-            summary: string;
-            /** Strengths */
-            strengths: string[];
-            /**
-             * Scored By
-             * @default Ideaxion
-             */
-            scored_by: string;
         };
     };
     responses: never;
@@ -5255,253 +5093,6 @@ export interface operations {
             };
         };
     };
-    list_lessons_api_v1_academy_lessons_get: {
-        parameters: {
-            query?: {
-                topic?: string | null;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LessonOut"][];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_progress_api_v1_academy_progress_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AcademyProgressOut"];
-                };
-            };
-        };
-    };
-    get_lesson_api_v1_academy_lessons__slug__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                slug: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LessonDetailOut"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    complete_lesson_api_v1_academy_lessons__slug__complete_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                slug: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AcademyProgressOut"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    start_guided_api_v1_academy_build_start_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["GuidedStartIn"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GuidedSessionOut"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    guided_turn_api_v1_academy_build__session_id__turn_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                session_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["GuidedTurnIn"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GuidedSessionOut"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    save_draft_api_v1_academy_build__session_id__draft_patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                session_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["GuidedDraftIn"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GuidedSessionOut"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_guided_api_v1_academy_build__session_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                session_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GuidedSessionOut"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
     get_my_weaknesses_api_v1_academy_my_weaknesses_get: {
         parameters: {
             query?: never;
@@ -5908,7 +5499,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["app__academy__schemas__SharedFicheOut"];
+                    "application/json": components["schemas"]["SharedFicheOut"];
                 };
             };
             /** @description Validation Error */
@@ -6808,7 +6399,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ProjectAdminOut"];
+                    "application/json": components["schemas"]["ProjectAdminDetailOut"];
                 };
             };
             /** @description Validation Error */
@@ -7694,7 +7285,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["app__sharing__schemas__SharedFicheOut"];
+                    "application/json": components["schemas"]["SharedProjectOut"];
                 };
             };
             /** @description Validation Error */

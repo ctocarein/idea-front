@@ -5,6 +5,8 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { ApiError } from "@/shared/api/client";
 import { ProjectDetail, type TimelineEvent } from "@/features/projects";
 import { getAdminProject, getAdminProjectTimeline } from "@/features/projects/api";
+import { BilanEditor } from "@/features/reports";
+import { getReportDetail } from "@/features/reports/api";
 import { transitionText } from "@/features/audit/api";
 
 export async function generateMetadata({
@@ -66,5 +68,18 @@ export default async function AdminProjectDetailPage({
     if (!(error instanceof ApiError)) throw error;
   }
 
-  return <ProjectDetail project={project} timeline={timeline} />;
+  // Reprise humaine du bilan, ici plutôt que dans l'espace porteur : c'est l'analyste
+  // assigné qu'elle vise, et le proxy lui interdit `/dashboard`. Le backend reste juge
+  // (`guard_assigned_or_admin`) — un analyste non assigné se verra refuser l'écriture.
+  let report = null;
+  if (project.latestReportId) {
+    report = await getReportDetail(project.latestReportId).catch(() => null);
+  }
+
+  return (
+    <div className="space-y-6">
+      <ProjectDetail project={project} timeline={timeline} />
+      {report ? <BilanEditor report={report} /> : null}
+    </div>
+  );
 }
