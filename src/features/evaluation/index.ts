@@ -7,4 +7,4 @@ export {
   type Contradiction,
   type EvidenceState,
 } from "./api";
-export { ExplainableRadar } from "./ExplainableRadar";
+export { ExplainableRadar, type MemoryStatement } from "./ExplainableRadar";

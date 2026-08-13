@@ -1,6 +1,8 @@
 import { ApiError, apiFetch } from "@/shared/api/client";
 import type { components } from "@/shared/api/schema";
 import type { RadarScore } from "@/features/scoring";
+import { getMyProjects } from "@/features/projects/api";
+import { toRadarScore } from "./lib/radar";
 
 import type { Report } from "./index";
 
@@ -21,11 +23,16 @@ export async function getReportDetail(reportId: string): Promise<ReportDetail> {
   return apiFetch<ReportDetail>(`/api/v1/reports/${reportId}`);
 }
 
-/** Le projet du porteur (dérivé de ses bilans), ou `null` s'il n'a pas encore de diagnostic. */
+/**
+ * Le projet du porteur, ou `null` s'il n'en a pas encore.
+ *
+ * Lu sur `GET /projects` (la source), et non plus déduit du premier bilan : un porteur
+ * peut avoir un projet sans bilan prêt, et l'ordre des bilans n'a jamais garanti le projet.
+ */
 export async function getMyProjectId(): Promise<string | null> {
   try {
-    const reports = await getMyReports();
-    return reports[0]?.project_id ?? null;
+    const projects = await getMyProjects();
+    return projects[0]?.id ?? null;
   } catch (error) {
     if (!(error instanceof ApiError)) throw error;
     return null;
@@ -58,12 +65,7 @@ export async function getLatestRadar(): Promise<RadarScore | null> {
   }
 }
 
-/** Adapte le `radar_score` backend (clés d1-d12 /10) au type front. Les clés correspondent déjà. */
-export function toRadarScore(
-  radar: NonNullable<ReportDetail["radar_score"]>,
-): RadarScore {
-  return { gridVersion: radar.gridVersion, axes: radar.axes as RadarScore["axes"] };
-}
+export { toRadarScore };
 
 /** Adapte un bilan backend à la carte d'affichage (`ReportsList`). */
 export function toReportCard(report: ReportOut): Report {

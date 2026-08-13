@@ -18,14 +18,21 @@ import {
 } from "@/shared/ui";
 import { ComprehensionTable, RadarChart } from "@/features/scoring";
 import { ProjectStatusBadge } from "./ProjectStatusBadge";
-import { ProjectTimeline } from "./ProjectTimeline";
+import { ProjectTimeline, type TimelineEvent } from "./ProjectTimeline";
 import { nextStatuses } from "../lib/status-machine";
 import { transitionReview } from "../actions";
 import type { Project, ProjectStatus } from "../types/project.types";
 
 const ANALYSTS = ["Mariam l'Analyste", "Admin Ideaxion"];
 
-export function ProjectDetail({ project }: { project: Project }) {
+export function ProjectDetail({
+  project,
+  timeline = [],
+}: {
+  project: Project;
+  /** Journal d'audit du projet, mis en forme par la page (Server Component). */
+  timeline?: TimelineEvent[];
+}) {
   const t = useTranslations("Admin.projects.detail");
   const tStatus = useTranslations("Admin.projects.status");
   const user = useSession();
@@ -48,12 +55,6 @@ export function ProjectDetail({ project }: { project: Project }) {
   const canChange = can(user, "project.changeStatus");
   const canAssign = can(user, "project.assign");
   const legal = nextStatuses(status);
-
-  const events = [
-    { label: t("toastStatus", { label: tStatus(status) }), when: t("eventNow") },
-    { label: t("eventDiagnostic"), when: project.createdAt },
-    { label: t("eventCreated"), when: project.createdAt },
-  ];
 
   return (
     <div className="space-y-8">
@@ -171,7 +172,7 @@ export function ProjectDetail({ project }: { project: Project }) {
         <Card>
           <CardContent className="space-y-3 pt-6">
             <h2 className="font-display text-base font-bold">{t("history")}</h2>
-            <ProjectTimeline events={events} />
+            <ProjectTimeline events={timeline} emptyLabel={t("historyEmpty")} />
           </CardContent>
         </Card>
       </div>

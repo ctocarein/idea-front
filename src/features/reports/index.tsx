@@ -3,6 +3,7 @@ import { Download, FileText } from "lucide-react";
 import { Badge, Button, Card, CardContent } from "@/shared/ui";
 
 export { BilanView } from "./components/BilanView";
+export { BilanEditor } from "./components/BilanEditor";
 export { BilanPending } from "./components/BilanPending";
 export { BilanFinalizing } from "./components/BilanFinalizing";
 
