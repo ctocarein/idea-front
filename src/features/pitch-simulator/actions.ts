@@ -1,13 +1,14 @@
 "use server";
 
-import { ApiError, apiFetch } from "@/shared/api/client";
+import { ApiError, apiErrorMessage, apiFetch } from "@/shared/api/client";
 import type { PitchSession } from "./api";
 
 export type StartResult = { ok: true; sessionId: string } | { ok: false; message: string };
 export type TurnResult = { ok: true; session: PitchSession } | { ok: false; message: string };
 
-const failed = (message = "Action impossible pour l'instant. Réessaie.") =>
-  ({ ok: false, message }) as const;
+const GENERIC_FAILURE = "Action impossible pour l'instant. Réessaie.";
+
+const failed = (message = GENERIC_FAILURE) => ({ ok: false, message }) as const;
 
 /** Crée une session de pitch (briefing) auprès du comité choisi. */
 export async function startSession(
@@ -42,11 +43,7 @@ export async function shareDeck(sessionId: string, formData: FormData): Promise<
     );
     return { ok: true, session };
   } catch (error) {
-    if (error instanceof ApiError && error.status < 500) {
-      const detail = error.detail as { error?: { message?: string } } | undefined;
-      if (detail?.error?.message) return failed(detail.error.message);
-    }
-    return failed();
+    return failed(apiErrorMessage(error, GENERIC_FAILURE));
   }
 }
 
@@ -59,11 +56,7 @@ async function post(sessionId: string, path: string, json?: unknown): Promise<Tu
     return { ok: true, session };
   } catch (error) {
     // Remonter le message métier du backend (ex. « Présentez votre pitch avant… »).
-    if (error instanceof ApiError && error.status < 500) {
-      const detail = error.detail as { error?: { message?: string } } | undefined;
-      if (detail?.error?.message) return failed(detail.error.message);
-    }
-    return failed();
+    return failed(apiErrorMessage(error, GENERIC_FAILURE));
   }
 }
 

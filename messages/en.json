@@ -330,17 +330,12 @@
     "overview": {
       "title": "Learning dashboard",
       "subtitle": "The north-star metric: transformation, not revenue.",
-      "stats": {
-        "activeFounders": "Active founders", "activeFoundersHint": "last 30 days",
-        "diagnostics": "Diagnostics run",
-        "pitches": "Pitches played",
-        "retention": "30-day retention",
-        "radarProgress": "Avg. Radar progress", "radarProgressHint": "before / after",
-        "proInterest": "Pro Phase interest", "proInterestHint": "intent signals"
-      },
-      "transformationTitle": "Transformation (Radar before / after)",
-      "transformationText": "Dashed = entry, solid = today. Proof that the freemium makes founders stronger.",
-      "retentionTitle": "Retention by week"
+      "conversion": "{pct}% of the previous step",
+      "detailTitle": "Event detail",
+      "detailLink": "Open the learning dashboard",
+      "totalEvents": "{total} events captured",
+      "emptyTitle": "No signal yet",
+      "emptyBody": "No learning event has been captured yet — the funnel will fill up as soon as the first reports are viewed."
     },
     "projects": {
       "title": "Projects",
@@ -368,9 +363,7 @@
         "history": "History",
         "toastStatus": "Status: {label}",
         "toastAssigned": "Assigned to {name}",
-        "eventNow": "now",
-        "eventDiagnostic": "Diagnostic generated",
-        "eventCreated": "Project created"
+        "historyEmpty": "No action recorded on this project yet."
       }
     },
     "audit": {
@@ -434,9 +427,15 @@
     "grid": {
       "title": "Radar grid",
       "subtitle": "The versioned evaluation framework. 12 dimensions → 4 pillars.",
-      "currentVersion": "Current version: v2",
-      "publish": "Publish a new version",
-      "toastPublished": "New grid version prepared"
+      "currentVersion": "Active version: {version}",
+      "versionsTitle": "Grid versions",
+      "versionsEmpty": "No version reported by the backend.",
+      "active": "Active",
+      "activate": "Activate",
+      "activated": "Grid {version} activated",
+      "scale": "Scale /{max}",
+      "unavailableTitle": "Grid unavailable",
+      "unavailableBody": "The backend did not return the active grid — check that the API responds and that your role has the governance permission."
     },
     "jobs": {
       "title": "Jobs supervision",
@@ -483,6 +482,53 @@
       "nextSteps": "Your next steps",
       "goToSpace": "Go to my space",
       "workWithWorkshop": "Work with the Workshop"
+    },
+    "actions": {
+      "title": "Where to start",
+      "subtitle": "Three levers at most, picked from your weakest dimensions.",
+      "priority": "First",
+      "score": "Currently {score}/10",
+      "start": "Let's go",
+      "lever": {
+        "academy": "Learn: {dimension}",
+        "pitchsim": "Practise: {dimension}",
+        "document": "Bring evidence: {dimension}",
+        "mentor": "Get support: {dimension}"
+      }
+    },
+    "memory": {
+      "add": "Add a detail",
+      "placeholder": "What you know that's missing here — a fact, a figure, a proof.",
+      "save": "Add",
+      "cancel": "Cancel",
+      "added": "Detail saved ✦"
+    },
+    "edit": {
+      "open": "Review this report",
+      "close": "Close",
+      "title": "Human review",
+      "subtitle": "Correct what the AI produced. Revised scores create a version signed by a human.",
+      "contentTitle": "What is written",
+      "summary": "Summary",
+      "verdictStatus": "Verdict",
+      "verdictPlaceholder": "Pick a verdict",
+      "verdictLabel": "Displayed label",
+      "verdictAnalysis": "Verdict analysis",
+      "verdict": { "go": "Go", "conditional": "Conditional", "nogo": "No-go" },
+      "risks": "Risks",
+      "addRisk": "Add a risk",
+      "riskPlaceholder": "Describe the risk",
+      "recommendations": "Recommendations",
+      "addRecommendation": "Add a recommendation",
+      "recommendationTitle": "Title",
+      "recommendationDescription": "Detail",
+      "saveContent": "Save the text",
+      "contentSaved": "Report updated",
+      "scoresTitle": "The 12 dimensions",
+      "scoresSubtitle": "Adjusting a score creates a new version, attributed to a human.",
+      "justificationPlaceholder": "Why this score? (optional)",
+      "saveScores": "Save the scores",
+      "scoresSaved": "Scores saved"
     },
     "pdf": { "download": "Download the report" },
     "failed": {
@@ -917,6 +963,13 @@
       "toastInterest": "Interest sent ✦",
       "strengthenToAccess": "Strengthen your project to access it."
     }
+  },
+  "Notifications": {
+    "title": "Notifications",
+    "markAll": "Mark all read",
+    "empty": "No notifications yet.",
+    "justNow": "just now",
+    "unread": "Unread"
   },
   "Profile": {
     "title": "My profile",

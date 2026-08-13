@@ -21,6 +21,7 @@ export default function robots(): MetadataRoute.Robots {
         "/*/verify-email",
         "/*/403",
         "/*/shared/",
+        "/*/catalogue", // catalogue interne du design system — hors production
         "/api/",
       ],
     },

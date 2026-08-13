@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { Bell, CheckCircle2, GraduationCap, Mic, AlertTriangle } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -17,22 +18,27 @@ const TYPE_ICON: Record<string, LucideIcon> = {
   pitch_progress: Mic,
 };
 
-const dateFmt = new Intl.RelativeTimeFormat("fr", { numeric: "auto" });
-
-function relativeTime(iso: string): string {
-  const diff = (new Date(iso).getTime() - Date.now()) / 1000;
-  const abs = Math.abs(diff);
-  if (abs < 60) return "à l'instant";
-  if (abs < 3600) return dateFmt.format(Math.round(diff / 60), "minutes");
-  if (abs < 86400) return dateFmt.format(Math.round(diff / 3600), "hours");
-  return dateFmt.format(Math.round(diff / 86400), "days");
-}
-
 function notifText(n: NotificationOut): string {
   return n.payload?.title ?? n.type;
 }
 
+/**
+ * Ancienneté lisible. Hors composant à dessein : `Date.now()` est impur, et le
+ * compilateur React interdit un appel impur pendant le rendu.
+ */
+function relativeTime(iso: string, locale: string, justNow: string): string {
+  const diff = (new Date(iso).getTime() - Date.now()) / 1000;
+  const abs = Math.abs(diff);
+  if (abs < 60) return justNow;
+  const fmt = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+  if (abs < 3600) return fmt.format(Math.round(diff / 60), "minutes");
+  if (abs < 86400) return fmt.format(Math.round(diff / 3600), "hours");
+  return fmt.format(Math.round(diff / 86400), "days");
+}
+
 export function NotificationsClient({ initialNotifs }: { initialNotifs: NotificationOut[] }) {
+  const t = useTranslations("Notifications");
+  const locale = useLocale();
   const router = useRouter();
   const [notifs, setNotifs] = useState(initialNotifs);
   const hasUnread = notifs.some((n) => n.unread);
@@ -57,7 +63,7 @@ export function NotificationsClient({ initialNotifs }: { initialNotifs: Notifica
       <div className="flex items-center justify-between pb-1">
         <h3 className="flex items-center gap-2 font-display text-base font-bold">
           <Bell className="size-4" />
-          Notifications
+          {t("title")}
           {hasUnread ? (
             <span className="flex size-5 items-center justify-center rounded-full bg-coral-strong text-[10px] font-bold text-white">
               {notifs.filter((n) => n.unread).length}
@@ -66,13 +72,13 @@ export function NotificationsClient({ initialNotifs }: { initialNotifs: Notifica
         </h3>
         {hasUnread ? (
           <Button variant="ghost" size="sm" className="-mr-1 text-xs" onClick={handleMarkAll}>
-            Tout lire
+            {t("markAll")}
           </Button>
         ) : null}
       </div>
 
       {notifs.length === 0 ? (
-        <p className="py-4 text-center text-sm text-muted-foreground">Aucune notification pour l'instant.</p>
+        <p className="py-4 text-center text-sm text-muted-foreground">{t("empty")}</p>
       ) : (
         <ul className="space-y-0.5">
           {notifs.map((n) => {
@@ -91,12 +97,14 @@ export function NotificationsClient({ initialNotifs }: { initialNotifs: Notifica
                     <p className={["text-sm", n.unread ? "font-medium" : ""].join(" ")}>
                       {notifText(n)}
                     </p>
-                    <p className="text-xs text-muted-foreground">{relativeTime(n.created_at)}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {relativeTime(n.created_at, locale, t("justNow"))}
+                    </p>
                   </div>
                   {n.unread ? (
                     <span
                       className="mt-1.5 size-2 shrink-0 rounded-full bg-coral-strong"
-                      aria-label="Non lu"
+                      aria-label={t("unread")}
                     />
                   ) : null}
                 </button>

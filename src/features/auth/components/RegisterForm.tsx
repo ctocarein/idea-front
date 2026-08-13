@@ -2,7 +2,7 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations, useLocale } from "next-intl";
 
@@ -22,11 +22,12 @@ export function RegisterForm() {
     register,
     handleSubmit,
     control,
-    watch,
     formState: { errors },
   } = useForm<RegisterInput>({ resolver: zodResolver(registerSchema) });
 
-  const password = watch("password") ?? "";
+  // `useWatch` plutôt que `watch()` : ce dernier renvoie une fonction non mémoïsable,
+  // ce qui fait renoncer le compilateur React à optimiser tout le composant.
+  const password = useWatch({ control, name: "password" }) ?? "";
 
   function onSubmit(data: RegisterInput) {
     startTransition(async () => {

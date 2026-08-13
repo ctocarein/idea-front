@@ -3,6 +3,7 @@ name: Build & Deploy — Staging (frontend)
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 env:
@@ -10,8 +11,39 @@ env:
   IMAGE: ghcr.io/${{ github.repository_owner }}/idea-front
 
 jobs:
+  # Garde de qualité (DoD GUIDE.md) : rien ne part en staging sans passer ici.
+  # Tourne aussi sur les PR, où c'est le seul job exécuté.
+  quality:
+    name: Lint · Types · Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm exec tsc --noEmit
+
+      - name: Unit tests
+        run: pnpm test
+
   build-push:
     name: Build image → GHCR
+    needs: quality
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       contents: read

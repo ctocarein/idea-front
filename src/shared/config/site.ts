@@ -1,3 +1,5 @@
+import type { components } from "@/shared/api/schema";
+
 /**
  * Métadonnées de marque, centralisées (i18n-ready : pas de chaîne dispersée).
  *
@@ -17,6 +19,9 @@ export const site = {
 /** Codes Open Graph par locale (og:locale). */
 export const OG_LOCALE: Record<string, string> = { fr: "fr_FR", en: "en_US" };
 
-/** Rôles RBAC (miroir UI du backend ; le backend reste la vraie barrière). */
-export const ROLES = ["founder", "mentor", "analyst", "admin"] as const;
-export type Role = (typeof ROLES)[number];
+/**
+ * Rôles RBAC — dérivés de l'OpenAPI backend, jamais recopiés : le backend reste la
+ * seule autorité (et la vraie barrière ; ici c'est du cosmétique d'affichage).
+ * Inclut `investor`, que le backend sait émettre même si son espace est différé en v2.
+ */
+export type Role = components["schemas"]["Role"];

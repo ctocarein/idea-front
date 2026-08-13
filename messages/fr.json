@@ -330,17 +330,12 @@
     "overview": {
       "title": "Tableau d’apprentissage",
       "subtitle": "La métrique nord : la transformation, pas le revenu.",
-      "stats": {
-        "activeFounders": "Porteurs actifs", "activeFoundersHint": "30 derniers jours",
-        "diagnostics": "Diagnostics réalisés",
-        "pitches": "Pitchs joués",
-        "retention": "Rétention 30j",
-        "radarProgress": "Progression Radar moy.", "radarProgressHint": "avant / après",
-        "proInterest": "Intérêt Phase Pro", "proInterestHint": "signaux d’intention"
-      },
-      "transformationTitle": "Transformation (Radar avant / après)",
-      "transformationText": "Pointillés = entrée, plein = aujourd’hui. La preuve que le freemium rend les porteurs plus solides.",
-      "retentionTitle": "Rétention par semaine"
+      "conversion": "{pct} % de l’étape précédente",
+      "detailTitle": "Le détail des événements",
+      "detailLink": "Ouvrir le tableau d’apprentissage",
+      "totalEvents": "{total} événements captés",
+      "emptyTitle": "Pas encore de signal",
+      "emptyBody": "Aucun événement d’apprentissage n’a encore été capté — le funnel se remplira dès les premiers bilans consultés."
     },
     "projects": {
       "title": "Projets",
@@ -368,9 +363,7 @@
         "history": "Historique",
         "toastStatus": "Statut : {label}",
         "toastAssigned": "Assigné à {name}",
-        "eventNow": "maintenant",
-        "eventDiagnostic": "Diagnostic généré",
-        "eventCreated": "Projet créé"
+        "historyEmpty": "Aucune action tracée sur ce projet pour l’instant."
       }
     },
     "audit": {
@@ -434,9 +427,15 @@
     "grid": {
       "title": "Grille Radar",
       "subtitle": "Le référentiel d’évaluation, versionné. 12 dimensions → 4 piliers.",
-      "currentVersion": "Version courante : v2",
-      "publish": "Publier une nouvelle version",
-      "toastPublished": "Nouvelle version de grille préparée"
+      "currentVersion": "Version active : {version}",
+      "versionsTitle": "Versions de la grille",
+      "versionsEmpty": "Aucune version connue du backend.",
+      "active": "Active",
+      "activate": "Activer",
+      "activated": "Grille {version} activée",
+      "scale": "Échelle /{max}",
+      "unavailableTitle": "Grille indisponible",
+      "unavailableBody": "Le backend n’a pas renvoyé la grille active — vérifie que l’API répond et que ton rôle a la permission de gouvernance."
     },
     "jobs": {
       "title": "Supervision des jobs",
@@ -483,6 +482,53 @@
       "nextSteps": "Tes prochaines étapes",
       "goToSpace": "Aller à mon espace",
       "workWithWorkshop": "Travailler avec le Workshop"
+    },
+    "actions": {
+      "title": "Par quoi commencer",
+      "subtitle": "Trois leviers au plus, choisis à partir de tes dimensions les plus faibles.",
+      "priority": "En premier",
+      "score": "Aujourd’hui à {score}/10",
+      "start": "Je m’y mets",
+      "lever": {
+        "academy": "Apprends : {dimension}",
+        "pitchsim": "Entraîne-toi : {dimension}",
+        "document": "Apporte des preuves : {dimension}",
+        "mentor": "Fais-toi accompagner : {dimension}"
+      }
+    },
+    "memory": {
+      "add": "Apporter une précision",
+      "placeholder": "Ce que tu sais et qui manque ici — un fait, un chiffre, une preuve.",
+      "save": "Ajouter",
+      "cancel": "Annuler",
+      "added": "Précision enregistrée ✦"
+    },
+    "edit": {
+      "open": "Reprendre ce bilan",
+      "close": "Fermer",
+      "title": "Reprise humaine",
+      "subtitle": "Corrige ce que l’IA a produit. Les notes reprises créent une version signée par un humain.",
+      "contentTitle": "Ce qui est écrit",
+      "summary": "Résumé",
+      "verdictStatus": "Verdict",
+      "verdictPlaceholder": "Choisir un verdict",
+      "verdictLabel": "Libellé affiché",
+      "verdictAnalysis": "Analyse du verdict",
+      "verdict": { "go": "Go", "conditional": "Sous conditions", "nogo": "No-go" },
+      "risks": "Risques",
+      "addRisk": "Ajouter un risque",
+      "riskPlaceholder": "Décris le risque",
+      "recommendations": "Recommandations",
+      "addRecommendation": "Ajouter une recommandation",
+      "recommendationTitle": "Titre",
+      "recommendationDescription": "Détail",
+      "saveContent": "Enregistrer le texte",
+      "contentSaved": "Bilan mis à jour",
+      "scoresTitle": "Les 12 dimensions",
+      "scoresSubtitle": "Réajuster une note crée une nouvelle version du score, attribuée à un humain.",
+      "justificationPlaceholder": "Pourquoi cette note ? (facultatif)",
+      "saveScores": "Enregistrer les notes",
+      "scoresSaved": "Notes enregistrées"
     },
     "pdf": { "download": "Télécharger le bilan" },
     "failed": {
@@ -917,6 +963,13 @@
       "toastInterest": "Intérêt transmis ✦",
       "strengthenToAccess": "Renforce ton projet pour y accéder."
     }
+  },
+  "Notifications": {
+    "title": "Notifications",
+    "markAll": "Tout lire",
+    "empty": "Aucune notification pour l’instant.",
+    "justNow": "à l’instant",
+    "unread": "Non lu"
   },
   "Profile": {
     "title": "Mon profil",
