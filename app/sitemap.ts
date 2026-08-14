@@ -7,6 +7,7 @@ import { site } from "@/shared/config/site";
 const PUBLIC_PATHS = [
   "/",
   "/startups",
+  "/institutions",
   "/financeurs",
   "/diagnostic",
   "/blog",

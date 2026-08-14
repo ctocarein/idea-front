@@ -17,6 +17,10 @@ export function homePathFor(role: Role): string {
       return routes.mentorHome;
     case "analyst":
       return routes.admin; // l'analyste est fondu dans l'admin au MVP
+    case "investor":
+      // L'espace financeur est différé en v2 (MVP = concierge manuel). On renvoie
+      // vers l'accueil plutôt que vers un espace gardé qui répondrait 403.
+      return routes.home;
     case "founder":
     default:
       return routes.dashboard;

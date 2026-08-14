@@ -1,6 +1,6 @@
 "use server";
 
-import { ApiError, apiFetch } from "@/shared/api/client";
+import { ApiError, apiErrorMessage, apiFetch } from "@/shared/api/client";
 import type { components } from "@/shared/api/schema";
 
 /**
@@ -43,7 +43,10 @@ export async function startManualDiagnostic(
       if (error.status === 401) return { ok: false, message: "Connecte-toi pour lancer ton diagnostic.", unauthorized: true };
       if (error.status === 422) return { ok: false, message: "Vérifie les champs : il manque une information." };
     }
-    return { ok: false, message: "Analyse impossible pour l'instant. Réessaie dans un instant." };
+    return {
+      ok: false,
+      message: apiErrorMessage(error, "Analyse impossible pour l'instant. Réessaie dans un instant."),
+    };
   }
 }
 
@@ -114,8 +117,10 @@ export async function extractFileIdea(formData: FormData): Promise<ExtractFileRe
       if (error.status === 415) return { ok: false, message: "Format non supporté (PDF ou DOCX uniquement)." };
       if (error.status === 422) return { ok: false, message: "Le document semble vide ou illisible. Essaie le flow 'Raconte'." };
       if (error.status === 429) return { ok: false, message: "Trop de demandes — réessaie dans une minute." };
-      return { ok: false, message: `Erreur backend HTTP ${error.status} — ${JSON.stringify(error.detail)}` };
     }
-    return { ok: false, message: `Erreur inattendue : ${String(error)}` };
+    return {
+      ok: false,
+      message: apiErrorMessage(error, "Lecture du document impossible pour l'instant. Réessaie."),
+    };
   }
 }

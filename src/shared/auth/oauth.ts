@@ -17,6 +17,26 @@ export function isOAuthProvider(value: string): value is OAuthProvider {
   return (OAUTH_PROVIDERS as readonly string[]).includes(value);
 }
 
+/** Lecture d'un flag `NEXT_PUBLIC_*` (inliné au build) : "true"/"1" = on, sinon le défaut. */
+function flag(value: string | undefined, fallback: boolean): boolean {
+  if (value === undefined || value === "") return fallback;
+  return value === "true" || value === "1";
+}
+
+/**
+ * Providers réellement proposés à l'écran. Un provider sans credentials côté backend afficherait
+ * un bouton mort (erreur `oauth_provider` au clic) — on ne montre donc que ceux qui sont activés.
+ * Défaut : Google visible ; LinkedIn masqué tant qu'il n'est pas configuré côté back (poser
+ * `NEXT_PUBLIC_OAUTH_LINKEDIN=true` pour l'afficher). Chaque `process.env.NEXT_PUBLIC_*` doit être
+ * référencé en clair — Next n'inline que les accès statiques.
+ */
+const OAUTH_ENABLED: Record<OAuthProvider, boolean> = {
+  google: flag(process.env.NEXT_PUBLIC_OAUTH_GOOGLE, true),
+  linkedin: flag(process.env.NEXT_PUBLIC_OAUTH_LINKEDIN, false),
+};
+
+export const ENABLED_OAUTH_PROVIDERS = OAUTH_PROVIDERS.filter((p) => OAUTH_ENABLED[p]);
+
 /** Cookie court portant la destination post-connexion (le back n'a pas à la connaître). */
 export const OAUTH_NEXT_COOKIE = "idx_oauth_next";
 

@@ -2,7 +2,7 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations, useLocale } from "next-intl";
 
@@ -22,11 +22,12 @@ export function RegisterForm() {
     register,
     handleSubmit,
     control,
-    watch,
     formState: { errors },
   } = useForm<RegisterInput>({ resolver: zodResolver(registerSchema) });
 
-  const password = watch("password") ?? "";
+  // `useWatch` plutôt que `watch()` : ce dernier renvoie une fonction non mémoïsable,
+  // ce qui fait renoncer le compilateur React à optimiser tout le composant.
+  const password = useWatch({ control, name: "password" }) ?? "";
 
   function onSubmit(data: RegisterInput) {
     startTransition(async () => {
@@ -35,9 +36,10 @@ export function RegisterForm() {
         toast.error(res.message);
         return;
       }
-      // Un diagnostic anonyme attend d'être rattaché → on file droit au dashboard
-      // (le claim y délivre le bilan promis). Sinon, onboarding d'accueil.
-      router.push(loadPendingDiagnostic() ? routes.dashboard : res.redirectTo);
+      // Un diagnostic anonyme attend d'être rattaché → on file droit à la relecture : le wizard
+      // organise le récit (l'IA) à son ouverture, le porteur relit puis lance son bilan. Le
+      // dashboard n'est plus une étape intermédiaire, c'est la destination finale. Sinon, onboarding.
+      router.push(loadPendingDiagnostic() ? routes.ajuster : res.redirectTo);
     });
   }
 

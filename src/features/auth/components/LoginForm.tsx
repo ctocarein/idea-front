@@ -7,6 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 
 import { Button, Field, Input, toast } from "@/shared/ui";
+import { routes } from "@/shared/config/routes";
+import { loadPendingDiagnostic } from "@/features/diagnostics";
 import { loginSchema, type LoginInput } from "../schemas/auth.schema";
 import { login } from "../api/actions";
 
@@ -24,8 +26,13 @@ export function LoginForm() {
   function onSubmit(data: LoginInput) {
     startTransition(async () => {
       const res = await login(data.email, data.password);
-      if (res.ok) router.push(res.redirectTo);
-      else toast.error(res.message);
+      if (!res.ok) {
+        toast.error(res.message);
+        return;
+      }
+      // Un diagnostic anonyme attend d'être rattaché → droit à la relecture (le wizard organise
+      // puis délivre le bilan). Sinon, la destination normale après connexion.
+      router.push(loadPendingDiagnostic() ? routes.ajuster : res.redirectTo);
     });
   }
 

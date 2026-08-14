@@ -8,12 +8,12 @@ import {
   BadgeCheck,
   Compass,
   GraduationCap,
-  HeartHandshake,
   Lock,
   Mic,
   PenLine,
   Rocket,
   ShieldCheck,
+  Trophy,
 } from "lucide-react";
 
 import { routes } from "@/shared/config/routes";
@@ -40,13 +40,13 @@ const TRUST = [
   { icon: BadgeCheck, id: "noCommit" },
 ] as const;
 
+// Porteur d'abord (audience principale), institutions en 2e (priorité stratégique), financeurs
+// ensuite. La 2e position est la plus lue après la 1re.
 const AUDIENCES = [
   { icon: Rocket, id: "founders", href: routes.startups },
-  { icon: HeartHandshake, id: "mentors", href: routes.login },
+  { icon: Trophy, id: "institutions", href: routes.institutions },
   { icon: ShieldCheck, id: "financiers", href: routes.financeurs },
 ] as const;
-
-const FAQ = ["free", "ai", "maturity"] as const;
 
 export async function generateMetadata({
   params,
@@ -201,23 +201,6 @@ export default function Home() {
             })}
           </div>
         </div>
-      </section>
-
-      {/* FAQ */}
-      <section className="mx-auto max-w-3xl px-5 py-16">
-        <Reveal>
-          <h2 className="text-center font-display text-2xl font-bold tracking-tight">
-            {t("faqTitle")}
-          </h2>
-        </Reveal>
-        <dl className="mt-8 space-y-4">
-          {FAQ.map((id) => (
-            <div key={id} className="rounded-2xl border border-border bg-card p-5">
-              <dt className="font-display text-base font-bold">{t(`faq.${id}.q`)}</dt>
-              <dd className="mt-1.5 text-sm text-muted-foreground">{t(`faq.${id}.a`)}</dd>
-            </div>
-          ))}
-        </dl>
       </section>
 
       {/* CTA final */}

@@ -12,6 +12,10 @@
       "title": "Pour les porteurs",
       "description": "Comprends ton projet, apprends à le structurer et entraîne-toi à pitcher — tout le parcours porteur, gratuit. Tu décides toi-même d’aller plus loin."
     },
+    "institutions": {
+      "title": "Pour les concours & incubateurs",
+      "description": "Évaluez vos candidatures sur une grille commune — le Radar de Collision. Des dossiers structurés, un score explicable, une présélection deux fois plus rapide."
+    },
     "financiers": {
       "title": "Pour les financeurs",
       "description": "Recevez des projets qualifiés et structurés, évalués sur un référentiel commun — le Radar de Collision. Ne triez plus le bruit ; ne voyez que des dossiers prêts."
@@ -52,6 +56,7 @@
   },
   "PublicHeader": {
     "startups": "Startups",
+    "institutions": "Concours",
     "financiers": "Financeurs",
     "diagnostic": "Diagnostic",
     "login": "Connexion",
@@ -72,14 +77,14 @@
     "ctaSecondary": "Comment ça marche",
     "reassurance": "Sans inscription · 3 minutes · ton bilan sur les 12 dimensions clés.",
     "stats": {
-      "free": "du parcours porteur, gratuit",
+      "free": "du parcours porteur, offert",
       "dimensions": "dimensions pour comprendre ton projet",
       "reps": "répétitions au simulateur"
     },
     "trust": {
       "private": { "title": "Ton idée reste privée", "text": "Chiffrée, jamais revendue. Tu contrôles ce que tu partages, et avec qui." },
       "author": { "title": "Tu restes l'auteur", "text": "L'IA t'explique et te questionne — c'est toi qui écris. Ton projet t'appartient." },
-      "noCommit": { "title": "Zéro engagement", "text": "Gratuit, sans carte bancaire. Tu commences, tu repars quand tu veux (RGPD)." }
+      "noCommit": { "title": "Zéro engagement", "text": "Sans carte bancaire. Tu commences, tu repars quand tu veux (RGPD)." }
     },
     "painTitle": "La première douleur n'est pas le manque d'argent.",
     "painText": "C'est l'impuissance : comprendre comment ça marche, structurer son projet, monter un pitch, perdre la peur. On construit le moteur qui t'y amène.",
@@ -91,17 +96,11 @@
     "audiencesTitle": "Pour qui ?",
     "audiences": {
       "founders": { "title": "Porteurs", "text": "Comprends, apprends, entraîne-toi — et décide toi-même d'aller plus loin.", "cta": "Découvrir le parcours" },
-      "mentors": { "title": "Mentors", "text": "Sois choisi par les porteurs que tu peux vraiment faire progresser.", "cta": "Rejoindre" },
+      "institutions": { "title": "Concours & incubateurs", "text": "Une grille commune pour trier vos candidatures.", "cta": "Découvrir" },
       "financiers": { "title": "Financeurs", "text": "Ne voyez que des dossiers réellement préparés et qualifiés.", "cta": "En savoir plus" }
     },
-    "faqTitle": "Questions fréquentes",
-    "faq": {
-      "free": { "q": "Pourquoi c'est gratuit ?", "a": "On construit d'abord la valeur. Tout le parcours porteur — diagnostic, academy, simulateur — est gratuit. L'accompagnement et la certification viendront ensuite, prouvés." },
-      "ai": { "q": "L'IA fait-elle le travail à ma place ?", "a": "Non. Elle t'explique et te questionne ; c'est toi qui écris. Tu restes l'auteur de ton projet — c'est comme ça que tu t'en empares." },
-      "maturity": { "q": "Et si mon idée n'est pas mûre ?", "a": "C'est le point de départ idéal. On part d'où tu es, sans jugement." }
-    },
     "finalTitle": "Ton projet mérite d'être compris avant d'être jugé.",
-    "finalCta": "Commencer, gratuitement",
+    "finalCta": "Commencer",
     "finalReassurance": "Sans inscription · sans carte bancaire · ton idée reste privée."
   },
   "Auth": {
@@ -170,6 +169,10 @@
     }
   },
   "Diagnostic": {
+    "newIdea": {
+      "title": "Nouvelle idée",
+      "subtitle": "Raconte ton idée — on l'organise, tu relis, puis on lance ton bilan."
+    },
     "page": {
       "eyebrow": "Gratuit · sans pression",
       "title": "Comprends ton projet",
@@ -216,20 +219,15 @@
       "note": "Le texte de ton document sera analysé par le LLM — même pipeline que « Raconte ton idée »."
     },
     "teaser": {
-      "title": "Ton bilan est prêt",
       "projectFallback": "Ton projet",
-      "subtitle": "<b>{projectName}</b> — analysé sur 12 dimensions.",
-      "reveal": "Ton dashboard complet t’attend.",
+      "subtitle": "<b>{projectName}</b> — prête à être analysée sur 12 dimensions.",
+      "reveal": "Ton analyse t’attend de l’autre côté.",
       "cta": "Créer mon espace (gratuit)",
       "note": "Rattaché à ton espace dès l’inscription.",
       "provisional": "Aperçu provisoire",
       "haveAccount": "J'ai déjà un compte",
-      "titleGeneric": "Ton bilan t'attend",
-      "titleWritten": "Voici ce que l'IA a compris",
-      "scoreHint": "Crée ton espace pour révéler ton score complet.",
-      "more": "+{count} autres",
-      "subtitleWritten": "L'IA a structuré <b>{total}</b> dimensions de <b>{projectName}</b>. Crée ton espace pour révéler ton score complet.",
-      "ctaPitch": "Débloque ton <b>bilan complet</b> et ton plan d'action personnalisé."
+      "titleGeneric": "On tient ton idée",
+      "ctaPitch": "Crée ton espace : l'IA organise ton idée, tu la relis, ton <b>bilan</b> se construit."
     },
     "claim": {
       "toast": "Ton bilan t’attendait — on l’a rattaché à ton espace.",
@@ -254,7 +252,7 @@
       "loading": "Chargement de ton récit…",
       "emptyTitle": "Rien à relire pour l'instant",
       "emptyText": "Commence par raconter ton projet — l'IA en tirera les 12 dimensions à valider ici.",
-      "emptyCta": "Commencer le diagnostic",
+      "emptyCta": "Retour au tableau de bord",
       "title": "Relis ton projet",
       "subtitle": "On a mis ton idée au clair. À toi de valider ou d'ajuster."
     },
@@ -279,7 +277,6 @@
   },
   "Dashboard": {
     "greeting": "Bonjour, {name} 👋",
-    "subtitle": "Voici où en est ton projet aujourd'hui.",
     "badgeDone": "Diagnostic fait",
     "badgePending": "Analyse en cours",
     "newProject": "Nouveau projet",
@@ -287,33 +284,40 @@
     "readiness": "Suis-je prêt ?",
     "comprehensionTitle": "Ton tableau de compréhension",
     "preparingTitle": "Ton bilan se prépare",
-    "preparingText": "L'analyse de ton projet est en cours. Tu peux suivre son avancement.",
+    "preparingText": "Analyse en cours — suis l'avancement.",
     "seeProgress": "Voir l'avancement",
-    "profileNudge": "Complète ton profil (2 min) — pour un accompagnement plus juste.",
+    "profileNudge": "Complète ton profil (2 min) — pour mieux t'accompagner.",
     "profileNudgeCta": "Compléter →",
     "nextTitle": "Et maintenant ?",
     "next": {
       "workshopTitle": "Renforce ton projet",
-      "workshopText": "Travaille tes axes faibles au Workshop et fais remonter ton score.",
+      "workshopText": "Bosse tes axes faibles, fais monter ton score.",
       "studioTitle": "Prépare ta présentation",
-      "studioText": "Logo, pitch, deck — donne un visage à ton projet au Studio.",
+      "studioText": "Logo, pitch, deck au Studio.",
       "opportunitiesTitle": "Trouve des opportunités",
-      "opportunitiesText": "Programmes et concours adaptés à ta maturité."
+      "opportunitiesText": "Programmes et concours pour ta maturité."
     },
     "empty": {
-      "subtitle": "Bienvenue dans ton espace. On part d'où tu es.",
+      "subtitle": "On part d'où tu es.",
       "compassPlaceholder": "Ta boussole apparaîtra ici",
       "ctaTitle": "Lance ton premier diagnostic",
-      "ctaText": "En quelques minutes, obtiens ton tableau de compréhension — essence, viabilité, scalabilité. Gratuit, sans jugement.",
+      "ctaText": "En quelques minutes : ton tableau de compréhension. Gratuit, sans jugement.",
       "ctaButton": "Commencer mon diagnostic",
       "journeyTitle": "Ton parcours",
       "toStart": "À commencer",
       "upcoming": "À venir",
       "steps": {
-        "understand": { "label": "Comprendre", "text": "Un diagnostic produit ta boussole : forces et angles morts." },
-        "structure": { "label": "Structurer", "text": "Renforce tes axes faibles au Workshop et construis ton projet, guidé." },
-        "dress": { "label": "Habiller", "text": "Crée ton logo, ton pitch et ton deck au Studio." }
+        "understand": { "label": "Comprendre", "text": "Ta boussole : forces et angles morts." },
+        "structure": { "label": "Structurer", "text": "Renforce tes axes faibles au Workshop, guidé." },
+        "dress": { "label": "Habiller", "text": "Logo, pitch et deck au Studio." }
       }
+    },
+    "applications": {
+      "consent": {
+        "text": "En soumettant, tu partages ton dossier et ton score avec {org}. Ils ne verront que les candidatures de cet appel.",
+        "checkbox": "J'accepte de partager mon dossier"
+      },
+      "submit": "Soumettre ma candidature"
     }
   },
   "Admin": {
@@ -326,17 +330,12 @@
     "overview": {
       "title": "Tableau d’apprentissage",
       "subtitle": "La métrique nord : la transformation, pas le revenu.",
-      "stats": {
-        "activeFounders": "Porteurs actifs", "activeFoundersHint": "30 derniers jours",
-        "diagnostics": "Diagnostics réalisés",
-        "pitches": "Pitchs joués",
-        "retention": "Rétention 30j",
-        "radarProgress": "Progression Radar moy.", "radarProgressHint": "avant / après",
-        "proInterest": "Intérêt Phase Pro", "proInterestHint": "signaux d’intention"
-      },
-      "transformationTitle": "Transformation (Radar avant / après)",
-      "transformationText": "Pointillés = entrée, plein = aujourd’hui. La preuve que le freemium rend les porteurs plus solides.",
-      "retentionTitle": "Rétention par semaine"
+      "conversion": "{pct} % de l’étape précédente",
+      "detailTitle": "Le détail des événements",
+      "detailLink": "Ouvrir le tableau d’apprentissage",
+      "totalEvents": "{total} événements captés",
+      "emptyTitle": "Pas encore de signal",
+      "emptyBody": "Aucun événement d’apprentissage n’a encore été capté — le funnel se remplira dès les premiers bilans consultés."
     },
     "projects": {
       "title": "Projets",
@@ -364,9 +363,7 @@
         "history": "Historique",
         "toastStatus": "Statut : {label}",
         "toastAssigned": "Assigné à {name}",
-        "eventNow": "maintenant",
-        "eventDiagnostic": "Diagnostic généré",
-        "eventCreated": "Projet créé"
+        "historyEmpty": "Aucune action tracée sur ce projet pour l’instant."
       }
     },
     "audit": {
@@ -430,9 +427,15 @@
     "grid": {
       "title": "Grille Radar",
       "subtitle": "Le référentiel d’évaluation, versionné. 12 dimensions → 4 piliers.",
-      "currentVersion": "Version courante : v2",
-      "publish": "Publier une nouvelle version",
-      "toastPublished": "Nouvelle version de grille préparée"
+      "currentVersion": "Version active : {version}",
+      "versionsTitle": "Versions de la grille",
+      "versionsEmpty": "Aucune version connue du backend.",
+      "active": "Active",
+      "activate": "Activer",
+      "activated": "Grille {version} activée",
+      "scale": "Échelle /{max}",
+      "unavailableTitle": "Grille indisponible",
+      "unavailableBody": "Le backend n’a pas renvoyé la grille active — vérifie que l’API répond et que ton rôle a la permission de gouvernance."
     },
     "jobs": {
       "title": "Supervision des jobs",
@@ -479,6 +482,53 @@
       "nextSteps": "Tes prochaines étapes",
       "goToSpace": "Aller à mon espace",
       "workWithWorkshop": "Travailler avec le Workshop"
+    },
+    "actions": {
+      "title": "Par quoi commencer",
+      "subtitle": "Trois leviers au plus, choisis à partir de tes dimensions les plus faibles.",
+      "priority": "En premier",
+      "score": "Aujourd’hui à {score}/10",
+      "start": "Je m’y mets",
+      "lever": {
+        "academy": "Apprends : {dimension}",
+        "pitchsim": "Entraîne-toi : {dimension}",
+        "document": "Apporte des preuves : {dimension}",
+        "mentor": "Fais-toi accompagner : {dimension}"
+      }
+    },
+    "memory": {
+      "add": "Apporter une précision",
+      "placeholder": "Ce que tu sais et qui manque ici — un fait, un chiffre, une preuve.",
+      "save": "Ajouter",
+      "cancel": "Annuler",
+      "added": "Précision enregistrée ✦"
+    },
+    "edit": {
+      "open": "Reprendre ce bilan",
+      "close": "Fermer",
+      "title": "Reprise humaine",
+      "subtitle": "Corrige ce que l’IA a produit. Les notes reprises créent une version signée par un humain.",
+      "contentTitle": "Ce qui est écrit",
+      "summary": "Résumé",
+      "verdictStatus": "Verdict",
+      "verdictPlaceholder": "Choisir un verdict",
+      "verdictLabel": "Libellé affiché",
+      "verdictAnalysis": "Analyse du verdict",
+      "verdict": { "go": "Go", "conditional": "Sous conditions", "nogo": "No-go" },
+      "risks": "Risques",
+      "addRisk": "Ajouter un risque",
+      "riskPlaceholder": "Décris le risque",
+      "recommendations": "Recommandations",
+      "addRecommendation": "Ajouter une recommandation",
+      "recommendationTitle": "Titre",
+      "recommendationDescription": "Détail",
+      "saveContent": "Enregistrer le texte",
+      "contentSaved": "Bilan mis à jour",
+      "scoresTitle": "Les 12 dimensions",
+      "scoresSubtitle": "Réajuster une note crée une nouvelle version du score, attribuée à un humain.",
+      "justificationPlaceholder": "Pourquoi cette note ? (facultatif)",
+      "saveScores": "Enregistrer les notes",
+      "scoresSaved": "Notes enregistrées"
     },
     "pdf": { "download": "Télécharger le bilan" },
     "failed": {
@@ -777,6 +827,15 @@
       "note": "Au démarrage, la mise en relation est personnelle : nous vous présentons nous-mêmes les meilleurs projets. Écris-nous pour rejoindre le cercle.",
       "cta": "Nous contacter"
     },
+    "institutions": {
+      "title": "Une grille commune.",
+      "subtitle": "Concours, incubateurs, ONG, écoles : des dossiers structurés, un score lisible.",
+      "value1": "Des dossiers structurés, pas des idées brutes.",
+      "value2": "Un score explicable, pas seulement un chiffre.",
+      "value3": "Une présélection deux fois plus rapide.",
+      "note": "Nous accompagnons quelques programmes, en direct. Décrivez-nous votre appel — réponse sous 48 h.",
+      "cta": "Nous contacter"
+    },
     "blog": {
       "title": "Le blog",
       "subtitle": "Des ressources pour comprendre, structurer et défendre ton projet.",
@@ -904,6 +963,13 @@
       "toastInterest": "Intérêt transmis ✦",
       "strengthenToAccess": "Renforce ton projet pour y accéder."
     }
+  },
+  "Notifications": {
+    "title": "Notifications",
+    "markAll": "Tout lire",
+    "empty": "Aucune notification pour l’instant.",
+    "justNow": "à l’instant",
+    "unread": "Non lu"
   },
   "Profile": {
     "title": "Mon profil",

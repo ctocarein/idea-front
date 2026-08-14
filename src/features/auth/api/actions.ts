@@ -3,7 +3,13 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { ACCESS_COOKIE, ApiError, REFRESH_COOKIE, apiFetch } from "@/shared/api/client";
+import {
+  ACCESS_COOKIE,
+  ApiError,
+  REFRESH_COOKIE,
+  apiErrorMessage,
+  apiFetch,
+} from "@/shared/api/client";
 import type { components } from "@/shared/api/schema";
 import { homePathFor } from "@/shared/auth/rbac";
 import { SESSION_MAX_AGE, cookieBase, persistSession } from "@/shared/auth/persist";
@@ -23,7 +29,9 @@ type MeOut = components["schemas"]["MeOut"];
 export type AuthResult = { ok: true; redirectTo: string } | { ok: false; message: string };
 
 const DEMO_PASSWORD = "ideaxion"; // comptes de seed (local)
-const DEMO_EMAIL: Record<Role, string> = {
+// Partiel à dessein : tous les rôles du backend n'ont pas de compte de seed
+// (`investor` notamment, dont l'espace est différé en v2).
+const DEMO_EMAIL: Partial<Record<Role, string>> = {
   founder: "founder@ideaxion.dev",
   mentor: "mentor@ideaxion.dev",
   analyst: "analyst@ideaxion.dev",
@@ -32,12 +40,14 @@ const DEMO_EMAIL: Record<Role, string> = {
 
 function messageFor(error: unknown): string {
   if (error instanceof ApiError) {
+    // Ces trois cas gardent une formulation front : le backend y répond volontairement
+    // vague (anti-énumération de comptes) ou sans le ton qu'on veut ici.
     if (error.status === 401) return "Email ou mot de passe incorrect.";
     if (error.status === 409) return "Un compte existe déjà avec cet email.";
     if (error.status === 429) return "Trop de tentatives. Réessaie dans un instant.";
-    return `Erreur HTTP ${error.status} — ${JSON.stringify(error.detail)}`;
+    return apiErrorMessage(error, "Connexion impossible pour l'instant. Réessaie dans un instant.");
   }
-  return `Connexion impossible : ${String(error)}`;
+  return "Connexion impossible pour l'instant. Réessaie dans un instant.";
 }
 
 export async function login(email: string, password: string): Promise<AuthResult> {
@@ -99,17 +109,18 @@ export async function completeOnboarding(data: OnboardingData): Promise<AuthResu
     );
     return { ok: true, redirectTo: routes.dashboard };
   } catch (error) {
-    const detail =
-      error instanceof ApiError
-        ? `HTTP ${error.status} — ${JSON.stringify(error.detail)}`
-        : String(error);
-    return { ok: false, message: `Erreur : ${detail}` };
+    return {
+      ok: false,
+      message: apiErrorMessage(error, "Enregistrement impossible. Réessaie dans un instant."),
+    };
   }
 }
 
 /** Connexion rapide à un rôle de démo (comptes de seed). */
 export async function signInAs(role: Role): Promise<AuthResult> {
-  return login(DEMO_EMAIL[role], DEMO_PASSWORD);
+  const email = DEMO_EMAIL[role];
+  if (!email) return { ok: false, message: `Aucun compte de démo pour le rôle « ${role} ».` };
+  return login(email, DEMO_PASSWORD);
 }
 
 /** Déconnexion : révoque le refresh côté backend (best-effort) + purge les cookies. */

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowRight, Compass, GraduationCap, Palette, Plus, Sparkles } from "lucide-react";
+import { ArrowRight, Compass, GraduationCap, Palette, Plus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { routes } from "@/shared/config/routes";
@@ -14,14 +14,15 @@ import {
   TONE_TO_BADGE,
   maturityLevel,
   overallScore,
-  sampleScore,
+  type RadarScore,
 } from "@/features/scoring";
-import { ClaimPendingDiagnostic } from "@/features/diagnostics";
+import { ClaimPendingDiagnostic, NewDiagnosticModal } from "@/features/diagnostics";
 import { ReportsList } from "@/features/reports";
 import { getMyReports, getReportDetail, toRadarScore, toReportCard } from "@/features/reports/api";
-import type { RadarScore } from "@/features/scoring";
 import { NotificationsList } from "@/features/notifications";
 import { DocumentsManager } from "@/features/documents";
+import { NextCard } from "./_NextCard";
+import { EmptyDashboard } from "./_EmptyDashboard";
 
 export const metadata: Metadata = { title: "Tableau de bord" };
 
@@ -70,7 +71,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* Cas limite : porteur déjà actif qui aurait refait un diagnostic en anonyme. */}
+      {/* Filet : un récit stashé non terminé (relecture interrompue) ramène le porteur au wizard. */}
       <ClaimPendingDiagnostic />
 
       {/* Confiance : confirme l'email (prioritaire sur le nudge d'onboarding). */}
@@ -88,20 +89,15 @@ export default async function DashboardPage() {
       )}
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight">
-            {t("greeting", { name: firstName })}
-          </h1>
-          <p className="text-muted-foreground">{t("subtitle")}</p>
-        </div>
+        <h1 className="font-display text-2xl font-bold tracking-tight">
+          {t("greeting", { name: firstName })}
+        </h1>
         <div className="flex items-center gap-2">
           <Badge variant="primary">{radar ? t("badgeDone") : t("badgePending")}</Badge>
-          <Button asChild variant="outline" size="sm">
-            <Link href={routes.diagnostic}>
-              <Plus className="size-3.5" />
-              {t("newProject")}
-            </Link>
-          </Button>
+          <NewDiagnosticModal variant="outline" size="sm">
+            <Plus className="size-3.5" />
+            {t("newProject")}
+          </NewDiagnosticModal>
         </div>
       </div>
 
@@ -191,112 +187,6 @@ export default async function DashboardPage() {
       </div>
 
       <DocumentsManager />
-    </div>
-  );
-}
-
-/** Carte d'action « prochaine étape » — mène vers un espace du parcours. */
-function NextCard({
-  icon: Icon,
-  href,
-  title,
-  text,
-}: {
-  icon: React.ElementType;
-  href: string;
-  title: string;
-  text: string;
-}) {
-  return (
-    <Link href={href} className="group">
-      <Card className="h-full transition-shadow hover:border-border-strong hover:shadow-sm">
-        <CardContent className="flex h-full flex-col gap-2 pt-6">
-          <span className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-            <Icon className="size-5" />
-          </span>
-          <h3 className="font-display font-bold">{title}</h3>
-          <p className="flex-1 text-sm text-muted-foreground">{text}</p>
-          <ArrowRight className="size-4 text-primary transition-transform group-hover:translate-x-0.5" />
-        </CardContent>
-      </Card>
-    </Link>
-  );
-}
-
-/**
- * Espace porteur sans diagnostic (état réel d'un compte frais). On ne montre pas de fausses
- * données : un accueil chaleureux et une seule action claire — lancer le diagnostic.
- */
-async function EmptyDashboard({ firstName }: { firstName: string }) {
-  const t = await getTranslations("Dashboard");
-  const steps = [
-    { icon: Compass, key: "understand", active: true },
-    { icon: GraduationCap, key: "structure", active: false },
-    { icon: Palette, key: "dress", active: false },
-  ] as const;
-
-  return (
-    <div className="space-y-8">
-      {/* Rattache un diagnostic fait en anonyme (le « Garder mon bilan » du parcours public). */}
-      <ClaimPendingDiagnostic />
-      <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight">
-          {t("greeting", { name: firstName })}
-        </h1>
-        <p className="text-muted-foreground">{t("empty.subtitle")}</p>
-      </div>
-
-      <Card className="overflow-hidden">
-        <CardContent className="grid items-center gap-8 pt-6 sm:grid-cols-[auto_1fr]">
-          {/* Aperçu de la boussole — estompé tant qu'il n'y a pas de diagnostic. */}
-          <div className="relative mx-auto" aria-hidden>
-            <div className="opacity-25 blur-[1px]">
-              <RadarChart score={sampleScore} size={220} />
-            </div>
-            <span className="pointer-events-none absolute inset-0 flex items-center justify-center px-6 text-center text-xs font-medium text-muted-foreground">
-              {t("empty.compassPlaceholder")}
-            </span>
-          </div>
-
-          <div className="space-y-4">
-            <span className="inline-flex size-12 items-center justify-center rounded-full bg-dawn text-ink">
-              <Sparkles className="size-6" />
-            </span>
-            <div className="space-y-1">
-              <h2 className="font-display text-xl font-bold tracking-tight">{t("empty.ctaTitle")}</h2>
-              <p className="max-w-md text-muted-foreground">{t("empty.ctaText")}</p>
-            </div>
-            <Button asChild size="md">
-              <Link href={routes.diagnostic}>
-                {t("empty.ctaButton")}
-                <ArrowRight className="size-5" />
-              </Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <section className="space-y-3">
-        <h2 className="font-display text-lg font-bold tracking-tight">{t("empty.journeyTitle")}</h2>
-        <div className="grid gap-4 sm:grid-cols-3">
-          {steps.map(({ icon: Icon, key, active }) => (
-            <Card key={key} className={active ? "" : "opacity-70"}>
-              <CardContent className="space-y-2 pt-6">
-                <div className="flex items-center justify-between">
-                  <span className="flex size-9 items-center justify-center rounded-md bg-secondary text-muted-foreground">
-                    <Icon className="size-5" />
-                  </span>
-                  <Badge variant={active ? "primary" : "outline"}>
-                    {active ? t("empty.toStart") : t("empty.upcoming")}
-                  </Badge>
-                </div>
-                <h3 className="font-display text-base font-bold">{t(`empty.steps.${key}.label`)}</h3>
-                <p className="text-sm text-muted-foreground">{t(`empty.steps.${key}.text`)}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
     </div>
   );
 }

@@ -1,9 +1,16 @@
 import { useTranslations } from "next-intl";
-import { AlertTriangle, HelpCircle, Info } from "lucide-react";
+import { AlertTriangle, HelpCircle, Info, Quote } from "lucide-react";
 
 import { Card, CardContent } from "@/shared/ui";
+import { AddMemory } from "@/features/projects";
 
 import type { Contradiction, DimensionEvaluation, EvidenceState, ProjectEvaluation } from "./api";
+
+/** Ce que le porteur (ou le système) a déjà déclaré sur une dimension. */
+export interface MemoryStatement {
+  id: string;
+  statement: string;
+}
 
 /** État de preuve → style de pastille. Plus la preuve est solide, plus c'est « vert ». */
 const EVIDENCE_STYLE: Record<EvidenceState, string> = {
@@ -20,7 +27,14 @@ const EVIDENCE_STYLE: Record<EvidenceState, string> = {
  * preuve, justification, information manquante. Rend le score lisible et actionnable.
  * (Les contradictions du détecteur seront ajoutées ici une fois l'audit branché en flux.)
  */
-export function ExplainableRadar({ evaluation }: { evaluation: ProjectEvaluation }) {
+export function ExplainableRadar({
+  evaluation,
+  memory,
+}: {
+  evaluation: ProjectEvaluation;
+  /** Mémoire projet par dimension (`d1`…`d12`) — ce qui fonde l'état de preuve. */
+  memory?: Record<string, MemoryStatement[]>;
+}) {
   const t = useTranslations("Bilan.evaluation");
   const dims = evaluation.dimensions ?? [];
   const questions = (evaluation.questions ?? []).slice(0, 3);
@@ -36,7 +50,13 @@ export function ExplainableRadar({ evaluation }: { evaluation: ProjectEvaluation
 
       <div className="grid gap-3 sm:grid-cols-2">
         {dims.map((dim) => (
-          <DimensionCard key={dim.dimension} dim={dim} t={t} />
+          <DimensionCard
+            key={dim.dimension}
+            dim={dim}
+            t={t}
+            projectId={evaluation.project_id}
+            statements={memory?.[dim.dimension] ?? []}
+          />
         ))}
       </div>
 
@@ -68,9 +88,13 @@ export function ExplainableRadar({ evaluation }: { evaluation: ProjectEvaluation
 function DimensionCard({
   dim,
   t,
+  projectId,
+  statements,
 }: {
   dim: DimensionEvaluation;
   t: ReturnType<typeof useTranslations>;
+  projectId: string;
+  statements: MemoryStatement[];
 }) {
   const confidencePct = Math.round((dim.confidence ?? 0) * 100);
   const evidenceLabel = t.has(`evidence.${dim.evidence_state}`)
@@ -127,6 +151,20 @@ function DimensionCard({
             ))}
           </div>
         )}
+
+        {/* Mémoire projet : ce qui est déjà déclaré, et de quoi en ajouter. C'est le
+            seul endroit où le porteur peut répondre à « il me manque cette information ». */}
+        {statements.length > 0 && (
+          <ul className="space-y-1.5 border-t border-border pt-3">
+            {statements.map((item) => (
+              <li key={item.id} className="flex gap-1.5 text-xs text-muted-foreground">
+                <Quote className="mt-0.5 size-3 shrink-0" />
+                <span>{item.statement}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        <AddMemory projectId={projectId} dimension={dim.dimension} />
       </CardContent>
     </Card>
   );

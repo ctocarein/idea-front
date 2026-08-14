@@ -1,64 +1,63 @@
 import type { LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import {
-  Heart,
-  Mic,
-  Repeat,
-  TrendingUp,
-  Users,
-  Wand2,
-} from "lucide-react";
+import { ArrowRight, Compass, Heart, Sparkles } from "lucide-react";
 
-import { Card, CardContent } from "@/shared/ui";
-import { RadarChart, sampleScore, sampleScoreAfter } from "@/features/scoring";
+import { Link } from "@/i18n/navigation";
+import { routes } from "@/shared/config/routes";
+import { Button, Card, CardContent, EmptyState } from "@/shared/ui";
+import type { LearningDashboard } from "@/features/analytics";
 
 /**
- * Tableau d'apprentissage (épic INSTRUM ★) — la métrique nord est la
- * TRANSFORMATION, pas le revenu. Données mockées ; au Sprint INT :
- * `GET /admin/learning-dashboard` (événements captés dès S2).
+ * Vue d'ensemble admin (épic INSTRUM ★) — la métrique nord est la TRANSFORMATION,
+ * pas le revenu.
+ *
+ * On n'affiche QUE ce que le backend mesure réellement (`GET /admin/learning-dashboard` :
+ * les trois étages du funnel + le volume d'événements). Les indicateurs qu'aucun event
+ * n'alimente encore — rétention par cohorte, progression Radar avant/après, pitchs joués —
+ * ne sont pas rendus : un chiffre inventé sur un écran de pilotage est pire que pas de chiffre.
  */
-interface Stat {
-  icon: LucideIcon;
-  key: string;
-  value: string;
-  hint?: boolean;
-}
 
-const STATS: Stat[] = [
-  { icon: Users, key: "activeFounders", value: "124", hint: true },
-  { icon: Wand2, key: "diagnostics", value: "312" },
-  { icon: Mic, key: "pitches", value: "890" },
-  { icon: Repeat, key: "retention", value: "48 %" },
-  { icon: TrendingUp, key: "radarProgress", value: "+14", hint: true },
-  { icon: Heart, key: "proInterest", value: "37", hint: true },
-];
+const STAGE_ICON: Record<string, LucideIcon> = {
+  bilan_viewed: Compass,
+  action_started: Sparkles,
+  opportunity_interest: Heart,
+};
 
-const RETENTION = [
-  { label: "S1", value: 100 },
-  { label: "S2", value: 72 },
-  { label: "S3", value: 58 },
-  { label: "S4", value: 48 },
-];
+const STAGE_LABEL_KEY: Record<string, string> = {
+  bilan_viewed: "bilanViewed",
+  action_started: "actionStarted",
+  opportunity_interest: "opportunityInterest",
+};
 
-export function LearningDashboard() {
+export function AdminOverview({ data }: { data: LearningDashboard | null }) {
   const t = useTranslations("Admin.overview");
+  const tStage = useTranslations("Admin.analytics");
+
+  if (!data || data.funnel.length === 0) {
+    return <EmptyState title={t("emptyTitle")} description={t("emptyBody")} />;
+  }
+
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-        {STATS.map((s) => {
-          const Icon = s.icon;
+      <div className="grid gap-4 sm:grid-cols-3">
+        {data.funnel.map((stage, i) => {
+          const Icon = STAGE_ICON[stage.stage] ?? Compass;
+          const labelKey = STAGE_LABEL_KEY[stage.stage];
           return (
-            <Card key={s.key}>
+            <Card key={stage.stage}>
               <CardContent className="space-y-1 pt-6">
                 <span className="flex size-9 items-center justify-center rounded-full bg-coral/15 text-coral-strong">
                   <Icon className="size-5" />
                 </span>
-                <p className="tabular font-display text-2xl font-extrabold">
-                  {s.value}
+                <p className="tabular font-display text-2xl font-extrabold">{stage.actors}</p>
+                <p className="text-sm font-medium">
+                  {labelKey && tStage.has(labelKey) ? tStage(labelKey) : stage.stage}
                 </p>
-                <p className="text-sm font-medium">{t(`stats.${s.key}`)}</p>
-                {s.hint ? (
-                  <p className="text-xs text-muted-foreground">{t(`stats.${s.key}Hint`)}</p>
+                {/* Le premier étage est la base : afficher « 100 % » n'apprendrait rien. */}
+                {i > 0 ? (
+                  <p className="text-xs text-muted-foreground">
+                    {t("conversion", { pct: Math.round(stage.conversion * 100) })}
+                  </p>
                 ) : null}
               </CardContent>
             </Card>
@@ -66,54 +65,22 @@ export function LearningDashboard() {
         })}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardContent className="space-y-3 pt-6">
-            <h3 className="font-display text-base font-bold">
-              {t("transformationTitle")}
-            </h3>
+      <Card>
+        <CardContent className="flex flex-wrap items-center justify-between gap-3 pt-6">
+          <div>
+            <h2 className="font-display text-base font-bold">{t("detailTitle")}</h2>
             <p className="text-sm text-muted-foreground">
-              {t("transformationText")}
+              {t("totalEvents", { total: data.total_events })}
             </p>
-            <div className="flex justify-center pt-2">
-              <RadarChart
-                score={sampleScoreAfter}
-                compare={sampleScore}
-                size={300}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="space-y-4 pt-6">
-            <h3 className="font-display text-base font-bold">
-              {t("retentionTitle")}
-            </h3>
-            <div className="flex items-end gap-4">
-              {RETENTION.map((w) => (
-                <div
-                  key={w.label}
-                  className="flex flex-1 flex-col items-center gap-1.5"
-                >
-                  <span className="tabular text-xs text-muted-foreground">
-                    {w.value}%
-                  </span>
-                  <div className="flex h-40 w-full items-end">
-                    <div
-                      className="w-full rounded-t-md bg-coral-strong/80"
-                      style={{ height: `${w.value}%` }}
-                    />
-                  </div>
-                  <span className="text-xs text-muted-foreground">
-                    {w.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+          <Button asChild variant="outline" size="sm">
+            <Link href={routes.adminLearningDashboard}>
+              {t("detailLink")}
+              <ArrowRight className="size-4" />
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }

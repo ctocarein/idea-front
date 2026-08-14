@@ -15,18 +15,18 @@ type Mode = "manual" | "upload";
 /** État intermédiaire : l'extraction de fichier a réussi, on enchaîne sur organize. */
 type Extracted = { extract: IdeaExtract; description: string };
 
-/** Fin du parcours anonyme : le teaser montre le projet écrit (si on a pu l'extraire). */
-type AnonDone = { projectName: string; extract: IdeaExtract | null };
-
+/**
+ * Entrée du diagnostic.
+ *  - Anonyme : uniquement le récit « Raconte ». L'upload est une fonctionnalité **connectée** :
+ *    il exige l'extraction serveur, qu'on ne fait pas avant l'inscription (zéro LLM en anonyme).
+ *    Fin du parcours anonyme → teaser.
+ *  - Connecté : choix des deux modes (Raconte / Upload) — tout reste dans l'espace authentifié.
+ */
 export function DiagnosticEntry({ isAuthed = false }: { isAuthed?: boolean }) {
   const t = useTranslations("Diagnostic.entry");
   const [mode, setMode] = useState<Mode | null>(null);
   const [extracted, setExtracted] = useState<Extracted | null>(null);
-  const [submitted, setSubmitted] = useState<AnonDone | null>(null);
-
-  function handleAnonSubmit(projectName: string, extract: IdeaExtract | null) {
-    setSubmitted({ projectName, extract });
-  }
+  const [submitted, setSubmitted] = useState<string | null>(null);
 
   function handleExtracted(extract: IdeaExtract, description: string) {
     setExtracted({ extract, description });
@@ -37,13 +37,21 @@ export function DiagnosticEntry({ isAuthed = false }: { isAuthed?: boolean }) {
     setMode(null);
   }
 
-  // Anonyme : récit organisé → teaser « ton projet est déjà écrit ».
+  // Anonyme : fin de parcours → teaser (aperçu, création de compte).
   if (submitted !== null) {
+    return <DiagnosticTeaser projectName={submitted} />;
+  }
+
+  // Anonyme : pas d'upload → directement le récit.
+  if (!isAuthed) {
     return (
-      <DiagnosticTeaser projectName={submitted.projectName} extract={submitted.extract} />
+      <Card className="p-6">
+        <RaconteDiagnostic onAnonSubmit={setSubmitted} />
+      </Card>
     );
   }
 
+  // Connecté : choix des deux modes.
   if (mode === null) {
     return (
       <div className="grid gap-4 sm:grid-cols-2">
@@ -86,21 +94,16 @@ export function DiagnosticEntry({ isAuthed = false }: { isAuthed?: boolean }) {
       </Button>
       <Card className="p-6">
         {mode === "manual" ? (
-          <RaconteDiagnostic isAuthed={isAuthed} onAnonSubmit={handleAnonSubmit} />
+          <RaconteDiagnostic isAuthed />
         ) : extracted ? (
           /* Fichier extrait → RaconteDiagnostic démarre directement en organize */
           <RaconteDiagnostic
-            isAuthed={isAuthed}
-            onAnonSubmit={handleAnonSubmit}
+            isAuthed
             initialExtract={extracted.extract}
             initialDescription={extracted.description}
           />
         ) : (
-          <UploadDiagnostic
-            isAuthed={isAuthed}
-            onExtracted={handleExtracted}
-            onAnonSubmit={handleAnonSubmit}
-          />
+          <UploadDiagnostic onExtracted={handleExtracted} />
         )}
       </Card>
     </div>

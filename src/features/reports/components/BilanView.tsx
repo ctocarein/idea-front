@@ -15,9 +15,14 @@ import {
   overallScore,
   type AxisKey,
 } from "@/features/scoring";
-import { ExplainableRadar, type ProjectEvaluation } from "@/features/evaluation";
+import {
+  ExplainableRadar,
+  type MemoryStatement,
+  type ProjectEvaluation,
+} from "@/features/evaluation";
 import { type ReportDetail, toRadarScore } from "../api";
 import { BilanPdfButton } from "./BilanPdfButton";
+import { NextActions } from "./NextActions";
 
 /** Mapping verdict backend → variante de badge. */
 const VERDICT_BADGE: Record<string, "success" | "warning" | "neutral"> = {
@@ -33,9 +38,12 @@ const VERDICT_BADGE: Record<string, "success" | "warning" | "neutral"> = {
 export function BilanView({
   report,
   evaluation,
+  memory,
 }: {
   report: ReportDetail;
   evaluation?: ProjectEvaluation | null;
+  /** Mémoire projet groupée par dimension, pour le radar explicable. */
+  memory?: Record<string, MemoryStatement[]>;
 }) {
   const t = useTranslations("Bilan.view");
   const tRadar = useTranslations("Radar");
@@ -159,7 +167,7 @@ export function BilanView({
           </section>
 
           {/* Radar explicable — le détail par dimension (confiance, preuve, justification). */}
-          {evaluation ? <ExplainableRadar evaluation={evaluation} /> : null}
+          {evaluation ? <ExplainableRadar evaluation={evaluation} memory={memory} /> : null}
         </>
       ) : null}
 
@@ -204,6 +212,10 @@ export function BilanView({
           ) : null}
         </div>
       ) : null}
+
+      {/* Prochaines actions — déterministes (dérivées des axes faibles), avant les
+          recommandations rédigées par l'IA : c'est ce qui se fait, pas ce qui se lit. */}
+      <NextActions reportId={report.id} actions={report.next_actions ?? []} />
 
       {/* Recommandations */}
       {recommendations.length > 0 ? (

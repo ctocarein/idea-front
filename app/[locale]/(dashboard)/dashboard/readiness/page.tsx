@@ -17,6 +17,7 @@ import {
   type AxisKey,
 } from "@/features/scoring";
 import { getLatestRadar } from "@/features/reports/api";
+import { NewDiagnosticModal } from "@/features/diagnostics";
 import { ExpressInterest } from "./_interest";
 
 export const metadata: Metadata = { title: "Readiness" };
@@ -66,12 +67,10 @@ export default async function ReadinessPage() {
               </h2>
               <p className="text-sm text-muted-foreground">{t("emptyText")}</p>
             </div>
-            <Button asChild>
-              <Link href={routes.diagnostic}>
-                {t("emptyCta")}
-                <ArrowRight className="size-4" />
-              </Link>
-            </Button>
+            <NewDiagnosticModal>
+              {t("emptyCta")}
+              <ArrowRight className="size-4" />
+            </NewDiagnosticModal>
           </CardContent>
         </Card>
       )}

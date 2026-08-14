@@ -12,6 +12,10 @@
       "title": "For founders",
       "description": "Understand your project, learn to structure it and practice pitching — the whole founder journey, free. Decide for yourself when to go further."
     },
+    "institutions": {
+      "title": "For contests & incubators",
+      "description": "Assess your applications on a shared grid — the Collision Radar. Structured files, an explainable score, a shortlist twice as fast."
+    },
     "financiers": {
       "title": "For investors",
       "description": "Receive qualified, structured projects assessed on a shared framework — the Collision Radar. Stop sifting through noise; see only ready deals."
@@ -52,6 +56,7 @@
   },
   "PublicHeader": {
     "startups": "Startups",
+    "institutions": "Contests",
     "financiers": "Investors",
     "diagnostic": "Diagnostic",
     "login": "Log in",
@@ -72,14 +77,14 @@
     "ctaSecondary": "How it works",
     "reassurance": "No sign-up · 3 minutes · your scorecard across the 12 key dimensions.",
     "stats": {
-      "free": "of the founder journey, free",
+      "free": "of the founder journey, included",
       "dimensions": "dimensions to understand your project",
       "reps": "pitch simulator run-throughs"
     },
     "trust": {
       "private": { "title": "Your idea stays private", "text": "Encrypted, never sold. You control what you share, and with whom." },
       "author": { "title": "You stay the author", "text": "The AI explains and questions — you do the writing. Your project is yours." },
-      "noCommit": { "title": "Zero commitment", "text": "Free, no credit card. Start now, leave whenever you want (GDPR)." }
+      "noCommit": { "title": "Zero commitment", "text": "No credit card. Start now, leave whenever you want (GDPR)." }
     },
     "painTitle": "The first pain isn't the lack of money.",
     "painText": "It's helplessness: understanding how it works, structuring your project, building a pitch, losing the fear. We build the engine that gets you there.",
@@ -91,17 +96,11 @@
     "audiencesTitle": "Who is it for?",
     "audiences": {
       "founders": { "title": "Founders", "text": "Understand, learn, practice — and decide for yourself when to go further.", "cta": "Explore the journey" },
-      "mentors": { "title": "Mentors", "text": "Get picked by the founders you can truly help move forward.", "cta": "Join" },
+      "institutions": { "title": "Contests & incubators", "text": "A shared grid to sort your applications.", "cta": "Discover" },
       "financiers": { "title": "Investors", "text": "Only see projects that are genuinely prepared and qualified.", "cta": "Learn more" }
     },
-    "faqTitle": "Frequently asked questions",
-    "faq": {
-      "free": { "q": "Why is it free?", "a": "We build value first. The whole founder journey — diagnostic, academy, simulator — is free. Mentoring and certification come later, once proven." },
-      "ai": { "q": "Does the AI do the work for me?", "a": "No. It explains and questions you; you do the writing. You stay the author of your project — that's how you own it." },
-      "maturity": { "q": "What if my idea isn't mature?", "a": "That's the ideal starting point. We start from where you are, no judgment." }
-    },
     "finalTitle": "Your project deserves to be understood before being judged.",
-    "finalCta": "Start, for free",
+    "finalCta": "Start",
     "finalReassurance": "No sign-up · no credit card · your idea stays private."
   },
   "Auth": {
@@ -170,6 +169,10 @@
     }
   },
   "Diagnostic": {
+    "newIdea": {
+      "title": "New idea",
+      "subtitle": "Tell us your idea — we structure it, you review, then we run your report."
+    },
     "page": {
       "eyebrow": "Free · no pressure",
       "title": "Understand your project",
@@ -216,20 +219,15 @@
       "note": "Your document's text will be analyzed by the AI — same pipeline as \"Tell us your idea\"."
     },
     "teaser": {
-      "title": "Your report is ready",
       "projectFallback": "Your project",
-      "subtitle": "<b>{projectName}</b> — assessed across 12 dimensions.",
-      "reveal": "Your full dashboard is waiting.",
+      "subtitle": "<b>{projectName}</b> — ready to be assessed across 12 dimensions.",
+      "reveal": "Your analysis is waiting on the other side.",
       "cta": "Create my space (free)",
       "note": "Attached to your space when you sign up.",
       "provisional": "Provisional preview",
       "haveAccount": "I already have an account",
-      "titleGeneric": "Your report is waiting",
-      "titleWritten": "Here's what the AI understood",
-      "scoreHint": "Create your space to reveal your full score.",
-      "more": "+{count} more",
-      "subtitleWritten": "The AI structured <b>{total}</b> dimensions of <b>{projectName}</b>. Create your space to reveal your full score.",
-      "ctaPitch": "Unlock your <b>full report</b> and your personalized action plan."
+      "titleGeneric": "We've got your idea",
+      "ctaPitch": "Create your space: the AI organizes your idea, you review it, your <b>report</b> takes shape."
     },
     "claim": {
       "toast": "Your report was waiting — we've attached it to your space.",
@@ -254,7 +252,7 @@
       "loading": "Loading your story…",
       "emptyTitle": "Nothing to review yet",
       "emptyText": "Start by telling us about your project — the AI will draft the 12 dimensions to review here.",
-      "emptyCta": "Start the diagnostic",
+      "emptyCta": "Back to dashboard",
       "title": "Review your project",
       "subtitle": "We've put your idea in order. Confirm or adjust as you like."
     },
@@ -279,7 +277,6 @@
   },
   "Dashboard": {
     "greeting": "Hi {name} 👋",
-    "subtitle": "Here's where your project stands today.",
     "badgeDone": "Diagnostic done",
     "badgePending": "Analysis in progress",
     "newProject": "New project",
@@ -287,33 +284,40 @@
     "readiness": "Am I ready?",
     "comprehensionTitle": "Your understanding scorecard",
     "preparingTitle": "Your report is being prepared",
-    "preparingText": "Your project analysis is running. You can follow its progress.",
+    "preparingText": "Analysis running — follow the progress.",
     "seeProgress": "See progress",
-    "profileNudge": "Complete your profile (2 min) — for more tailored support.",
+    "profileNudge": "Complete your profile (2 min) — for better support.",
     "profileNudgeCta": "Complete →",
     "nextTitle": "What's next?",
     "next": {
       "workshopTitle": "Strengthen your project",
-      "workshopText": "Work on your weak axes in the Workshop and raise your score.",
+      "workshopText": "Work your weak axes, raise your score.",
       "studioTitle": "Prepare your presentation",
-      "studioText": "Logo, pitch, deck — give your project a face in the Studio.",
+      "studioText": "Logo, pitch, deck in the Studio.",
       "opportunitiesTitle": "Find opportunities",
-      "opportunitiesText": "Programs and contests matched to your maturity."
+      "opportunitiesText": "Programs and contests for your maturity."
     },
     "empty": {
-      "subtitle": "Welcome to your space. We start from where you are.",
+      "subtitle": "We start from where you are.",
       "compassPlaceholder": "Your compass will appear here",
       "ctaTitle": "Run your first diagnostic",
-      "ctaText": "In a few minutes, get your understanding scorecard — essence, viability, scalability. Free, no judgment.",
+      "ctaText": "In minutes: your understanding scorecard. Free, no judgment.",
       "ctaButton": "Start my diagnostic",
       "journeyTitle": "Your journey",
       "toStart": "To start",
       "upcoming": "Coming up",
       "steps": {
-        "understand": { "label": "Understand", "text": "A diagnostic produces your compass: strengths and blind spots." },
-        "structure": { "label": "Structure", "text": "Strengthen your weak axes in the Workshop and build your project, guided." },
-        "dress": { "label": "Dress up", "text": "Create your logo, pitch and deck in the Studio." }
+        "understand": { "label": "Understand", "text": "Your compass: strengths and blind spots." },
+        "structure": { "label": "Structure", "text": "Strengthen your weak axes in the Workshop, guided." },
+        "dress": { "label": "Dress up", "text": "Logo, pitch and deck in the Studio." }
       }
+    },
+    "applications": {
+      "consent": {
+        "text": "By submitting, you share your file and your score with {org}. They will only see applications to this call.",
+        "checkbox": "I agree to share my file"
+      },
+      "submit": "Submit my application"
     }
   },
   "Admin": {
@@ -326,17 +330,12 @@
     "overview": {
       "title": "Learning dashboard",
       "subtitle": "The north-star metric: transformation, not revenue.",
-      "stats": {
-        "activeFounders": "Active founders", "activeFoundersHint": "last 30 days",
-        "diagnostics": "Diagnostics run",
-        "pitches": "Pitches played",
-        "retention": "30-day retention",
-        "radarProgress": "Avg. Radar progress", "radarProgressHint": "before / after",
-        "proInterest": "Pro Phase interest", "proInterestHint": "intent signals"
-      },
-      "transformationTitle": "Transformation (Radar before / after)",
-      "transformationText": "Dashed = entry, solid = today. Proof that the freemium makes founders stronger.",
-      "retentionTitle": "Retention by week"
+      "conversion": "{pct}% of the previous step",
+      "detailTitle": "Event detail",
+      "detailLink": "Open the learning dashboard",
+      "totalEvents": "{total} events captured",
+      "emptyTitle": "No signal yet",
+      "emptyBody": "No learning event has been captured yet — the funnel will fill up as soon as the first reports are viewed."
     },
     "projects": {
       "title": "Projects",
@@ -364,9 +363,7 @@
         "history": "History",
         "toastStatus": "Status: {label}",
         "toastAssigned": "Assigned to {name}",
-        "eventNow": "now",
-        "eventDiagnostic": "Diagnostic generated",
-        "eventCreated": "Project created"
+        "historyEmpty": "No action recorded on this project yet."
       }
     },
     "audit": {
@@ -430,9 +427,15 @@
     "grid": {
       "title": "Radar grid",
       "subtitle": "The versioned evaluation framework. 12 dimensions → 4 pillars.",
-      "currentVersion": "Current version: v2",
-      "publish": "Publish a new version",
-      "toastPublished": "New grid version prepared"
+      "currentVersion": "Active version: {version}",
+      "versionsTitle": "Grid versions",
+      "versionsEmpty": "No version reported by the backend.",
+      "active": "Active",
+      "activate": "Activate",
+      "activated": "Grid {version} activated",
+      "scale": "Scale /{max}",
+      "unavailableTitle": "Grid unavailable",
+      "unavailableBody": "The backend did not return the active grid — check that the API responds and that your role has the governance permission."
     },
     "jobs": {
       "title": "Jobs supervision",
@@ -479,6 +482,53 @@
       "nextSteps": "Your next steps",
       "goToSpace": "Go to my space",
       "workWithWorkshop": "Work with the Workshop"
+    },
+    "actions": {
+      "title": "Where to start",
+      "subtitle": "Three levers at most, picked from your weakest dimensions.",
+      "priority": "First",
+      "score": "Currently {score}/10",
+      "start": "Let's go",
+      "lever": {
+        "academy": "Learn: {dimension}",
+        "pitchsim": "Practise: {dimension}",
+        "document": "Bring evidence: {dimension}",
+        "mentor": "Get support: {dimension}"
+      }
+    },
+    "memory": {
+      "add": "Add a detail",
+      "placeholder": "What you know that's missing here — a fact, a figure, a proof.",
+      "save": "Add",
+      "cancel": "Cancel",
+      "added": "Detail saved ✦"
+    },
+    "edit": {
+      "open": "Review this report",
+      "close": "Close",
+      "title": "Human review",
+      "subtitle": "Correct what the AI produced. Revised scores create a version signed by a human.",
+      "contentTitle": "What is written",
+      "summary": "Summary",
+      "verdictStatus": "Verdict",
+      "verdictPlaceholder": "Pick a verdict",
+      "verdictLabel": "Displayed label",
+      "verdictAnalysis": "Verdict analysis",
+      "verdict": { "go": "Go", "conditional": "Conditional", "nogo": "No-go" },
+      "risks": "Risks",
+      "addRisk": "Add a risk",
+      "riskPlaceholder": "Describe the risk",
+      "recommendations": "Recommendations",
+      "addRecommendation": "Add a recommendation",
+      "recommendationTitle": "Title",
+      "recommendationDescription": "Detail",
+      "saveContent": "Save the text",
+      "contentSaved": "Report updated",
+      "scoresTitle": "The 12 dimensions",
+      "scoresSubtitle": "Adjusting a score creates a new version, attributed to a human.",
+      "justificationPlaceholder": "Why this score? (optional)",
+      "saveScores": "Save the scores",
+      "scoresSaved": "Scores saved"
     },
     "pdf": { "download": "Download the report" },
     "failed": {
@@ -777,6 +827,15 @@
       "note": "At the start, matchmaking is personal: we introduce the best projects ourselves. Write to us to join the circle.",
       "cta": "Contact us"
     },
+    "institutions": {
+      "title": "One shared grid.",
+      "subtitle": "Contests, incubators, NGOs, schools: structured files, a legible score.",
+      "value1": "Structured files, not raw ideas.",
+      "value2": "An explainable score, not just a number.",
+      "value3": "A shortlist twice as fast.",
+      "note": "We support a few programs, directly. Tell us about your call — reply within 48h.",
+      "cta": "Contact us"
+    },
     "blog": {
       "title": "The blog",
       "subtitle": "Resources to understand, structure and defend your project.",
@@ -904,6 +963,13 @@
       "toastInterest": "Interest sent ✦",
       "strengthenToAccess": "Strengthen your project to access it."
     }
+  },
+  "Notifications": {
+    "title": "Notifications",
+    "markAll": "Mark all read",
+    "empty": "No notifications yet.",
+    "justNow": "just now",
+    "unread": "Unread"
   },
   "Profile": {
     "title": "My profile",

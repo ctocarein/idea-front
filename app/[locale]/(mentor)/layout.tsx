@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 import { routes } from "@/shared/config/routes";
+import { features } from "@/shared/config/features";
 import { getSession } from "@/shared/auth/server";
 import { SessionProvider, SPACE_ROLES } from "@/shared/auth";
 import { AppShell, type NavItem } from "@/shared/layout";
@@ -15,6 +16,10 @@ export default async function MentorLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Mentorat repoussé en V2 (features.mentors=false) : l'espace est fermé même à un admin,
+  // tant que le réseau n'existe pas. Réactivation : NEXT_PUBLIC_FEATURE_MENTORS=true.
+  if (!features.mentors) redirect(routes.dashboard);
+
   const session = await getSession();
   if (!session) redirect(routes.login);
   if (!SPACE_ROLES["/mentor"].includes(session.role))
