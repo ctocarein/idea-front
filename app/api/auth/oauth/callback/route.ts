@@ -5,6 +5,7 @@ import { ApiError, apiFetch } from "@/shared/api/client";
 import type { components } from "@/shared/api/schema";
 import { homePathFor } from "@/shared/auth/rbac";
 import { persistSession } from "@/shared/auth/persist";
+import { site } from "@/shared/config/site";
 
 type TokenPair = components["schemas"]["TokenPair"];
 
@@ -17,9 +18,12 @@ type TokenPair = components["schemas"]["TokenPair"];
  *
  * En cas d'échec on repart vers `/login?error=…` : ces codes sont traduits à l'affichage,
  * on ne renvoie jamais le détail backend au porteur.
+ *
+ * Toutes les redirections partent de `site.url` : derrière un proxy, `req.nextUrl.origin` vaut
+ * l'origine vue par le conteneur (`https://localhost:80`) et casserait le retour du porteur.
  */
-function failure(req: NextRequest, reason: string) {
-  const url = new URL("/login", req.nextUrl.origin);
+function failure(reason: string) {
+  const url = new URL("/login", site.url);
   url.searchParams.set("error", reason);
   const res = NextResponse.redirect(url);
   res.cookies.delete(OAUTH_NEXT_COOKIE);
@@ -30,10 +34,10 @@ export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams;
 
   // Le porteur a refusé le consentement, ou le fournisseur a renvoyé une erreur.
-  if (params.get("error")) return failure(req, "oauth_denied");
+  if (params.get("error")) return failure("oauth_denied");
 
   const code = params.get("code");
-  if (!code) return failure(req, "oauth_missing_code");
+  if (!code) return failure("oauth_missing_code");
 
   let role;
   try {
@@ -44,14 +48,14 @@ export async function GET(req: NextRequest) {
     role = await persistSession(tokens);
   } catch (error) {
     // 409 : l'email est pris par un compte qu'on n'a pas pu relier automatiquement.
-    if (error instanceof ApiError && error.status === 409) return failure(req, "oauth_conflict");
-    return failure(req, "oauth_failed");
+    if (error instanceof ApiError && error.status === 409) return failure("oauth_conflict");
+    return failure("oauth_failed");
   }
 
   // Destination : là où le porteur voulait aller, sinon l'accueil de son rôle. Le chemin est
   // volontairement non localisé — le proxy le repréfixe (`/dashboard` → `/fr/dashboard`).
   const next = safeNext(req.cookies.get(OAUTH_NEXT_COOKIE)?.value) ?? homePathFor(role);
-  const res = NextResponse.redirect(new URL(next, req.nextUrl.origin));
+  const res = NextResponse.redirect(new URL(next, site.url));
   res.cookies.delete(OAUTH_NEXT_COOKIE);
   return res;
 }

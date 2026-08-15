@@ -8,6 +8,7 @@ import {
 } from "@/shared/auth/oauth";
 import { cookieBase } from "@/shared/auth/persist";
 import { env } from "@/shared/config/env";
+import { site } from "@/shared/config/site";
 
 /**
  * Entrée du parcours OAuth — `GET /api/auth/oauth/google|linkedin`.
@@ -27,19 +28,21 @@ export async function GET(
 ) {
   const { provider } = await params;
 
+  // Origine canonique, JAMAIS `req.nextUrl.origin` : derrière nginx-proxy, Next.js reconstruit
+  // l'origine depuis les en-têtes (`Host: localhost` + `X-Forwarded-Proto: https`) et produit
+  // `https://localhost:80`. Le back rejette alors le redirect_uri (anti open-redirect).
   const backToLogin = (error: string) =>
-    NextResponse.redirect(
-      new URL(`/login?error=${encodeURIComponent(error)}`, req.nextUrl.origin),
-    );
+    NextResponse.redirect(new URL(`/login?error=${encodeURIComponent(error)}`, site.url));
 
   if (!isOAuthProvider(provider)) return backToLogin("oauth_provider");
 
   const authorize = new URL(`${env.backendUrl}/api/v1/auth/oauth/${provider}/authorize`);
-  // Le back a besoin de savoir où renvoyer le fournisseur : notre callback, sur notre origine
-  // réelle (utile derrière un proxy / en préprod, où elle varie d'un environnement à l'autre).
+  // Le back a besoin de savoir où renvoyer le fournisseur : notre callback, sur l'origine
+  // canonique du portail. Cette valeur doit être IDENTIQUE à l'autorisation et à l'échange,
+  // sinon le fournisseur refuse (`redirect_uri_mismatch`).
   authorize.searchParams.set(
     "redirect_uri",
-    new URL("/api/auth/oauth/callback", req.nextUrl.origin).toString(),
+    new URL("/api/auth/oauth/callback", site.url).toString(),
   );
 
   // On suit l'autorisation côté serveur (jamais le navigateur) et on récupère l'URL du fournisseur.
