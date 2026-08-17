@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { routes } from "@/shared/config/routes";
 import { Chip, DataTable, type Column } from "@/shared/ui";
 import { overallScore } from "@/features/scoring";
+import { sectorLabel } from "@/features/diagnostics";
 import { ProjectStatusBadge } from "./ProjectStatusBadge";
 import { ALL_STATUSES } from "../data/mock";
 import type { Project } from "../types/project.types";
@@ -49,7 +50,9 @@ export function ProjectTable({ projects }: { projects: Project[] }) {
       key: "sector",
       header: t("cols.sector"),
       sortable: true,
-      sortValue: (p) => p.sector,
+      // On trie et on filtre sur la clé canonique, on affiche le libellé lisible.
+      sortValue: (p) => sectorLabel(p.sector),
+      cell: (p) => sectorLabel(p.sector),
     },
     {
       key: "status",
@@ -87,7 +90,7 @@ export function ProjectTable({ projects }: { projects: Project[] }) {
             selected={sector === s}
             onClick={() => setSector((cur) => (cur === s ? null : s))}
           >
-            {s}
+            {sectorLabel(s)}
           </Chip>
         ))}
       </div>

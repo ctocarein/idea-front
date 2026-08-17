@@ -256,6 +256,13 @@
       "title": "Review your project",
       "subtitle": "We've put your idea in order. Confirm or adjust as you like."
     },
+    "sector": {
+      "title": "Is this your sector?",
+      "subtitleProposed": "We inferred it from your story. Correct it if we got it wrong — it's what lets us compare you to projects like yours.",
+      "subtitleUnknown": "We couldn't infer it from your story. Pick the one that fits best.",
+      "seeAll": "See all sectors",
+      "confirm": "That's right"
+    },
     "wizard": {
       "recapTitle": "Before running the analysis",
       "recapSubtitle": "{decided} of {total} dimensions decided.",
@@ -280,7 +287,17 @@
     "badgeDone": "Diagnostic done",
     "badgePending": "Analysis in progress",
     "newProject": "New project",
+    "projects": {
+      "title": "My projects",
+      "count": "{count, plural, one {# project} other {# projects}}",
+      "state": {
+        "ready": "Report ready",
+        "pending": "Analysis running",
+        "none": "Diagnostic to start"
+      }
+    },
     "compassEyebrow": "Your compass",
+    "compassProject": "Your compass · {project}",
     "readiness": "Am I ready?",
     "comprehensionTitle": "Your understanding scorecard",
     "preparingTitle": "Your report is being prepared",
@@ -458,6 +475,28 @@
       "eventsTitle": "Events ({total})",
       "noEvents": "No events recorded."
     }
+  },
+  "Project": {
+    "fallbackTitle": "My project",
+    "back": "My projects",
+    "meta": "{sector} · {stage} · created on {date}",
+    "state": {
+      "ready": "Report ready",
+      "pending": "Analysis running",
+      "none": "Diagnostic to start"
+    },
+    "openReport": "Open the report",
+    "compassEyebrow": "This project's compass",
+    "comprehensionTitle": "Your understanding scorecard",
+    "reportPending": "Your compass is being built — check back in a moment.",
+    "noReport": "No report on this project yet.",
+    "stats": {
+      "documents": "Confirmed documents",
+      "memory": "Memory items",
+      "dimensions": "Dimensions covered"
+    },
+    "memoryTitle": "What we know about your project",
+    "memoryEmpty": "Nothing in memory yet — tell us about your project and it will fill up."
   },
   "Bilan": {
     "pending": {

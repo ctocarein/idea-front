@@ -7,7 +7,7 @@ import { Loader2, Mic, Wand2 } from "lucide-react";
 
 import { Button, Checkbox, Field, Input, Textarea, toast } from "@/shared/ui";
 import { routes } from "@/shared/config/routes";
-import { type IdeaExtract } from "../api/actions";
+import { type IdeaExtract, type ManualDiagnosticPayload } from "../api/actions";
 import { savePendingDiagnostic } from "../lib/pending";
 import { useDictation } from "../lib/use-dictation";
 
@@ -111,9 +111,11 @@ export function RaconteDiagnostic({
     },
   );
 
-  function buildPayload() {
+  function buildPayload(): ManualDiagnosticPayload {
     return {
       projectName: (name.trim() || initialExtract?.project_name || "Mon projet").slice(0, 120),
+      // Provisoire : on ne demande plus son secteur au porteur ici. L'extraction le déduit
+      // du récit et il le confirme au wizard (`SectorConfirm`), qui réécrit cette valeur.
       sector: "autre",
       description: idea.trim(),
       consent: true,

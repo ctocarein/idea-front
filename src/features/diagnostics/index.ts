@@ -11,7 +11,16 @@ export {
 } from "./components/DimensionWizard";
 export { loadPendingDiagnostic, savePendingDiagnostic, clearPendingDiagnostic } from "./lib/pending";
 export type { PendingDiagnostic } from "./lib/pending";
+export { SectorConfirm } from "./components/SectorConfirm";
 export { CATEGORIES, getCategory, type Category } from "./data/categories";
+export {
+  SECTOR_KEYS,
+  SECTOR_LABELS,
+  SECTOR_HINTS,
+  isSectorKey,
+  sectorLabel,
+  type SectorKey,
+} from "./data/sectors";
 export {
   manualDiagnosticSchema,
   type ManualDiagnosticInput,

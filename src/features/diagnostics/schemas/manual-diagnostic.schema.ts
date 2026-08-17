@@ -1,9 +1,13 @@
 import { z } from "zod";
 
+import { SECTOR_KEYS } from "../data/sectors";
+
 /** Miroir client du DTO de diagnostic guidé (ARCHITECTURE_FRONTEND.md §8). */
 export const manualDiagnosticSchema = z.object({
   projectName: z.string().min(2, "Donne un nom à ton projet."),
-  sector: z.string().min(1, "Choisis une catégorie."),
+  // Vocabulaire fermé : le backend rejette (422) toute clé hors liste. On refuse ici
+  // plutôt que de laisser partir une valeur libre qui serait perdue pour le corpus.
+  sector: z.enum(SECTOR_KEYS, { error: "Choisis un secteur." }),
   description: z
     .string()
     .min(20, "Décris ton projet (20 caractères minimum)."),

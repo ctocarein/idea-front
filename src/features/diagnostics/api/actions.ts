@@ -3,6 +3,8 @@
 import { ApiError, apiErrorMessage, apiFetch } from "@/shared/api/client";
 import type { components } from "@/shared/api/schema";
 
+import type { SectorKey } from "../data/sectors";
+
 /**
  * Lancement du diagnostic guidé (Sprint INT). `POST /diagnostics` crée projet + bilan `pending`
  * et enqueue l'analyse (worker LLM) → réponse 202 avec le `report_id` à suivre (poll du bilan).
@@ -15,7 +17,8 @@ export type StartDiagnosticResult =
 
 export interface ManualDiagnosticPayload {
   projectName: string;
-  sector: string;
+  /** Clé du vocabulaire fermé (`data/sectors.ts`) — confirmée par le porteur. */
+  sector: SectorKey;
   description: string;
   fundingNeed?: number;
   consent: boolean;
@@ -63,8 +66,17 @@ export interface ExtractedDimension {
   suggestion: string;
 }
 
+/**
+ * Classement sectoriel déduit du récit — une PROPOSITION, jamais une décision.
+ * Le porteur tranche (`SectorConfirm`) : le secteur est un fait sur le projet, pas un
+ * jugement de sa valeur, il peut donc le corriger sans cesser d'être la source.
+ * Type pris sur le contrat backend, jamais recopié.
+ */
+export type SectorProposal = components["schemas"]["SectorProposal"];
+
 export interface IdeaExtract {
   project_name: string | null;
+  sector_proposal?: SectorProposal | null;
   captured_count: number;
   total: number;
   dimensions: ExtractedDimension[];

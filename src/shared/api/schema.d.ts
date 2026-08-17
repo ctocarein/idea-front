@@ -2564,6 +2564,7 @@ export interface components {
         IdeaExtractOut: {
             /** Project Name */
             project_name?: string | null;
+            sector_proposal?: components["schemas"]["SectorProposal"] | null;
             /** Captured Count */
             captured_count: number;
             /** Total */
@@ -2724,8 +2725,7 @@ export interface components {
         ManualDiagnosticIn: {
             /** Project Name */
             project_name: string;
-            /** Sector */
-            sector: string;
+            sector: components["schemas"]["Sector"];
             /**
              * Consent
              * @default false
@@ -3767,6 +3767,53 @@ export interface components {
              */
             content: string;
         };
+        /**
+         * Sector
+         * @enum {string}
+         */
+        Sector: "agro" | "commerce" | "restauration" | "artisanat_mode" | "btp_immobilier" | "transport_logistique" | "sante" | "education" | "finance" | "services_pro" | "numerique" | "energie_environnement" | "tourisme_culture" | "autre";
+        /**
+         * SectorProposal
+         * @description Classement sectoriel déduit du récit — à confirmer par le porteur.
+         *
+         *     Le secteur est un fait sur le projet, pas un jugement de sa valeur : le porteur
+         *     peut donc le corriger sans enfreindre « le porteur est source, jamais juge ».
+         *     `source` et `model` sont tracés pour la même raison qu'un `ScoreRun` : un
+         *     changement de modèle ne doit jamais reclasser le corpus en silence.
+         */
+        SectorProposal: {
+            sector: components["schemas"]["Sector"];
+            /** Label */
+            label: string;
+            /**
+             * Confidence
+             * @default 0
+             */
+            confidence: number;
+            /** Candidates */
+            candidates?: components["schemas"]["Sector"][];
+            /** @default llm */
+            source: components["schemas"]["SectorSource"];
+            /**
+             * Model
+             * @default
+             */
+            model: string;
+            /**
+             * Prompt Version
+             * @default
+             */
+            prompt_version: string;
+        };
+        /**
+         * SectorSource
+         * @description Qui a posé le secteur. Même rôle que `ScoreSource` pour les notes.
+         *
+         *     Sans cette trace, un changement de modèle reclasse le corpus sans que rien ne
+         *     le signale, et la comparaison se met à comparer des populations hétérogènes.
+         * @enum {string}
+         */
+        SectorSource: "llm" | "human" | "import";
         /** SessionOut */
         SessionOut: {
             /**
@@ -4057,8 +4104,7 @@ export interface components {
         UploadDiagnosticIn: {
             /** Project Name */
             project_name: string;
-            /** Sector */
-            sector: string;
+            sector: components["schemas"]["Sector"];
             /**
              * Consent
              * @default false

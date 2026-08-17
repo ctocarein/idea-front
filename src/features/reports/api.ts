@@ -67,12 +67,16 @@ export async function getLatestRadar(): Promise<RadarScore | null> {
 
 export { toRadarScore };
 
-/** Adapte un bilan backend à la carte d'affichage (`ReportsList`). */
-export function toReportCard(report: ReportOut): Report {
+/**
+ * Adapte un bilan backend à la carte d'affichage (`ReportsList`).
+ * `projectName` lève l'ambiguïté dès que le porteur a plusieurs projets.
+ */
+export function toReportCard(report: ReportOut, projectName?: string): Report {
   return {
     id: report.id,
     title: report.title,
     status: report.status === "ready" ? "ready" : "pending",
     createdAt: dateFmt.format(new Date(report.created_at)),
+    projectName,
   };
 }

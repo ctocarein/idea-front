@@ -27,6 +27,11 @@ export interface PendingDiagnostic {
   currency?: string;
   /** Langue du récit — idem, pour que l'extraction produise les dimensions dans la bonne langue. */
   lang?: string;
+  /**
+   * Le porteur a tranché son secteur. Drapeau explicite plutôt que déduit de la valeur :
+   * `autre` est un choix légitime, on ne doit pas reposer la question à chaque refresh.
+   */
+  sectorConfirmed?: boolean;
 }
 
 /** Ancien format (payload nu) — encore possible dans un navigateur qui n'a pas rechargé. */
@@ -39,7 +44,7 @@ function isLegacy(raw: StoredShape): raw is ManualDiagnosticPayload {
 export function savePendingDiagnostic(
   payload: ManualDiagnosticPayload,
   extract: IdeaExtract | null = null,
-  meta: { currency?: string; lang?: string } = {},
+  meta: { currency?: string; lang?: string; sectorConfirmed?: boolean } = {},
 ): void {
   try {
     localStorage.setItem(

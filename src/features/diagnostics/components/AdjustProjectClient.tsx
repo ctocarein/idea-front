@@ -15,11 +15,15 @@ import {
   type ManualDiagnosticPayload,
 } from "../api/actions";
 import { clearPendingDiagnostic, loadPendingDiagnostic, savePendingDiagnostic } from "../lib/pending";
+import { type SectorKey } from "../data/sectors";
 import { DimensionWizard, type WizardResult } from "./DimensionWizard";
+import { SectorConfirm } from "./SectorConfirm";
 
 type State =
   | { status: "loading" }
   | { status: "empty" }
+  // Le secteur se confirme AVANT la relecture : une question fermée, puis les 12 dimensions.
+  | { status: "sector"; payload: ManualDiagnosticPayload; extract: IdeaExtract }
   | { status: "ready"; payload: ManualDiagnosticPayload; extract: IdeaExtract };
 
 /**
@@ -54,9 +58,13 @@ export function AdjustProjectClient() {
     }
 
     // Déjà des dimensions (upload connecté pré-extrait, ou refresh après organisation) : droit
-    // au wizard, aucun appel LLM.
+    // au wizard, aucun appel LLM. Le secteur reste à trancher s'il ne l'a pas encore été.
     if (pending.extract?.dimensions.length) {
-      setState({ status: "ready", payload: pending.payload, extract: pending.extract });
+      setState({
+        status: pending.sectorConfirmed ? "ready" : "sector",
+        payload: pending.payload,
+        extract: pending.extract,
+      });
       return;
     }
 
@@ -98,9 +106,23 @@ export function AdjustProjectClient() {
         currency: pending.currency,
         lang: pending.lang ?? locale,
       });
-      setState({ status: "ready", payload: pending.payload, extract: res.data });
+      // L'extraction a proposé un secteur : le porteur le confirme avant de relire.
+      setState({ status: "sector", payload: pending.payload, extract: res.data });
     })();
   }, [router, locale]);
+
+  /** Le secteur tranché entre dans le payload et dans le stash (un refresh ne le redemande pas). */
+  function confirmSector(sector: SectorKey) {
+    if (state.status !== "sector") return;
+    const payload = { ...state.payload, sector };
+    const pending = loadPendingDiagnostic();
+    savePendingDiagnostic(payload, state.extract, {
+      currency: pending?.currency,
+      lang: pending?.lang ?? locale,
+      sectorConfirmed: true,
+    });
+    setState({ status: "ready", payload, extract: state.extract });
+  }
 
   function submit(result: WizardResult) {
     if (state.status !== "ready") return;
@@ -134,6 +156,12 @@ export function AdjustProjectClient() {
           <Link href={routes.dashboard}>{t("emptyCta")}</Link>
         </Button>
       </div>
+    );
+  }
+
+  if (state.status === "sector") {
+    return (
+      <SectorConfirm proposal={state.extract.sector_proposal} onConfirm={confirmSector} />
     );
   }
 

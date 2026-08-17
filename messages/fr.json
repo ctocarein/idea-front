@@ -256,6 +256,13 @@
       "title": "Relis ton projet",
       "subtitle": "On a mis ton idée au clair. À toi de valider ou d'ajuster."
     },
+    "sector": {
+      "title": "C'est bien ton secteur ?",
+      "subtitleProposed": "On l'a déduit de ton récit. Corrige si on s'est trompé — ça sert à te comparer aux projets qui te ressemblent.",
+      "subtitleUnknown": "On n'a pas réussi à le déduire de ton récit. Choisis celui qui te correspond le mieux.",
+      "seeAll": "Voir tous les secteurs",
+      "confirm": "C'est bien ça"
+    },
     "wizard": {
       "recapTitle": "Avant de lancer l'analyse",
       "recapSubtitle": "{decided} dimension(s) sur {total} tranchées.",
@@ -280,7 +287,17 @@
     "badgeDone": "Diagnostic fait",
     "badgePending": "Analyse en cours",
     "newProject": "Nouveau projet",
+    "projects": {
+      "title": "Mes projets",
+      "count": "{count, plural, one {# projet} other {# projets}}",
+      "state": {
+        "ready": "Bilan prêt",
+        "pending": "Analyse en cours",
+        "none": "Diagnostic à lancer"
+      }
+    },
     "compassEyebrow": "Ta boussole",
+    "compassProject": "Ta boussole · {project}",
     "readiness": "Suis-je prêt ?",
     "comprehensionTitle": "Ton tableau de compréhension",
     "preparingTitle": "Ton bilan se prépare",
@@ -458,6 +475,28 @@
       "eventsTitle": "Événements ({total})",
       "noEvents": "Aucun événement enregistré."
     }
+  },
+  "Project": {
+    "fallbackTitle": "Mon projet",
+    "back": "Mes projets",
+    "meta": "{sector} · {stage} · créé le {date}",
+    "state": {
+      "ready": "Bilan prêt",
+      "pending": "Analyse en cours",
+      "none": "Diagnostic à lancer"
+    },
+    "openReport": "Ouvrir le bilan",
+    "compassEyebrow": "La boussole de ce projet",
+    "comprehensionTitle": "Ton tableau de compréhension",
+    "reportPending": "Ta boussole se construit — reviens dans un instant.",
+    "noReport": "Aucun bilan sur ce projet pour l'instant.",
+    "stats": {
+      "documents": "Documents confirmés",
+      "memory": "Éléments de mémoire",
+      "dimensions": "Dimensions nourries"
+    },
+    "memoryTitle": "Ce qu'on sait de ton projet",
+    "memoryEmpty": "Rien en mémoire pour l'instant — raconte-nous ton projet et ça se remplira."
   },
   "Bilan": {
     "pending": {

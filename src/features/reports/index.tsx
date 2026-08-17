@@ -16,6 +16,8 @@ export interface Report {
   title: string;
   status: "ready" | "pending";
   createdAt: string;
+  /** Projet d'origine — indispensable dès que le porteur en a plusieurs. */
+  projectName?: string;
 }
 
 export const mockReports: Report[] = [
@@ -42,7 +44,9 @@ export function ReportsList({ reports = mockReports }: { reports?: Report[] }) {
             </span>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium">{r.title}</p>
-              <p className="text-xs text-muted-foreground">{r.createdAt}</p>
+              <p className="truncate text-xs text-muted-foreground">
+                {r.projectName ? `${r.projectName} · ${r.createdAt}` : r.createdAt}
+              </p>
             </div>
             {r.status === "ready" ? (
               <Button size="sm" variant="outline" disabled>

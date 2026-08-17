@@ -21,6 +21,8 @@ import { ReportsList } from "@/features/reports";
 import { getMyReports, getReportDetail, toRadarScore, toReportCard } from "@/features/reports/api";
 import { NotificationsList } from "@/features/notifications";
 import { DocumentsManager } from "@/features/documents";
+import { MyProjects } from "@/features/projects";
+import { getMyProjects } from "@/features/projects/api";
 import { NextCard } from "./_NextCard";
 import { EmptyDashboard } from "./_EmptyDashboard";
 
@@ -49,11 +51,23 @@ export default async function DashboardPage() {
     if (!(error instanceof ApiError)) throw error;
   }
 
+  // Les projets du porteur : chaque diagnostic lancé en crée un de plus. Sans cette liste,
+  // ajouter une idée n'affichait qu'un bilan supplémentaire, jamais la collection de projets.
+  let projects: Awaited<ReturnType<typeof getMyProjects>> = [];
+  try {
+    projects = await getMyProjects();
+  } catch (error) {
+    if (!(error instanceof ApiError)) throw error;
+  }
+
   if (reports.length === 0) {
     return <EmptyDashboard firstName={firstName} />;
   }
 
-  const reportCards = reports.map(toReportCard);
+  const projectName = new Map(projects.map((project) => [project.id, project.title]));
+  const reportCards = reports.map((report) =>
+    toReportCard(report, projects.length > 1 ? projectName.get(report.project_id) : undefined),
+  );
 
   // Score réel : le dernier bilan prêt (radar v2 12 dimensions). Aucun prêt → préparation en cours.
   const latestReady = reports.find((rep) => rep.status === "ready");
@@ -68,6 +82,12 @@ export default async function DashboardPage() {
   }
   const overall = radar ? overallScore(radar) : null;
   const maturity = overall !== null ? maturityLevel(overall) : null;
+  // Avec plusieurs projets, une boussole anonyme ne dit plus de quoi elle parle.
+  const radarProject = latestReady ? projectName.get(latestReady.project_id) : undefined;
+  const compassEyebrow =
+    projects.length > 1 && radarProject
+      ? t("compassProject", { project: radarProject })
+      : t("compassEyebrow");
 
   return (
     <div className="space-y-8">
@@ -101,6 +121,9 @@ export default async function DashboardPage() {
         </div>
       </div>
 
+      {/* Les projets du porteur — la collection, avant la boussole du dernier bilan. */}
+      <MyProjects projects={projects} reports={reports} />
+
       {radar && maturity ? (
         <>
           <Card>
@@ -110,7 +133,7 @@ export default async function DashboardPage() {
               </div>
               <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  {t("compassEyebrow")}
+                  {compassEyebrow}
                 </p>
                 <div className="flex items-baseline gap-2">
                   <span className="tabular font-display text-3xl font-extrabold">{overall}</span>

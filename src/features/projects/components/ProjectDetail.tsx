@@ -17,6 +17,7 @@ import {
   toast,
 } from "@/shared/ui";
 import { ComprehensionTable, RadarChart } from "@/features/scoring";
+import { sectorLabel } from "@/features/diagnostics";
 import { ProjectStatusBadge } from "./ProjectStatusBadge";
 import { ProjectTimeline, type TimelineEvent } from "./ProjectTimeline";
 import { nextStatuses } from "../lib/status-machine";
@@ -71,7 +72,7 @@ export function ProjectDetail({
             {project.name}
           </h1>
           <p className="text-muted-foreground">
-            {project.founderName} · {project.sector}
+            {project.founderName} · {sectorLabel(project.sector)}
           </p>
         </div>
         <div className="flex items-center gap-2">
