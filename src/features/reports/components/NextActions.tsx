@@ -23,16 +23,33 @@ const LEVER_ICON: Record<string, LucideIcon> = {
 };
 
 /**
- * Où mène un levier. Le backend émet des *intents* (`lever_type` + `topic`), pas des liens :
- * c'est au front de les résoudre selon ce qui existe vraiment — un levier dont la feature est
- * différée retombe sur le Workshop plutôt que d'offrir un lien mort.
+ * Levier EFFECTIF, après repli. Le backend émet des *intents* (`lever_type` + `topic`), pas
+ * des liens : c'est au front de les résoudre selon ce qui existe vraiment. Un levier dont le
+ * module est démonté retombe sur le Workshop plutôt que d'offrir un lien mort.
+ *
+ * Le type effectif pilote AUSSI le libellé et l'icône. Auparavant seule la destination
+ * repliait : un levier `pitchsim` s'annonçait « Entraîne-toi », icône micro, et menait au
+ * Workshop. Le porteur lisait une promesse que le clic ne tenait pas — exactement ce que le
+ * démontage cherchait à éviter en supprimant les liens morts.
  */
-function destinationFor(action: NextAction): string {
+function effectiveLever(action: NextAction): string {
   switch (action.lever_type) {
     case "pitchsim":
-      return features.pitchSimulator ? routes.pitchSim : routes.academyTopic(action.topic ?? "");
+      return features.pitchSimulator ? "pitchsim" : "academy";
     case "mentor":
-      return features.mentors ? routes.mentors : routes.academyTopic(action.topic ?? "");
+      return features.mentors ? "mentor" : "academy";
+    default:
+      return action.lever_type;
+  }
+}
+
+/** Où mène un levier, une fois son repli résolu. */
+function destinationFor(action: NextAction): string {
+  switch (effectiveLever(action)) {
+    case "pitchsim":
+      return routes.pitchSim;
+    case "mentor":
+      return routes.mentors;
     case "document":
       // Le gestionnaire de documents vit sur le tableau de bord (pas de route dédiée).
       return routes.dashboard;
@@ -67,12 +84,15 @@ export function NextActions({ reportId, actions }: { reportId: string; actions: 
       <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
       <div className="space-y-2">
         {actions.map((action) => {
-          const Icon = LEVER_ICON[action.lever_type] ?? GraduationCap;
+          // Libellé, icône et destination suivent le MÊME levier effectif : ce que le
+          // porteur lit est ce sur quoi il atterrit.
+          const lever = effectiveLever(action);
+          const Icon = LEVER_ICON[lever] ?? GraduationCap;
           const dimension = tRadar.has(`${action.key}.label`)
             ? tRadar(`${action.key}.label`)
             : action.dimension;
-          const cta = t.has(`lever.${action.lever_type}`)
-            ? t(`lever.${action.lever_type}`, { dimension: dimension.toLowerCase() })
+          const cta = t.has(`lever.${lever}`)
+            ? t(`lever.${lever}`, { dimension: dimension.toLowerCase() })
             : action.label;
 
           return (

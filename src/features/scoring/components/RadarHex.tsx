@@ -3,6 +3,10 @@ import { cn } from "@/shared/lib/utils";
 /**
  * RadarHex — l'hexagone signature en ornement (sceaux, héros, états vides).
  * Décoratif : dégradé d'aube autorisé. `aria-hidden`.
+ *
+ * Six côtés parce que c'est une SIGNATURE GRAPHIQUE, pas une représentation de la grille —
+ * celle-ci a 12 dimensions, et c'est `RadarChart` qui la dessine. Ne pas « corriger » ce
+ * nombre en dodécagone : l'ornement ne prétend rien mesurer.
  */
 export function RadarHex({
   className,

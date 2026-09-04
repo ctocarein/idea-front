@@ -6,7 +6,7 @@
     },
     "home": {
       "title": "Ideaxion — D’une idée floue à un projet finançable",
-      "description": "Teste ton idée gratuitement : obtiens ton tableau de compréhension sur 12 dimensions clés, apprends à structurer ton projet et entraîne-toi à pitcher. Deviens capable et confiant."
+      "description": "Teste ton idée gratuitement : obtiens ton tableau de compréhension sur 12 dimensions clés, apprends à structurer ton projet et sache ce qui lui manque. Deviens capable et confiant."
     },
     "startups": {
       "title": "Pour les porteurs",
@@ -241,7 +241,7 @@
       "title": "Voici ton tableau de compréhension",
       "subtitle": "{projectName} — une lecture honnête de tes forces et de tes angles morts. {reading} dans l’ensemble.",
       "overviewTitle": "La vue d’ensemble",
-      "overviewText": "Le Radar de Collision résume tes 12 dimensions. C’est ta boussole : tu le verras progresser au fil du Workshop et du simulateur de pitch.",
+      "overviewText": "Le Radar de Collision résume tes 12 dimensions. C’est ta boussole : tu le verras progresser au fil du Workshop.",
       "seeFull": "Voir mon bilan complet",
       "keep": "Garder mon bilan",
       "downloadPdf": "Télécharger le PDF",
@@ -850,7 +850,7 @@
       "title": "On te rend capable, puis confiant.",
       "subtitle": "Tout le parcours porteur est gratuit. Tu comprends ton projet, tu apprends à le structurer, tu t’entraînes — et tu décides toi-même d’aller plus loin.",
       "journey": {
-        "understand": { "title": "Comprendre", "text": "Diagnostic gratuit (idée guidée ou upload) → ton tableau de compréhension sur 3 lentilles." },
+        "understand": { "title": "Comprendre", "text": "Diagnostic gratuit (idée guidée ou upload) → ton tableau de compréhension sur 4 piliers." },
         "learn": { "title": "Apprendre", "text": "Modules pédagogiques + assistant qui t’explique pendant que TU écris ta propre version." },
         "practice": { "title": "S’exercer", "text": "Le simulateur de pitch te fait répéter face à une IA-investisseur, sans jugement." },
         "realize": { "title": "Réaliser", "text": "La page readiness te montre où tu en es — et la suite, sans pression d’achat." }

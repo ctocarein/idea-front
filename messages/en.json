@@ -6,7 +6,7 @@
     },
     "home": {
       "title": "Ideaxion — From a fuzzy idea to a fundable project",
-      "description": "Test your idea for free: get your understanding scorecard across 12 key dimensions, learn to structure your project and practice pitching. Become capable and confident."
+      "description": "Test your idea for free: get your understanding scorecard across 12 key dimensions, learn to structure your project and know what it still lacks. Become capable and confident."
     },
     "startups": {
       "title": "For founders",
@@ -241,7 +241,7 @@
       "title": "Here's your understanding scorecard",
       "subtitle": "{projectName} — an honest read of your strengths and blind spots. {reading} overall.",
       "overviewTitle": "The big picture",
-      "overviewText": "The Collision Radar sums up your 12 dimensions. It's your compass: you'll watch it progress through the Workshop and the pitch simulator.",
+      "overviewText": "The Collision Radar sums up your 12 dimensions. It's your compass: you'll watch it progress through the Workshop.",
       "seeFull": "See my full report",
       "keep": "Keep my report",
       "downloadPdf": "Download the PDF",
@@ -850,7 +850,7 @@
       "title": "We make you capable, then confident.",
       "subtitle": "The whole founder journey is free. You understand your project, learn to structure it, practice — and decide for yourself when to go further.",
       "journey": {
-        "understand": { "title": "Understand", "text": "Free diagnostic (guided idea or upload) → your understanding scorecard across 3 lenses." },
+        "understand": { "title": "Understand", "text": "Free diagnostic (guided idea or upload) → your understanding scorecard across 4 pillars." },
         "learn": { "title": "Learn", "text": "Educational modules + an assistant that explains while YOU write your own version." },
         "practice": { "title": "Practice", "text": "The pitch simulator makes you rehearse in front of an AI investor, no judgment." },
         "realize": { "title": "Deliver", "text": "The readiness page shows you where you stand — and what's next, no purchase pressure." }
