@@ -31,6 +31,14 @@ export {
   type Lever,
 } from "./types/scoring.types";
 export {
+  ACTIONABLE_LEVERS,
+  axesByKey,
+  isActionableLever,
+  nextAnchor,
+  reachedAnchor,
+} from "./lib/anchors";
+export { toMaturityLevels } from "./lib/maturity";
+export {
   sampleScore,
   sampleScoreAfter,
   mockScoreFromInput,

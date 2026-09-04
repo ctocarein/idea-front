@@ -577,6 +577,13 @@
     },
     "evaluation": {
       "title": "Le détail par dimension",
+      "otherPillar": "Autres dimensions",
+      "needsReview": "Ce score est en attente de revue : nos passes d'analyse ne sont pas tombées d'accord. Il peut encore bouger.",
+      "nextAnchor": "Pour atteindre {score}/10 :",
+      "lever": {
+        "document": "Apporter une preuve",
+        "mentor": "Se faire accompagner"
+      },
       "subtitle": "Derrière le score : ce que l'IA a compris, sa confiance, et ce qui reste à préciser.",
       "confidence": "Confiance {pct}%",
       "questionsTitle": "Questions pour affiner",

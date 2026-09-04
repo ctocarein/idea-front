@@ -20,6 +20,7 @@ import {
   type MemoryStatement,
   type ProjectEvaluation,
 } from "@/features/evaluation";
+import type { GridAxis } from "@/features/scoring/api";
 import { type ReportDetail, toRadarScore } from "../api";
 import { BilanPdfButton } from "./BilanPdfButton";
 import { NextActions } from "./NextActions";
@@ -40,6 +41,7 @@ export function BilanView({
   evaluation,
   memory,
   maturityLevels = [],
+  gridAxes = [],
 }: {
   report: ReportDetail;
   evaluation?: ProjectEvaluation | null;
@@ -47,6 +49,8 @@ export function BilanView({
   memory?: Record<string, MemoryStatement[]>;
   /** Paliers servis par `GET /scoring/grid` — source unique, jamais redéfinis ici. */
   maturityLevels?: readonly MaturityLevel[];
+  /** Axes de la même grille : ancres par dimension, pour dire ce qui manque. */
+  gridAxes?: readonly GridAxis[];
 }) {
   const t = useTranslations("Bilan.view");
   const tRadar = useTranslations("Radar");
@@ -173,7 +177,9 @@ export function BilanView({
           </section>
 
           {/* Radar explicable — le détail par dimension (confiance, preuve, justification). */}
-          {evaluation ? <ExplainableRadar evaluation={evaluation} memory={memory} /> : null}
+          {evaluation ? (
+            <ExplainableRadar evaluation={evaluation} memory={memory} gridAxes={gridAxes} />
+          ) : null}
         </>
       ) : null}
 

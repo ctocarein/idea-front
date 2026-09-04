@@ -577,6 +577,13 @@
     },
     "evaluation": {
       "title": "Dimension-by-dimension detail",
+      "otherPillar": "Other dimensions",
+      "needsReview": "This score is pending review: our analysis passes disagreed. It may still change.",
+      "nextAnchor": "To reach {score}/10:",
+      "lever": {
+        "document": "Bring evidence",
+        "mentor": "Get support"
+      },
       "subtitle": "Behind the score: what the AI understood, how confident it is, and what's still missing.",
       "confidence": "Confidence {pct}%",
       "questionsTitle": "Questions to refine",

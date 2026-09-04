@@ -1,6 +1,7 @@
 import { apiFetch } from "@/shared/api/client";
 import type { components } from "@/shared/api/schema";
-import type { MaturityLevel, ReadingTone } from "./types/scoring.types";
+import { toMaturityLevels } from "./lib/maturity";
+import type { MaturityLevel } from "./types/scoring.types";
 
 /**
  * Grille Radar servie par le backend — la référence d'évaluation, versionnée.
@@ -26,19 +27,14 @@ export async function getGridVersions(): Promise<GridSummary[]> {
   return apiFetch<GridSummary[]>("/api/v1/admin/scoring/grids");
 }
 
-const TONES: readonly ReadingTone[] = ["strong", "good", "watch", "fragile"];
-
 /**
  * Paliers de maturité de la grille active — SOURCE UNIQUE du système.
  *
- * Le front les recopiait en dur ; les bornes coïncidaient, mais rien ne le garantissait —
- * un changement backend ne cassait aucun test ici. On rétrécit le `tone` (l'OpenAPI le
- * décrit comme `string`) plutôt que de caster à chaque appel.
+ * Raccourci pour les écrans qui n'ont besoin QUE des paliers. Une page qui veut aussi les
+ * ancres charge la grille une seule fois et passe par `toMaturityLevels` : deux requêtes
+ * pourraient servir deux versions de grille, et un bilan mélangeant les ancres de l'une et
+ * les paliers de l'autre serait faux sans que rien ne le signale.
  */
 export async function getMaturityLevels(): Promise<MaturityLevel[]> {
-  const grid = await getActiveGrid();
-  return (grid.maturity_levels ?? []).map((level) => ({
-    ...level,
-    tone: TONES.includes(level.tone as ReadingTone) ? (level.tone as ReadingTone) : "watch",
-  }));
+  return toMaturityLevels(await getActiveGrid());
 }

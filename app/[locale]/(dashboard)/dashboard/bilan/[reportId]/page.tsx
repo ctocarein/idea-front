@@ -15,8 +15,9 @@ import {
   type ProjectEvaluation,
 } from "@/features/evaluation";
 import { getProjectMemory } from "@/features/projects/api";
-import { getMaturityLevels } from "@/features/scoring/api";
-import type { MaturityLevel } from "@/features/scoring";
+import { getActiveGrid } from "@/features/scoring/api";
+import type { GridAxis } from "@/features/scoring/api";
+import { toMaturityLevels, type MaturityLevel } from "@/features/scoring";
 import { NewDiagnosticModal } from "@/features/diagnostics";
 
 export const metadata: Metadata = { title: "Mon bilan" };
@@ -48,14 +49,16 @@ export default async function BilanPage({
   let evaluation: ProjectEvaluation | null = null;
   let memory: Record<string, MemoryStatement[]> = {};
   let maturityLevels: MaturityLevel[] = [];
+  let gridAxes: GridAxis[] = [];
   if (report.radar_score) {
-    const [evalResult, memoryItems, levels] = await Promise.all([
+    const [evalResult, memoryItems, grid] = await Promise.all([
       getProjectEvaluation(report.project_id).catch(() => null),
       getProjectMemory(report.project_id).catch(() => []),
-      getMaturityLevels().catch(() => []),
+      getActiveGrid().catch(() => null),
     ]);
     evaluation = evalResult;
-    maturityLevels = levels;
+    maturityLevels = toMaturityLevels(grid);
+    gridAxes = grid?.axes ?? [];
     memory = memoryItems.reduce<Record<string, MemoryStatement[]>>((acc, item) => {
       (acc[item.dimension] ??= []).push({ id: item.id, statement: item.statement });
       return acc;
@@ -78,6 +81,7 @@ export default async function BilanPage({
           evaluation={evaluation}
           memory={memory}
           maturityLevels={maturityLevels}
+          gridAxes={gridAxes}
         />
       </div>
     );
@@ -92,6 +96,7 @@ export default async function BilanPage({
           evaluation={evaluation}
           memory={memory}
           maturityLevels={maturityLevels}
+          gridAxes={gridAxes}
         />
       </div>
     );
