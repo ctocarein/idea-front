@@ -3,6 +3,7 @@ import { ArrowRight, Compass, GraduationCap, Palette, Plus } from "lucide-react"
 import { getTranslations } from "next-intl/server";
 
 import { routes } from "@/shared/config/routes";
+import { features } from "@/shared/config/features";
 import { Link } from "@/i18n/navigation";
 import { getSession } from "@/shared/auth/server";
 import { ApiError, apiFetch } from "@/shared/api/client";
@@ -166,22 +167,26 @@ export default async function DashboardPage() {
             <ComprehensionTable score={radar} />
           </section>
 
-          {/* Prochaines étapes — connecte la boussole au parcours (Workshop → Studio → Orbit). */}
+          {/* Prochaines étapes — connecte la boussole au parcours (Workshop → Orbit).
+              Le Studio n'y figure que si le flag le rouvre : c'est l'aval du parcours,
+              hors du moment validé (v3.1 §3), et une carte de plus dilue l'action unique. */}
           <section className="space-y-3">
             <h2 className="font-display text-lg font-bold tracking-tight">{t("nextTitle")}</h2>
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className={features.studio ? "grid gap-4 sm:grid-cols-3" : "grid gap-4 sm:grid-cols-2"}>
               <NextCard
                 icon={GraduationCap}
                 href={routes.academy}
                 title={t("next.workshopTitle")}
                 text={t("next.workshopText")}
               />
-              <NextCard
-                icon={Palette}
-                href={routes.studio}
-                title={t("next.studioTitle")}
-                text={t("next.studioText")}
-              />
+              {features.studio && (
+                <NextCard
+                  icon={Palette}
+                  href={routes.studio}
+                  title={t("next.studioTitle")}
+                  text={t("next.studioText")}
+                />
+              )}
               <NextCard
                 icon={Compass}
                 href={routes.opportunities}

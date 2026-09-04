@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { ArrowRight, Presentation, Shapes, Palette, FileText, type LucideIcon } from "lucide-react";
 
+import { redirect } from "next/navigation";
+
 import { Link } from "@/i18n/navigation";
 import { apiFetch } from "@/shared/api/client";
+import { features } from "@/shared/config/features";
 import { routes } from "@/shared/config/routes";
 import { Card, CardContent } from "@/shared/ui";
 import type { PitchData } from "@/features/pitch-editor";
@@ -12,6 +15,9 @@ import type { LogoData } from "@/features/studio";
 export const metadata: Metadata = { title: "Studio" };
 
 export default async function StudioPage() {
+  // Hors chemin critique (v3.1 §3) : la porte est fermée, le code reste.
+  if (!features.studio) redirect(routes.dashboard);
+
   const t = await getTranslations("Studio");
   const [pitch, logo] = await Promise.all([
     apiFetch<PitchData>("/api/v1/pitch").catch(() => null),

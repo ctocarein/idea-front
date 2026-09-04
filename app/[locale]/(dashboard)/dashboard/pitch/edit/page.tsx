@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 import { apiFetch } from "@/shared/api/client";
+import { features } from "@/shared/config/features";
 import { routes } from "@/shared/config/routes";
 import { DeckEditor } from "@/features/pitch-editor";
 import type { PitchData } from "@/features/pitch-editor";
@@ -10,6 +11,8 @@ import type { PitchData } from "@/features/pitch-editor";
 export const metadata: Metadata = { title: "Éditer le deck" };
 
 export default async function PitchEditPage() {
+  if (!features.pitchEditor) redirect(routes.dashboard);
+
   const t = await getTranslations("Pitch");
   let pitch: PitchData | null = null;
   try {

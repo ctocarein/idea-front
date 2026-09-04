@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
 
+import { redirect } from "next/navigation";
+
 import { Link } from "@/i18n/navigation";
+import { features } from "@/shared/config/features";
 import { routes } from "@/shared/config/routes";
 import { BrandKit, getKit, type KitData } from "@/features/studio";
 
@@ -10,6 +13,8 @@ export const metadata: Metadata = { title: "Kit de marque · Studio" };
 export const dynamic = "force-dynamic";
 
 export default async function KitPage() {
+  if (!features.studio) redirect(routes.dashboard);
+
   const t = await getTranslations("Studio");
   let kit: KitData | null = null;
   try {

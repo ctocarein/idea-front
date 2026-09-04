@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
 
+import { redirect } from "next/navigation";
+
 import { Link } from "@/i18n/navigation";
 import { apiFetch } from "@/shared/api/client";
+import { features } from "@/shared/config/features";
 import { routes } from "@/shared/config/routes";
 import { PitchStart } from "@/features/pitch-editor";
 import type { PitchData } from "@/features/pitch-editor";
@@ -11,6 +14,9 @@ import type { PitchData } from "@/features/pitch-editor";
 export const metadata: Metadata = { title: "Pitch" };
 
 export default async function PitchPage() {
+  // Le deck est l'aval du parcours, hors moment validé (v3.1 §3).
+  if (!features.pitchEditor) redirect(routes.dashboard);
+
   const t = await getTranslations("Pitch");
   let pitch: PitchData | null = null;
   try {

@@ -1,12 +1,15 @@
 import { cookies } from "next/headers";
 
 import { ACCESS_COOKIE } from "@/shared/auth/session";
+import { features } from "@/shared/config/features";
 import { env } from "@/shared/config/env";
 
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ pitchId: string }> },
 ) {
+  if (!features.pitchEditor) return new Response(null, { status: 404 });
+
   const { pitchId } = await params;
   const accessToken = (await cookies()).get(ACCESS_COOKIE)?.value;
 

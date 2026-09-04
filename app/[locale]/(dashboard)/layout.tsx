@@ -19,12 +19,15 @@ export default async function DashboardLayout({
   const session = await getSession();
   if (!session) redirect(routes.login);
 
-  // Nav resserrée : 5 destinations calées sur le parcours. Simulateur & Mentors = V2 (flag).
+  // Nav resserrée, calée sur le seul moment validé (v3.1 §5). Studio, éditeur de pitch,
+  // Simulateur & Mentors sont derrière un flag : ils ne sont plus des destinations.
   const t = await getTranslations("Nav");
   const nav: NavItem[] = [
     { href: routes.dashboard, label: t("dashboard"), shortLabel: t("dashboardShort"), icon: "overview" },
     { href: routes.academy, label: t("workshop"), icon: "academy" },
-    { href: routes.studio, label: t("studio"), icon: "studio" },
+    ...(features.studio
+      ? [{ href: routes.studio, label: t("studio"), icon: "studio" } as NavItem]
+      : []),
     ...(features.pitchSimulator
       ? [{ href: routes.pitchSim, label: t("simulator"), shortLabel: t("simulatorShort"), icon: "pitch" } as NavItem]
       : []),
