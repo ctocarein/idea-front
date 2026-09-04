@@ -314,6 +314,25 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/diagnostics/draft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Diagnostic Draft */
+        get: operations["get_diagnostic_draft_api_v1_diagnostics_draft_get"];
+        /** Save Diagnostic Draft */
+        put: operations["save_diagnostic_draft_api_v1_diagnostics_draft_put"];
+        post?: never;
+        /** Discard Diagnostic Draft */
+        delete: operations["discard_diagnostic_draft_api_v1_diagnostics_draft_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/reports": {
         parameters: {
             query?: never;
@@ -1627,6 +1646,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/draft-funnel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Draft Funnel */
+        get: operations["draft_funnel_api_v1_admin_draft_funnel_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/reminder-stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Reminder Stats */
+        get: operations["reminder_stats_api_v1_admin_reminder_stats_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/export": {
         parameters: {
             query?: never;
@@ -1757,6 +1810,30 @@ export interface paths {
         put?: never;
         /** Mark All Notifications Read */
         post: operations["mark_all_notifications_read_api_v1_notifications_mark_all_read_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/unsubscribe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Unsubscribe From Reminders
+         * @description Désabonnement des rappels — route PUBLIQUE, cliquée depuis une boîte mail.
+         *
+         *     Aucune authentification : le token signé porte l'identité. Réponse en texte brut plutôt
+         *     qu'une redirection vers le front, pour que le lien fonctionne même si le front est
+         *     indisponible — un désabonnement ne doit dépendre de rien.
+         */
+        get: operations["unsubscribe_from_reminders_api_v1_notifications_unsubscribe_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2323,6 +2400,53 @@ export interface components {
             diagnostic_status: components["schemas"]["DiagnosticStatus"];
             review_status: components["schemas"]["ReviewStatus"];
         };
+        /**
+         * DiagnosticDraftIn
+         * @description Corps du `PUT /diagnostics/draft` — l'état COMPLET du brouillon, pas un delta.
+         *
+         *     Volontairement permissif : c'est une saisie en cours, pas une soumission. Aucune
+         *     validation métier ici (secteur fermé, longueur minimale du récit…) — elle s'applique à
+         *     la soumission, dans `ManualDiagnosticIn`. Contraindre un brouillon reviendrait à
+         *     empêcher d'enregistrer un travail inachevé, ce qui est précisément son objet.
+         */
+        DiagnosticDraftIn: {
+            /** Answers */
+            answers?: {
+                [key: string]: string;
+            };
+            /** Payload */
+            payload?: {
+                [key: string]: unknown;
+            };
+            /** @default guided */
+            mode: components["schemas"]["EntryMode"];
+            /** Last Dimension */
+            last_dimension?: string | null;
+        };
+        /** DiagnosticDraftOut */
+        DiagnosticDraftOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Answers */
+            answers: {
+                [key: string]: string;
+            };
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+            mode: components["schemas"]["EntryMode"];
+            /** Lastdimension */
+            lastDimension?: string | null;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
         /** DiagnosticReport */
         DiagnosticReport: {
             /**
@@ -2412,6 +2536,24 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+        };
+        /**
+         * DraftFunnelOut
+         * @description Diagnostic en cours — mesure du décrochage pendant la saisie.
+         */
+        DraftFunnelOut: {
+            /** Created */
+            created: number;
+            /** Submitted */
+            submitted: number;
+            /** Completion Rate */
+            completion_rate: number;
+            /** Dropoff By Dimension */
+            dropoff_by_dimension: {
+                [key: string]: number;
+            };
+            /** Median Resume Delay Seconds */
+            median_resume_delay_seconds?: number | null;
         };
         /**
          * EntryMode
@@ -2506,6 +2648,11 @@ export interface components {
              * @default 10
              */
             scale_max: number;
+            /**
+             * Overall Scale
+             * @default 100
+             */
+            overall_scale: number;
             /** Pillars */
             pillars: components["schemas"]["PillarOut"][];
             /** Axes */
@@ -2516,6 +2663,8 @@ export interface components {
                     [key: string]: number;
                 };
             };
+            /** Calibrated Sectors */
+            calibrated_sectors?: string[];
             /** Maturity Levels */
             maturity_levels?: components["schemas"]["MaturityLevel"][];
         };
@@ -3110,8 +3259,8 @@ export interface components {
             sector: string | null;
             /** Min Overall */
             min_overall: number;
-            /** Min Maturity */
-            min_maturity: number | null;
+            /** Min Advancement */
+            min_advancement: number | null;
             /** Deadline */
             deadline: string | null;
             /** Is Active */
@@ -3140,8 +3289,8 @@ export interface components {
              * @default 0
              */
             min_overall: number;
-            /** Min Maturity */
-            min_maturity?: number | null;
+            /** Min Advancement */
+            min_advancement?: number | null;
             /** Deadline */
             deadline?: string | null;
             /**
@@ -3540,6 +3689,14 @@ export interface components {
             axes: {
                 [key: string]: number;
             };
+            /** Overall */
+            overall?: number | null;
+            /** Pillars */
+            pillars?: {
+                [key: string]: number;
+            } | null;
+            /** Sectorcalibrated */
+            sectorCalibrated?: boolean | null;
         };
         /** Recommendation */
         Recommendation: {
@@ -3585,6 +3742,25 @@ export interface components {
              * @default fr
              */
             language: string;
+        };
+        /**
+         * ReminderStatsOut
+         * @description Rappels J+7 — envoyés, annulés (par motif), désabonnements.
+         *
+         *     Le taux de désabonnement est le SIGNAL D'ALERTE : élevé, il signifie que le mail est
+         *     perçu comme du marketing, ce qui invaliderait le principe même du rappel.
+         */
+        ReminderStatsOut: {
+            /** Sent */
+            sent: number;
+            /** Cancelled */
+            cancelled: number;
+            /** Cancelled By Reason */
+            cancelled_by_reason: {
+                [key: string]: number;
+            };
+            /** Opted Out Users */
+            opted_out_users: number;
         };
         /** ReportDescription */
         ReportDescription: {
@@ -3735,6 +3911,11 @@ export interface components {
             };
             /** Overall */
             overall: number;
+            /**
+             * Sector Calibrated
+             * @default false
+             */
+            sector_calibrated: boolean;
             /** Confidence */
             confidence?: number | null;
             /**
@@ -4923,6 +5104,77 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
+            };
+        };
+    };
+    get_diagnostic_draft_api_v1_diagnostics_draft_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiagnosticDraftOut"];
+                };
+            };
+        };
+    };
+    save_diagnostic_draft_api_v1_diagnostics_draft_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DiagnosticDraftIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiagnosticDraftOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    discard_diagnostic_draft_api_v1_diagnostics_draft_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -7365,6 +7617,46 @@ export interface operations {
             };
         };
     };
+    draft_funnel_api_v1_admin_draft_funnel_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DraftFunnelOut"];
+                };
+            };
+        };
+    };
+    reminder_stats_api_v1_admin_reminder_stats_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReminderStatsOut"];
+                };
+            };
+        };
+    };
     export_my_data_api_v1_me_export_get: {
         parameters: {
             query?: never;
@@ -7558,6 +7850,37 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+        };
+    };
+    unsubscribe_from_reminders_api_v1_notifications_unsubscribe_get: {
+        parameters: {
+            query: {
+                token: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

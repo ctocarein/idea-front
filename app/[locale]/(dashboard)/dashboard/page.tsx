@@ -13,9 +13,9 @@ import {
   RadarChart,
   TONE_TO_BADGE,
   maturityLevel,
-  overallScore,
   type RadarScore,
 } from "@/features/scoring";
+import { getMaturityLevels } from "@/features/scoring/api";
 import { ClaimPendingDiagnostic, NewDiagnosticModal } from "@/features/diagnostics";
 import { ReportsList } from "@/features/reports";
 import { getMyReports, getReportDetail, toRadarScore, toReportCard } from "@/features/reports/api";
@@ -80,8 +80,12 @@ export default async function DashboardPage() {
       if (!(error instanceof ApiError)) throw error;
     }
   }
-  const overall = radar ? overallScore(radar) : null;
-  const maturity = overall !== null ? maturityLevel(overall) : null;
+  // Le global est SERVI, jamais recalculé : moyenne pondérée par secteur, que le front ne
+  // peut pas reproduire faute d'avoir les poids. Les paliers viennent de la même grille —
+  // une seule définition dans le système. Best-effort : sans grille, le palier est absent.
+  const overall = radar?.overall ?? null;
+  const levels = radar ? await getMaturityLevels().catch(() => []) : [];
+  const maturity = overall !== null ? maturityLevel(overall, levels) : null;
   // Avec plusieurs projets, une boussole anonyme ne dit plus de quoi elle parle.
   const radarProject = latestReady ? projectName.get(latestReady.project_id) : undefined;
   const compassEyebrow =

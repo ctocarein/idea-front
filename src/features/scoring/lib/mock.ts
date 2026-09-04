@@ -1,4 +1,4 @@
-import { AXES, SCALE_MAX, type RadarScore } from "../types/scoring.types";
+import { AXES, SCALE_MAX, overallScore, type RadarScore } from "../types/scoring.types";
 
 /**
  * Scores mockés (vitrines/démo). Le vrai score vient du backend (`GET /reports/{id}`
@@ -22,6 +22,7 @@ export const sampleScore: RadarScore = {
     d11: 6,
     d12: 5,
   },
+  overall: 57, // moyenne des 12 axes ramenée /100 (fixture : non pondérée)
 };
 
 /** Exemple « après » (progression) pour démontrer l'avant/après. */
@@ -41,6 +42,7 @@ export const sampleScoreAfter: RadarScore = {
     d11: 8,
     d12: 7,
   },
+  overall: 74,
 };
 
 /** Hash simple et stable d'une chaîne → entier positif. */
@@ -63,5 +65,10 @@ export function mockScoreFromInput(seed: string): RadarScore {
   AXES.forEach((axis, i) => {
     axes[axis.key] = ((base >> (i * 2)) % (SCALE_MAX - 2)) + 3; // 3..SCALE_MAX
   });
-  return { gridVersion: "mock-v2", axes };
+  // Les fixtures portent `overall`, comme un vrai score : c'est LE seul endroit où le
+  // front a encore le droit d'agréger, précisément pour que les écrans n'aient jamais
+  // besoin de le faire. `overallScore` est non pondérée — acceptable ici, une fixture ne
+  // prétend pas reproduire le calcul du backend, seulement en avoir la forme.
+  const score: RadarScore = { gridVersion: "mock-v2", axes };
+  return { ...score, overall: overallScore(score) };
 }

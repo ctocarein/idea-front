@@ -6,7 +6,6 @@ import { useTranslations } from "next-intl";
 
 import { routes } from "@/shared/config/routes";
 import { Chip, DataTable, type Column } from "@/shared/ui";
-import { overallScore } from "@/features/scoring";
 import { sectorLabel } from "@/features/diagnostics";
 import { ProjectStatusBadge } from "./ProjectStatusBadge";
 import { ALL_STATUSES } from "../data/mock";
@@ -65,10 +64,11 @@ export function ProjectTable({ projects }: { projects: Project[] }) {
       key: "score",
       header: t("cols.score"),
       sortable: true,
-      sortValue: (p) => (p.score ? overallScore(p.score) : -1),
-      cell: (p) => (
-        <span className="tabular">{p.score ? overallScore(p.score) : "—"}</span>
-      ),
+      // Score SERVI par le backend, jamais réagrégé ici : c'est aussi la clé de TRI, donc
+      // un recalcul local classerait les projets sur un chiffre qui ne fait foi nulle part.
+      // -1 pour les scores absents → ils tombent en fin de tri croissant.
+      sortValue: (p) => p.score?.overall ?? -1,
+      cell: (p) => <span className="tabular">{p.score?.overall ?? "—"}</span>,
     },
     {
       key: "createdAt",

@@ -13,8 +13,8 @@ import {
   RadarChart,
   TONE_TO_BADGE,
   maturityLevel,
-  overallScore,
 } from "@/features/scoring";
+import { getMaturityLevels } from "@/features/scoring/api";
 import { toWorkspaceRadar } from "@/features/projects";
 import { getProjectWorkspace } from "@/features/projects/api";
 import { sectorLabel } from "@/features/diagnostics";
@@ -72,8 +72,12 @@ export default async function ProjectWorkspacePage({
 
   const { project, latest_report: latest, documents, memory } = workspace;
   const radar = toWorkspaceRadar(latest?.radar_score);
-  const overall = radar ? overallScore(radar) : null;
-  const maturity = overall !== null ? maturityLevel(overall) : null;
+  // Le global est SERVI, jamais recalculé : moyenne pondérée par secteur, que le front ne
+  // peut pas reproduire faute d'avoir les poids. Les paliers viennent de la même grille —
+  // une seule définition dans le système. Best-effort : sans grille, le palier est absent.
+  const overall = radar?.overall ?? null;
+  const levels = radar ? await getMaturityLevels().catch(() => []) : [];
+  const maturity = overall !== null ? maturityLevel(overall, levels) : null;
   const state = !latest ? "none" : latest.status === "ready" ? "ready" : "pending";
 
   const stats = [

@@ -15,6 +15,8 @@ import {
   type ProjectEvaluation,
 } from "@/features/evaluation";
 import { getProjectMemory } from "@/features/projects/api";
+import { getMaturityLevels } from "@/features/scoring/api";
+import type { MaturityLevel } from "@/features/scoring";
 import { NewDiagnosticModal } from "@/features/diagnostics";
 
 export const metadata: Metadata = { title: "Mon bilan" };
@@ -38,14 +40,22 @@ export default async function BilanPage({
 
   // Radar explicable (détail par dimension) + mémoire projet qui le fonde — best-effort :
   // si l'un des deux endpoints manque (403/404), on dégrade sans casser le bilan.
+  //
+  // La grille apporte les PALIERS DE MATURITÉ, qui n'existent qu'à un seul endroit du
+  // système : `app/scoring/constants.py`. Le front les recopiait en dur, et rien ne
+  // garantissait qu'ils restent synchronisés — un changement backend ne cassait aucun test
+  // ici. Best-effort aussi : sans grille, le bilan s'affiche, le palier devient « — ».
   let evaluation: ProjectEvaluation | null = null;
   let memory: Record<string, MemoryStatement[]> = {};
+  let maturityLevels: MaturityLevel[] = [];
   if (report.radar_score) {
-    const [evalResult, memoryItems] = await Promise.all([
+    const [evalResult, memoryItems, levels] = await Promise.all([
       getProjectEvaluation(report.project_id).catch(() => null),
       getProjectMemory(report.project_id).catch(() => []),
+      getMaturityLevels().catch(() => []),
     ]);
     evaluation = evalResult;
+    maturityLevels = levels;
     memory = memoryItems.reduce<Record<string, MemoryStatement[]>>((acc, item) => {
       (acc[item.dimension] ??= []).push({ id: item.id, statement: item.statement });
       return acc;
@@ -63,7 +73,12 @@ export default async function BilanPage({
     return (
       <div className="space-y-6">
         {editor}
-        <BilanView report={report} evaluation={evaluation} memory={memory} />
+        <BilanView
+          report={report}
+          evaluation={evaluation}
+          memory={memory}
+          maturityLevels={maturityLevels}
+        />
       </div>
     );
   }
@@ -72,7 +87,12 @@ export default async function BilanPage({
       <div className="space-y-6">
         <BilanFinalizing reportId={reportId} />
         {editor}
-        <BilanView report={report} evaluation={evaluation} memory={memory} />
+        <BilanView
+          report={report}
+          evaluation={evaluation}
+          memory={memory}
+          maturityLevels={maturityLevels}
+        />
       </div>
     );
   }

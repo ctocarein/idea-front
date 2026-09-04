@@ -12,8 +12,8 @@ import {
   RadarChart,
   TONE_TO_BADGE,
   maturityLevel,
-  overallScore,
   type AxisKey,
+  type MaturityLevel,
 } from "@/features/scoring";
 import {
   ExplainableRadar,
@@ -39,17 +39,23 @@ export function BilanView({
   report,
   evaluation,
   memory,
+  maturityLevels = [],
 }: {
   report: ReportDetail;
   evaluation?: ProjectEvaluation | null;
   /** Mémoire projet groupée par dimension, pour le radar explicable. */
   memory?: Record<string, MemoryStatement[]>;
+  /** Paliers servis par `GET /scoring/grid` — source unique, jamais redéfinis ici. */
+  maturityLevels?: readonly MaturityLevel[];
 }) {
   const t = useTranslations("Bilan.view");
   const tRadar = useTranslations("Radar");
   const radar = report.radar_score ? toRadarScore(report.radar_score) : null;
-  const overall = radar ? overallScore(radar) : null;
-  const maturity = overall !== null ? maturityLevel(overall) : null;
+  // Le score global est LU, jamais recalculé : c'est une moyenne pondérée par secteur, et
+  // le front n'a pas les poids. Un bilan antérieur à l'unification n'en porte pas — on
+  // affiche « — » plutôt que de reconstruire un nombre qui ne serait celui de personne.
+  const overall = radar?.overall ?? null;
+  const maturity = overall !== null ? maturityLevel(overall, maturityLevels) : null;
   const insights = report.report ?? null;
   const verdict = insights?.verdict;
   const strengths = insights?.strengths ?? [];
@@ -134,7 +140,7 @@ export function BilanView({
                   {t("compass")}
                 </p>
                 <div className="flex items-baseline gap-2">
-                  <span className="tabular font-display text-3xl font-extrabold">{overall}</span>
+                  <span className="tabular font-display text-3xl font-extrabold">{overall ?? "—"}</span>
                   <span className="text-muted-foreground">/100</span>
                   {maturity ? (
                     <Badge variant={TONE_TO_BADGE[maturity.tone]}>

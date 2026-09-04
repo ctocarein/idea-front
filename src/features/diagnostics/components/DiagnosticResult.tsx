@@ -7,7 +7,6 @@ import { Button } from "@/shared/ui";
 import {
   ComprehensionTable,
   RadarChart,
-  overallScore,
   reading,
   type RadarScore,
 } from "@/features/scoring";
@@ -26,8 +25,10 @@ export function DiagnosticResult({
   projectName: string;
   isAuthed?: boolean;
 }) {
-  const overall = overallScore(score);
-  const r = reading(overall);
+  // Servi par le backend (pondéré par secteur, /100). Les fixtures de démo le portent
+  // aussi : aucune surface n'agrège un score, y compris en vitrine.
+  const overall = score.overall ?? null;
+  const r = reading(overall ?? 0);
   const t = useTranslations("Diagnostic.result");
   const tRadar = useTranslations("Radar");
 

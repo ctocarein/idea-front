@@ -9,5 +9,18 @@ export function toWorkspaceRadar(raw: { [key: string]: unknown } | null | undefi
   if (!raw) return null;
   const { gridVersion, axes } = raw as { gridVersion?: unknown; axes?: unknown };
   if (typeof gridVersion !== "string" || typeof axes !== "object" || axes === null) return null;
-  return { gridVersion, axes: axes as RadarScore["axes"] };
+  // `overall` est SERVI par le backend (pondéré par secteur, /100) : le laisser tomber ici
+  // obligerait l'écran à le réagréger, donc à afficher un autre nombre que le bilan.
+  const { overall, pillars, sectorCalibrated } = raw as {
+    overall?: unknown;
+    pillars?: unknown;
+    sectorCalibrated?: unknown;
+  };
+  return {
+    gridVersion,
+    axes: axes as RadarScore["axes"],
+    overall: typeof overall === "number" ? overall : null,
+    pillars: typeof pillars === "object" && pillars !== null ? (pillars as Record<string, number>) : null,
+    sectorCalibrated: typeof sectorCalibrated === "boolean" ? sectorCalibrated : null,
+  };
 }

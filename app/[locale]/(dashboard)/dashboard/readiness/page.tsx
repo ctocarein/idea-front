@@ -13,9 +13,10 @@ import {
   RadarChart,
   TONE_TO_BADGE,
   maturityLevel,
-  overallScore,
   type AxisKey,
+  type MaturityLevel,
 } from "@/features/scoring";
+import { getMaturityLevels } from "@/features/scoring/api";
 import { getLatestRadar } from "@/features/reports/api";
 import { NewDiagnosticModal } from "@/features/diagnostics";
 import { ExpressInterest } from "./_interest";
@@ -48,6 +49,9 @@ function leverCta(key: AxisKey): { href: string; labelKey: LeverLabelKey; icon: 
 export default async function ReadinessPage() {
   const score = await getLatestRadar();
   const t = await getTranslations("Readiness");
+  // Chargés ici, dans le composant SERVEUR : `ReadinessContent` est synchrone (il utilise
+  // `useTranslations`), il reçoit donc les paliers plutôt que d'aller les chercher.
+  const maturityLevels = score ? await getMaturityLevels().catch(() => []) : [];
 
   return (
     <div className="space-y-8">
@@ -57,7 +61,7 @@ export default async function ReadinessPage() {
       </div>
 
       {score ? (
-        <ReadinessContent score={score} />
+        <ReadinessContent score={score} maturityLevels={maturityLevels} />
       ) : (
         <Card>
           <CardContent className="flex flex-wrap items-center justify-between gap-4 py-8">
@@ -78,11 +82,20 @@ export default async function ReadinessPage() {
   );
 }
 
-function ReadinessContent({ score }: { score: NonNullable<Awaited<ReturnType<typeof getLatestRadar>>> }) {
+function ReadinessContent({
+  score,
+  maturityLevels,
+}: {
+  score: NonNullable<Awaited<ReturnType<typeof getLatestRadar>>>;
+  maturityLevels: readonly MaturityLevel[];
+}) {
   const t = useTranslations("Readiness");
   const tRadar = useTranslations("Radar");
-  const overall = overallScore(score);
-  const maturity = maturityLevel(overall);
+  // Le global est SERVI, jamais recalculé : moyenne pondérée par secteur, que le front ne
+  // peut pas reproduire faute d'avoir les poids. Les paliers viennent de la même grille —
+  // une seule définition dans le système. Best-effort : sans grille, le palier est absent.
+  const overall = score.overall ?? null;
+  const maturity = overall !== null ? maturityLevel(overall, maturityLevels) : null;
   const weak = [...AXES]
     .sort((a, b) => (score.axes[a.key] ?? 0) - (score.axes[b.key] ?? 0))
     .slice(0, 3);
@@ -96,15 +109,19 @@ function ReadinessContent({ score }: { score: NonNullable<Awaited<ReturnType<typ
           </div>
           <div className="space-y-2">
             <div className="flex items-baseline gap-2">
-              <span className="tabular font-display text-3xl font-extrabold">{overall}</span>
+              <span className="tabular font-display text-3xl font-extrabold">{overall ?? "—"}</span>
               <span className="text-muted-foreground">/100</span>
-              <Badge variant={TONE_TO_BADGE[maturity.tone]}>
-                {tRadar(`maturity.${maturity.key}.label`)}
-              </Badge>
+              {maturity ? (
+                <Badge variant={TONE_TO_BADGE[maturity.tone]}>
+                  {tRadar(`maturity.${maturity.key}.label`)}
+                </Badge>
+              ) : null}
             </div>
-            <p className="text-sm text-muted-foreground">
-              {tRadar(`maturity.${maturity.key}.description`)}
-            </p>
+            {maturity ? (
+              <p className="text-sm text-muted-foreground">
+                {tRadar(`maturity.${maturity.key}.description`)}
+              </p>
+            ) : null}
           </div>
         </CardContent>
       </Card>

@@ -52,10 +52,24 @@ export type AxisKey = (typeof AXES)[number]["key"];
 
 export type GridVersion = string;
 
-/** Un score Radar = valeurs 0..SCALE_MAX par axe + version de grille. */
+/**
+ * Un score Radar = valeurs 0..SCALE_MAX par axe + version de grille.
+ *
+ * `overall` est SERVI par le backend, jamais recalculé ici : c'est une moyenne PONDÉRÉE
+ * selon le secteur, sur 0..100. Le front n'a pas les poids, il ne peut donc pas la
+ * reproduire — c'est précisément pourquoi les deux chiffres divergeaient.
+ *
+ * Optionnels : les bilans produits avant l'unification ne les portent pas.
+ */
 export interface RadarScore {
   gridVersion: GridVersion;
   axes: Record<AxisKey, number>;
+  /** Score global pondéré 0..100, calculé et persisté par le backend. */
+  overall?: number | null;
+  /** Moyenne simple 0..SCALE_MAX par pilier — NE reconstitue PAS `overall`. */
+  pillars?: Record<string, number> | null;
+  /** Faux = aucune pondération calibrée pour ce secteur (toutes dimensions à poids égal). */
+  sectorCalibrated?: boolean | null;
 }
 
 /** Moyenne (0..SCALE_MAX) des axes d'un pilier — vue porteur. */
@@ -65,7 +79,16 @@ export function pillarScore(score: RadarScore, pillar: PillarKey): number {
   return Math.round(sum / axes.length);
 }
 
-/** Score global **sur 100** (moyenne des 12 axes ramenée /100) — pour la boussole + `reading`. */
+/**
+ * Moyenne NON PONDÉRÉE des 12 axes, ramenée sur 100.
+ *
+ * @deprecated Réservé aux FIXTURES (`lib/mock.ts`). Ne jamais l'utiliser sur une surface
+ * d'affichage : le backend applique des poids par secteur que le front n'a pas, donc ce
+ * nombre diffère de celui qui est persisté, servi par l'API et imprimé dans le bilan
+ * téléchargé. C'est l'écart que l'unification du score a fermé — il ne doit pas rouvrir.
+ *
+ * Un score réel porte `overall` : lisez-le, ne le recalculez pas.
+ */
 export function overallScore(score: RadarScore): number {
   const sum = AXES.reduce((acc, a) => acc + (score.axes[a.key] ?? 0), 0);
   return Math.round((sum / AXES.length) * (100 / SCALE_MAX));
@@ -91,63 +114,26 @@ export interface MaturityLevel {
   tone: ReadingTone;
 }
 
-export const MATURITY_LEVELS: MaturityLevel[] = [
-  {
-    key: "idee_brute",
-    label: "Idée brute",
-    min: 0,
-    max: 25,
-    description: "Le projet est encore très flou — travaillons les fondamentaux.",
-    tone: "fragile",
-  },
-  {
-    key: "a_structurer",
-    label: "Projet à structurer",
-    min: 26,
-    max: 45,
-    description: "Le potentiel existe, mais les bases sont à renforcer.",
-    tone: "watch",
-  },
-  {
-    key: "prometteur",
-    label: "Projet prometteur",
-    min: 46,
-    max: 60,
-    description: "Le projet commence à être lisible — tu es sur la bonne voie.",
-    tone: "watch",
-  },
-  {
-    key: "pre_viable",
-    label: "Projet pré-viable",
-    min: 61,
-    max: 75,
-    description: "Le projet peut être testé sérieusement.",
-    tone: "good",
-  },
-  {
-    key: "business_ready",
-    label: "Business Ready",
-    min: 76,
-    max: 85,
-    description: "Prêt à rencontrer des partenaires, incubateurs ou premiers clients.",
-    tone: "strong",
-  },
-  {
-    key: "investor_ready",
-    label: "Investor Ready",
-    min: 86,
-    max: 100,
-    description: "Suffisamment structuré pour des financeurs ou institutions.",
-    tone: "strong",
-  },
-];
+/**
+ * Paliers de maturité — SERVIS par le backend (`GET /scoring/grid` → `maturity_levels`).
+ *
+ * Ils étaient définis deux fois, ici et dans `app/scoring/constants.py`. Les bornes
+ * coïncidaient, mais rien ne le garantissait : un changement backend ne cassait aucun test
+ * front. Une seule définition subsiste désormais, et c'est celle qui a servi à calculer.
+ */
 
-/** Retourne le niveau de maturité correspondant au score global /100. */
-export function maturityLevel(overall: number): MaturityLevel {
-  return (
-    MATURITY_LEVELS.find((l) => overall >= l.min && overall <= l.max) ??
-    MATURITY_LEVELS[0]
-  );
+/**
+ * Palier correspondant au score global /100, dans les bornes FOURNIES par le backend.
+ *
+ * `levels` est requis : sans lui, il faudrait un tableau de repli — c'est-à-dire une
+ * seconde définition, et le doublon qu'on vient de supprimer. Rend `null` si les paliers
+ * ne sont pas encore chargés, ce que l'appelant doit afficher comme « — ».
+ */
+export function maturityLevel(
+  overall: number,
+  levels: readonly MaturityLevel[],
+): MaturityLevel | null {
+  return levels.find((l) => overall >= l.min && overall <= l.max) ?? null;
 }
 
 /** Mapping tone → variante de Badge (shadcn). */
