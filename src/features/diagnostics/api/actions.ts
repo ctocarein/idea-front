@@ -136,3 +136,67 @@ export async function extractFileIdea(formData: FormData): Promise<ExtractFileRe
     };
   }
 }
+
+/**
+ * Brouillon de diagnostic — la saisie en cours, côté SERVEUR.
+ *
+ * Le `localStorage` reste la persistance du parcours ANONYME : c'est le comportement
+ * conforme, la donnée reste sur l'appareil du visiteur tant qu'il n'a pas de compte. Une
+ * fois connecté, le serveur devient la source de vérité — ce qui permet de reprendre sur
+ * un autre appareil, de survivre à un nettoyage de cache, et surtout de MESURER où les
+ * porteurs décrochent, ce qu'aucune autre donnée ne dit.
+ */
+type DiagnosticDraftOut = components["schemas"]["DiagnosticDraftOut"];
+
+export interface DraftPayload {
+  answers: Record<string, string>;
+  /** Métadonnées du récit (title, sector, extract…), rejouées à la reprise. */
+  payload: Record<string, unknown>;
+  /** Dernière dimension ouverte — le champ qui situe le décrochage. */
+  lastDimension?: string | null;
+}
+
+/**
+ * Enregistre l'état COMPLET du brouillon (pas un delta). Idempotent : appelé à chaque
+ * changement de dimension.
+ *
+ * Ne lève JAMAIS. Une sauvegarde en échec ne doit pas interrompre la saisie : en zone à
+ * connectivité faible, un wizard qui bloque sur une requête est inutilisable. On rend
+ * `false`, l'appelant continue, et la dimension suivante retentera.
+ */
+export async function saveDiagnosticDraft(input: DraftPayload): Promise<boolean> {
+  try {
+    await apiFetch<DiagnosticDraftOut>("/api/v1/diagnostics/draft", {
+      method: "PUT",
+      json: {
+        answers: input.answers,
+        payload: input.payload,
+        lastDimension: input.lastDimension ?? null,
+      },
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Brouillon vivant du porteur, ou `null`.
+ *
+ * `null` couvre le cas normal (404 : rien à reprendre) ET les pannes. Ce choix est
+ * délibéré : l'écran de relecture doit s'ouvrir même si le brouillon est inaccessible, et
+ * le repli — `localStorage`, sinon écran vide — reste utilisable. Perdre la reprise est
+ * gênant ; bloquer le porteur devant une erreur le serait davantage.
+ */
+export async function loadDiagnosticDraft(): Promise<DiagnosticDraftOut | null> {
+  try {
+    return await apiFetch<DiagnosticDraftOut>("/api/v1/diagnostics/draft");
+  } catch {
+    return null;
+  }
+}
+
+// Pas d'action de SUPPRESSION ici : `DELETE /diagnostics/draft` existe côté backend (et y
+// est testé), mais aucune surface ne l'appelle. « Recommencer » écrase les réponses plutôt
+// que de supprimer le brouillon, sinon le récit serait perdu. Le jour où un vrai abandon
+// de projet aura une UI, l'action tiendra en quatre lignes.

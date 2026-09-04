@@ -7,6 +7,7 @@ import { ArrowLeft, Check, HelpCircle, Pencil, Sparkles } from "lucide-react";
 import { Button, Textarea } from "@/shared/ui";
 import { AXES } from "@/features/scoring";
 import type { ExtractedDimension, IdeaExtract } from "../api/actions";
+import { mergeDrafts } from "../lib/resume";
 
 /** Ce que le porteur a décidé pour une dimension. */
 export type DimensionVerdict = "confirmed" | "adjusted" | "skipped";
@@ -52,6 +53,9 @@ export function DimensionWizard({
   extract,
   onComplete,
   onExit,
+  onProgress,
+  initialIndex = 0,
+  initialDrafts,
   submitting = false,
   submitLabel,
 }: {
@@ -59,6 +63,18 @@ export function DimensionWizard({
   onComplete: (result: WizardResult) => void;
   /** « Reprendre plus tard » — absent si le parcours ne permet pas de sortir. */
   onExit?: () => void;
+  /**
+   * Sauvegarde serveur, appelée au CHANGEMENT DE DIMENSION — jamais à la frappe : un appel
+   * par caractère saturerait le réseau, et la connectivité régionale ne le supporte pas.
+   *
+   * Doit être non bloquante et ne jamais lever : une panne de sauvegarde n'interrompt pas
+   * la saisie, elle se rattrape à la dimension suivante.
+   */
+  onProgress?: (state: { answers: Record<string, string>; lastDimension: string }) => void;
+  /** Reprise : dimension où le porteur s'était arrêté. */
+  initialIndex?: number;
+  /** Reprise : textes déjà saisis, qui reprennent la main sur ce que l'IA avait rédigé. */
+  initialDrafts?: Record<string, string>;
   submitting?: boolean;
   /** Libellé du CTA final (par défaut : lancer l'analyse). */
   submitLabel?: string;
@@ -68,9 +84,14 @@ export function DimensionWizard({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const dimensions = extract.dimensions;
-  const [idx, setIdx] = useState(0);
+  const [idx, setIdx] = useState(() =>
+    Math.min(Math.max(initialIndex, 0), Math.max(dimensions.length - 1, 0)),
+  );
   const [drafts, setDrafts] = useState<Record<string, string>>(() =>
-    Object.fromEntries(dimensions.map((d) => [d.key, initialDraft(d)])),
+    mergeDrafts(
+      Object.fromEntries(dimensions.map((d) => [d.key, initialDraft(d)])),
+      initialDrafts,
+    ),
   );
   const [verdicts, setVerdicts] = useState<Record<string, DimensionVerdict>>({});
   const [recap, setRecap] = useState(false);
@@ -97,8 +118,16 @@ export function DimensionWizard({
   function decide(verdict: DimensionVerdict) {
     const current = dimensions[idx];
     setVerdicts((prev) => ({ ...prev, [current.key]: verdict }));
-    if (idx + 1 < dimensions.length) setIdx(idx + 1);
+    const next = idx + 1;
+    if (next < dimensions.length) setIdx(next);
     else setRecap(true);
+    // Sauvegarde au CHANGEMENT de dimension. `lastDimension` pointe la dimension OUVERTE
+    // ensuite : c'est là que le porteur s'arrête s'il abandonne, donc c'est elle qui situe
+    // le décrochage. Sur la dernière, on garde la dimension courante.
+    onProgress?.({
+      answers: { ...drafts },
+      lastDimension: (next < dimensions.length ? dimensions[next] : current).key,
+    });
   }
 
   function goBack() {

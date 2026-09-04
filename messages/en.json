@@ -251,6 +251,10 @@
     "adjust": {
       "loading": "Loading your story…",
       "emptyTitle": "Nothing to review yet",
+      "resumeTitle": "You'd started — let's pick up where you left off",
+      "resumeText": "{filled} of {total} dimensions already filled in.",
+      "resumeCta": "Resume",
+      "restartCta": "Start over",
       "emptyText": "Start by telling us about your project — the AI will draft the 12 dimensions to review here.",
       "emptyCta": "Back to dashboard",
       "title": "Review your project",

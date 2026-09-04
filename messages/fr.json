@@ -251,6 +251,10 @@
     "adjust": {
       "loading": "Chargement de ton récit…",
       "emptyTitle": "Rien à relire pour l'instant",
+      "resumeTitle": "Tu avais commencé — reprenons où tu t'es arrêté",
+      "resumeText": "{filled} dimension(s) sur {total} déjà renseignée(s).",
+      "resumeCta": "Reprendre",
+      "restartCta": "Recommencer",
       "emptyText": "Commence par raconter ton projet — l'IA en tirera les 12 dimensions à valider ici.",
       "emptyCta": "Retour au tableau de bord",
       "title": "Relis ton projet",
